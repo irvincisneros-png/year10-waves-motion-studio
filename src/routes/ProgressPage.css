@@ -1,0 +1,82 @@
+.progress-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+/* The import control is a <label> wrapping a visually-hidden file input;
+   show the focus ring on the label when the input has keyboard focus. */
+.progress-actions__import {
+  position: relative;
+}
+.progress-actions__import:has(input:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.progress-feedback {
+  margin-top: var(--space-4);
+}
+
+.progress-summary {
+  margin-top: var(--space-4);
+  color: var(--ink-muted);
+}
+
+/* Wide table scrolls inside its own container — never the page. */
+.progress-table-wrap {
+  margin-top: var(--space-4);
+  overflow-x: auto;
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+}
+
+.progress-table {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.progress-table th,
+.progress-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line-subtle);
+}
+
+.progress-table thead th {
+  background: var(--surface-sunken);
+  color: var(--ink-strong);
+  position: sticky;
+  top: 0;
+}
+
+.progress-table tbody tr:last-child th,
+.progress-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.progress-table__desc {
+  max-width: 36rem;
+}
+
+.level {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+}
+.level--none {
+  color: var(--status-not-attempted);
+}
+.level--developing {
+  color: var(--status-developing);
+}
+.level--secure {
+  color: var(--status-secure);
+}

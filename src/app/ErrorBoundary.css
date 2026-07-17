@@ -1,0 +1,41 @@
+.error-boundary {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-7) var(--content-gutter);
+}
+
+.error-boundary__card {
+  max-width: 42rem;
+  background: var(--surface-card);
+  border: 1px solid var(--line-subtle);
+  border-left: 4px solid var(--status-danger);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-1);
+  padding: var(--space-6);
+}
+
+.error-boundary__title {
+  margin-bottom: var(--space-3);
+  outline: none;
+}
+
+.error-boundary__detail {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background: var(--status-danger-surface);
+  border-radius: var(--radius-md);
+  overflow-wrap: anywhere;
+}
+
+.error-boundary__detail code {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--status-danger);
+}
+
+.error-boundary__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}

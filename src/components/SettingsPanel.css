@@ -1,0 +1,49 @@
+.settings {
+  display: contents;
+}
+
+.settings__button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--line-on-nav);
+  border-radius: var(--radius-md);
+  background: var(--surface-nav-raised);
+  color: var(--ink-on-nav);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+}
+
+.settings__button:hover {
+  border-color: var(--accent-cyan);
+}
+
+.settings__button[aria-expanded="true"] {
+  border-color: var(--accent-cyan);
+}
+
+/* Panel spans the full header width, in normal flow (no overlay).
+   `width: 100%` forces the panel onto its own row of the wrapping flex
+   header, below the brand/nav/button row. */
+.settings__panel {
+  width: 100%;
+  background: var(--surface-card);
+  color: var(--ink-body);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-1);
+  padding: var(--space-4) var(--space-5);
+  margin-top: var(--space-3);
+}
+
+.settings__heading {
+  font-size: var(--text-md);
+  margin-bottom: var(--space-2);
+}
+
+.settings__close {
+  margin-top: var(--space-3);
+}
