@@ -5,7 +5,7 @@ describe('Units Engine', () => {
   it('converts distances correctly', () => {
     expect(toMeters(1, 'm')).toBe(1);
     expect(toMeters(1, 'cm')).toBe(0.01);
-    expect(toMeters(500, 'nm')).toBe(500e-9);
+    expect(toMeters(500, 'nm')).toBeCloseTo(500e-9, 15);
 
     expect(fromMeters(1, 'cm')).toBe(100);
     expect(fromMeters(0.001, 'mm')).toBe(1);

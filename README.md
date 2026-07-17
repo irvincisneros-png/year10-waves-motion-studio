@@ -1,32 +1,52 @@
-# React + TypeScript + Vite
+# WaveMotion Studio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+An offline-capable, browser-based learning application for the NSW Year 10
+**Waves & Motion** topic (outcomes 7.1.1–7.5.1). Built for NSW classrooms:
+teacher demonstration, guided learning, free exploration, virtual investigation,
+data collection, graphing, calculation, assessment, and revision.
 
-Currently, two official plugins are available:
+Part of the NSW Junior Science Simulator suite — see
+`../SCIENCE_SIMULATOR_SUITE_SHARED_SPEC.md` (platform contract) and
+`../YEAR_10_WAVES_MOTION_APP_PLAN.md` (scientific content contract).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Status
 
-## React Compiler
+In staged rebuild — see `IMPLEMENTATION_STATUS.md` for honest per-outcome status and
+`docs/plans/2026-07-17-wavemotion-orchestration-plan.md` for the delivery plan.
+Pre-existing prototype code is being replaced stage by stage
+(`docs/AUDIT_2026-07-17.md`).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the Oxlint configuration
+- TypeScript (strict) · React 19 · Vite 8 · react-router-dom 7 · Zustand 5
+- Vitest (unit/invariant tests) · Playwright (browser tests) · oxlint
+- vite-plugin-pwa (offline shell) — no runtime CDNs, all assets bundled locally
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Scripts
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install            # once
+npm run dev            # dev server (test via HTTP, not file://)
+npm run build          # type-check + production build to dist/
+npm run preview        # serve the production build locally
+npm run test           # unit tests (Vitest)
+npm run lint           # oxlint
+npm run verify         # lint + typecheck + unit tests + Playwright (full gate)
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Supported browsers
+
+Current Chrome, Edge, and Safari on laptop and tablet. Responsive from 320 px
+(phone) to 1440 px. WCAG 2.2 AA target: full keyboard operation, reduced-motion
+support, non-visual alternatives for Canvas/audio content.
+
+## Privacy model
+
+No login, no student names, no analytics, no network calls after first load.
+Optional progress lives in versioned local storage on the device only, with
+export/import/reset under user control. Audio is off by default and
+volume-limited when enabled.
+
+## Language
+
+Australian English throughout.
