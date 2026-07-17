@@ -1,0 +1,118 @@
+/*
+ * WaveMotion Studio — design tokens.
+ *
+ * LIGHT THEME BY DEFAULT (no dark-mode variant is shipped). Warm off-white
+ * foundation, deep navy/charcoal ink and nav surfaces, electric cyan +
+ * spectral violet as the topic accents (Year 10 Waves & Motion).
+ *
+ * Every text/background pairing used in the UI is verified for WCAG AA
+ * contrast — see docs/CONTRAST_AUDIT.md for the measured ratios.
+ *
+ * Colour is never the sole carrier of meaning; strand accents always sit
+ * beside a text label.
+ */
+
+:root {
+  /* ----- Foundation surfaces (warm off-white family) ----- */
+  --surface-page: #f7f4ee; /* warm off-white page background */
+  --surface-card: #ffffff; /* raised cards / panels */
+  --surface-sunken: #efe9df; /* subtle recessed areas */
+  --surface-nav: #141b2e; /* deep navy header/footer */
+  --surface-nav-raised: #1e2740; /* nav hover/active surface */
+
+  /* ----- Ink (text) ----- */
+  --ink-strong: #161c28; /* headings / primary text on light */
+  --ink-body: #2f3646; /* body text on light */
+  --ink-muted: #545c6e; /* secondary text on light (AA on page) */
+  --ink-on-nav: #f4f6fb; /* primary text on navy */
+  --ink-on-nav-muted: #c4ccdd; /* secondary text on navy (AA) */
+  --ink-on-accent: #10131b; /* text placed on a bright accent fill */
+
+  /* ----- Topic accents ----- */
+  /* Bright, decorative-only accents (used for fills, rules, focus, icons —
+     NOT as small text on a light background where they would fail AA). */
+  --accent-cyan: #00b8d4;
+  --accent-violet: #7c4dff;
+  /* Accessible "ink" variants of the accents for text / links on light. */
+  --accent-cyan-ink: #056977; /* AA on page + card */
+  --accent-violet-ink: #5b34c9; /* AA on page + card */
+
+  /* ----- Status (each is always paired with an icon + text label) ----- */
+  --status-secure: #1f7a4d;
+  --status-developing: #8a5a0e;
+  --status-not-attempted: #545c6e;
+  --status-danger: #b3261e;
+  --status-danger-surface: #fbeceb;
+  --status-info: #056977;
+  --status-info-surface: #e6f4f6;
+  --status-warn-surface: #fbf2e0;
+
+  /* ----- Borders / lines ----- */
+  --line-subtle: #ddd5c8;
+  --line-strong: #b9b0a0;
+  --line-on-nav: #313a56;
+
+  /* ----- Typography scale (1.20 minor-third, 16px root) ----- */
+  --font-sans: "Segoe UI", "Helvetica Neue", "Inter", system-ui, -apple-system,
+    Roboto, Arial, sans-serif;
+  --font-mono: "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.35rem;
+  --text-xl: 1.62rem;
+  --text-2xl: 1.94rem;
+  --text-3xl: 2.33rem;
+  --leading-tight: 1.2;
+  --leading-normal: 1.55;
+  --weight-normal: 400;
+  --weight-medium: 550;
+  --weight-bold: 700;
+
+  /* ----- Spacing scale (4px base) ----- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* ----- Radius ----- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  /* ----- Elevation ----- */
+  --elevation-1: 0 1px 2px rgba(20, 27, 46, 0.08),
+    0 1px 3px rgba(20, 27, 46, 0.06);
+  --elevation-2: 0 2px 6px rgba(20, 27, 46, 0.1),
+    0 6px 16px rgba(20, 27, 46, 0.08);
+
+  /* ----- Focus ring ----- */
+  --focus-ring-color: #5b34c9;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+
+  /* ----- Interactive sizing ----- */
+  --target-min: 44px; /* minimum interactive target */
+
+  /* ----- Layout ----- */
+  --content-max: 72rem;
+  --content-gutter: clamp(1rem, 4vw, 2.5rem);
+
+  /* ----- Motion (respect reduced-motion, see global.css) ----- */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+/* Low-graphics mode: flatten elevation + decorative gradients (results never
+   change — this is a rendering-only setting). */
+:root[data-low-graphics="true"] {
+  --elevation-1: 0 0 0 1px var(--line-subtle);
+  --elevation-2: 0 0 0 1px var(--line-strong);
+}
