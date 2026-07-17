@@ -13,6 +13,9 @@ const PORT = 4611;
 
 export default defineConfig({
   testDir: './tests/e2e',
+  // The external SSD accumulates macOS AppleDouble (._*) sidecar files;
+  // never treat them as test sources.
+  testIgnore: '**/._*',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,
@@ -20,6 +23,9 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: 'on-first-retry',
+    // Deterministic default for the settings tests regardless of the host
+    // machine's OS accessibility preferences.
+    reducedMotion: 'no-preference',
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
