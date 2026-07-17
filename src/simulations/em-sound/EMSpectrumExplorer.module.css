@@ -1,0 +1,165 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.spectrumBar {
+  display: flex;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-bg-tertiary);
+  cursor: pointer;
+}
+
+.regionBlock {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  overflow: hidden;
+}
+
+.regionLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.regionBlock:hover .regionLabel, .activeBlock .regionLabel {
+  opacity: 1;
+}
+
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: 0 var(--spacing-md);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.slider {
+  width: 100%;
+  cursor: pointer;
+}
+
+.sliderLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metricsPanel {
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.metricsPanel h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  border-bottom: 1px solid var(--color-bg-tertiary);
+  padding-bottom: var(--spacing-xs);
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+  border-bottom: 1px dashed var(--color-bg-tertiary);
+}
+
+.metricLabel {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.metricValue {
+  font-family: 'JetBrains Mono', monospace, monospace;
+  font-weight: 600;
+  color: var(--color-accent-violet);
+}
+
+.scaleIndicator {
+  margin-top: auto;
+  padding: var(--spacing-sm);
+  background-color: rgba(0, 229, 255, 0.1);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.infoPanel {
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.infoPanel h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+.description {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.applications h4 {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-text-primary);
+}
+
+.applications ul {
+  margin: 0;
+  padding-left: var(--spacing-lg);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}

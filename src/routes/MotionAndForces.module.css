@@ -1,0 +1,31 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.header {
+  border-bottom: 2px solid var(--color-bg-tertiary);
+  padding-bottom: var(--spacing-md);
+}
+
+.learningIntention {
+  background-color: rgba(0, 229, 255, 0.1);
+  border-left: 4px solid var(--color-accent-cyan);
+  padding: var(--spacing-md);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-top: var(--spacing-md);
+  color: var(--color-text-secondary);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxl);
+}
+
+.moduleSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
