@@ -90,6 +90,10 @@
   color: var(--status-developing);
   background: var(--status-warn-surface);
 }
+.badge--available {
+  color: var(--status-secure);
+  background: #eef7f1;
+}
 
 /* ---------- Toggle switch (checkbox styled) ---------- */
 .toggle {

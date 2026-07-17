@@ -1,0 +1,324 @@
+/* Wave-foundations workspace styles. Reuses shell primitives (.card, .btn,
+ * .stack, .notice, .chip). Light theme only. */
+
+.wave-lab {
+  display: grid;
+  gap: var(--space-5);
+}
+
+/* ---------- Phase navigation ---------- */
+.wave-lab__phases {
+  overflow-x: auto;
+}
+
+.wave-lab__phase-list {
+  display: flex;
+  gap: var(--space-2);
+  min-width: max-content;
+  padding-bottom: var(--space-1);
+}
+
+.wave-lab__phase-link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--ink-body);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.wave-lab__phase-link[aria-current='page'] {
+  border-color: var(--accent-cyan-ink);
+  background: var(--status-info-surface);
+  color: var(--ink-strong);
+}
+
+.wave-lab__phase-tag {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-violet-ink);
+  font-weight: var(--weight-medium);
+}
+
+/* ---------- Simulation stage ---------- */
+.wave-stage {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.wave-stage__readouts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--ink-body);
+}
+
+.wave-stage__readouts strong {
+  color: var(--ink-strong);
+}
+
+.wave-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-2) var(--space-5);
+  align-items: start;
+}
+
+/* Segmented / option controls */
+.seg-control {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2) 0;
+}
+
+.seg-control__legend {
+  font-weight: var(--weight-medium);
+  color: var(--ink-strong);
+  padding: 0;
+}
+
+.seg-control__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.seg-control__option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--text-sm);
+}
+
+.seg-control__option:has(input:checked) {
+  background: var(--accent-cyan-ink);
+  border-color: var(--accent-cyan-ink);
+  color: #fff;
+}
+
+.seg-control__option input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: currentColor;
+}
+
+.seg-control__note {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+/* Checkbox rows */
+.check-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  padding-right: var(--space-3);
+}
+
+.check-row input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--accent-cyan-ink);
+}
+
+/* Chamber captions */
+.chamber-caption {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.chamber-caption strong {
+  font-size: var(--text-base);
+}
+
+.chamber-caption span {
+  color: var(--ink-muted);
+}
+
+/* Ruler tool */
+.ruler-tool {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2) 0;
+}
+
+.ruler-tool__handle {
+  min-height: var(--target-min);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  cursor: ew-resize;
+}
+
+/* Data tables */
+.data-table-wrap {
+  overflow-x: auto;
+}
+
+.data-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--text-sm);
+}
+
+.data-table caption {
+  text-align: left;
+  font-weight: var(--weight-medium);
+  color: var(--ink-strong);
+  padding-bottom: var(--space-2);
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line-subtle);
+}
+
+.data-table th {
+  color: var(--ink-strong);
+}
+
+/* Field + error pattern */
+.field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.field__label {
+  font-weight: var(--weight-medium);
+  color: var(--ink-strong);
+  font-size: var(--text-sm);
+}
+
+.field__row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.field__input {
+  min-height: var(--target-min);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  width: 9rem;
+}
+
+.field__unit {
+  min-height: var(--target-min);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  padding: var(--space-1) var(--space-2);
+}
+
+.field__error {
+  color: var(--status-danger);
+  font-size: var(--text-sm);
+}
+
+.field__error::before {
+  content: '⚠ ';
+}
+
+/* Feedback (never colour-only: icon + text) */
+.feedback {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  border: 1px solid;
+}
+
+.feedback--correct {
+  border-color: var(--status-secure);
+  background: #eef7f1;
+  color: var(--ink-body);
+}
+
+.feedback--incorrect {
+  border-color: var(--status-developing);
+  background: var(--status-warn-surface);
+}
+
+.feedback--invalid {
+  border-color: var(--status-danger);
+  background: var(--status-danger-surface);
+}
+
+/* Question runner */
+.question-options {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.question-option {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.question-option:has(input:checked) {
+  border-color: var(--accent-cyan-ink);
+  background: var(--status-info-surface);
+}
+
+.question-option input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  flex: 0 0 auto;
+  accent-color: var(--accent-cyan-ink);
+}
+
+/* Anatomy diagram */
+.anatomy-svg {
+  width: 100%;
+  height: auto;
+  background: var(--surface-card);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+}
+
+/* Presentation mode: enlarge the simulation stage for projection */
+:root[data-presentation='true'] .wave-stage__readouts {
+  font-size: var(--text-md);
+}
+
+:root[data-presentation='true'] .canvas-scene__canvas {
+  min-height: 260px;
+}

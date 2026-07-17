@@ -1,0 +1,28 @@
+.wave-equation {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.wave-equation math,
+.wave-equation__fallback {
+  font-size: var(--text-xl);
+  color: var(--ink-strong);
+  font-family: var(--font-mono);
+}
+
+.wave-equation--compact math,
+.wave-equation--compact .wave-equation__fallback {
+  font-size: var(--text-lg);
+}
+
+.wave-equation__meaning {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  max-width: 60ch;
+}
+
+/* Presentation mode: enlarge the equation for projection. */
+:root[data-presentation="true"] .wave-equation math,
+:root[data-presentation="true"] .wave-equation__fallback {
+  font-size: var(--text-3xl);
+}

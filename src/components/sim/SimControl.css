@@ -1,0 +1,35 @@
+.sim-control {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-1);
+  padding: var(--space-2) 0;
+}
+
+.sim-control__label {
+  font-weight: var(--weight-medium);
+  color: var(--ink-strong);
+}
+
+.sim-control__range {
+  width: 100%;
+  min-height: var(--target-min);
+  accent-color: var(--accent-cyan-ink);
+  cursor: pointer;
+}
+
+.sim-control__range:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.sim-control__value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--ink-body);
+}
+
+.sim-control__hint {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  margin: 0;
+}

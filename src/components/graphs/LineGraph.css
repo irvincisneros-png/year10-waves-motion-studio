@@ -1,0 +1,47 @@
+.line-graph {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.line-graph__title {
+  font-weight: var(--weight-medium);
+  color: var(--ink-strong);
+  font-size: var(--text-sm);
+}
+
+.line-graph__svg {
+  width: 100%;
+  height: auto;
+  background: var(--surface-card);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+}
+
+.line-graph__grid {
+  stroke: var(--line-subtle);
+  stroke-width: 1;
+}
+
+.line-graph__axis {
+  stroke: var(--ink-muted);
+  stroke-width: 1.5;
+}
+
+.line-graph__tick {
+  font-size: 11px;
+  fill: var(--ink-muted);
+  text-anchor: middle;
+}
+
+.line-graph__tick--y {
+  text-anchor: end;
+  dominant-baseline: middle;
+}
+
+.line-graph__label {
+  font-size: 13px;
+  fill: var(--ink-body);
+  text-anchor: middle;
+  font-weight: 550;
+}

@@ -2,10 +2,10 @@
  * Learning-map data for the home page.
  *
  * The 11 planned workspaces of WaveMotion Studio, grouped by strand and
- * labelled with the syllabus outcomes each will cover. In Stage 1 NONE of the
- * workspaces are built, so every card is marked `in-development` and rendered
- * as a NON-interactive panel (never a dead link/button). Only the shared shell
- * routes (glossary/progress/teacher/about) are navigable this stage.
+ * labelled with the syllabus outcomes each will cover. A workspace is marked
+ * `available` (with a real `route`) only once it has passed its stage gate;
+ * everything else is `in-development` and rendered as a NON-interactive panel
+ * (never a dead link/button). Stage 2 unlocked the wave-foundations workspace.
  *
  * Outcome codes reference src/content/outcomes.ts (the canonical list).
  */
@@ -45,7 +45,8 @@ export const learningMap: StrandGroup[] = [
         summary:
           'Model mechanical vs electromagnetic waves, transverse vs longitudinal, and measure amplitude, frequency, wavelength and speed.',
         outcomeCodes: ['7.1.1', '7.1.2', '7.1.3', '7.1.5', '7.1.6'],
-        status: 'in-development',
+        status: 'available',
+        route: '/waves',
       },
       {
         id: 'spectrum',
