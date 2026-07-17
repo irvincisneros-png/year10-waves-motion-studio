@@ -10,7 +10,7 @@ Companion documents: `docs/plans/2026-07-17-wavemotion-orchestration-plan.md` (d
 |---|---|
 | TypeScript strict | Shared-spec requirement; engine correctness |
 | React 19 + Vite 8 | Shared-spec recommended stack; already scaffolded and working |
-| react-router-dom 7 (BrowserRouter with hash fallback for static hosts) | Deep links + refresh behaviour required by Stage 1 gate |
+| react-router-dom 7 (**HashRouter** — decided Stage 1) | Deep links + refresh behaviour required by Stage 1 gate. Hash URLs (`/#/glossary`) load, refresh and deep-link correctly on any static host with zero SPA-fallback server configuration — the deployment target is plain school-friendly static hosting |
 | Zustand 5 | Small, testable state; store-per-domain |
 | SVG for diagrams, Canvas 2D for continuous simulations | Exact teaching diagrams must be data-driven; Canvas for 60 fps particle fields |
 | No Three.js at launch | No Year 10 Waves & Motion module *requires* 3D; avoids WebGL fallback burden. Revisit post-release |

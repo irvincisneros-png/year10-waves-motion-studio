@@ -7,6 +7,14 @@
 
 Status values: `not built` · `prototype — not verified` · `in build` · `verified` · `deferred`
 
+> Stage 1 note (2026-07-17): the shared shell (routes `/`, `/glossary`,
+> `/progress`, `/teacher`, `/about` + 404), design tokens, accessibility
+> primitives, settings/progress stores and offline PWA are built and
+> builder-verified. Prototype simulation code now lives in
+> `src/_prototype_archive/` (excluded from build/lint/typecheck) — outcome
+> rows below still describe those archived prototypes; no outcome content
+> ships in Stage 1.
+
 ## Outcomes
 
 | Code | Status | Notes |
@@ -41,8 +49,8 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 
 | Stage | Status |
 |---|---|
-| 0 — Scope and evidence contract | in progress |
-| 1 — Shared shell and foundations | not started |
+| 0 — Scope and evidence contract | complete (tagged `stage-0`) |
+| 1 — Shared shell and foundations | built — `npm run verify` green (oxlint, tsc, 37 unit, 83 e2e across Chromium+WebKit); awaiting orchestrator gate review |
 | 2 — Wave laboratory vertical slice | not started |
 | 3 — Sound module group | not started |
 | 4 — Light and vision module group | not started |

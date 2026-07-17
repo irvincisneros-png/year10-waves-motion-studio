@@ -34,6 +34,15 @@ npm run lint           # oxlint
 npm run verify         # lint + typecheck + unit tests + Playwright (full gate)
 ```
 
+## Routing
+
+Hash-based routing (react-router-dom `HashRouter`): all routes live behind
+`/#/…` (for example `/#/glossary`). Cold loads, refreshes and deep links work
+on any static host without SPA-fallback configuration, which suits the plain
+static hosting this app targets. Playwright's e2e server runs on port **4611**
+(not vite's default 4173) so it never latches onto another project's preview
+server on this machine.
+
 ## Supported browsers
 
 Current Chrome, Edge, and Safari on laptop and tablet. Responsive from 320 px
