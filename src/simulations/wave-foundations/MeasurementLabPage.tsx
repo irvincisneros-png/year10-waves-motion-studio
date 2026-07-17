@@ -264,7 +264,9 @@ export default function MeasurementLabPage() {
   const dvtWindow = 3 * T;
   const dvtSeries = displacementVsTime(wave, probeX, Math.max(0, t - dvtWindow), Math.max(t, 1e-6), 120);
 
-  const probeDisp = displacement(wave, probeX, t);
+  const probeDispRaw = displacement(wave, probeX, t);
+  // Zero-clamp float noise at the DISPLAY layer only.
+  const probeDisp = Math.abs(probeDispRaw) < 1e-9 ? 0 : probeDispRaw;
   const tCoarse = Math.round(t * 4) / 4;
 
   return (

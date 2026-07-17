@@ -57,7 +57,9 @@ export default function WaveTypesPage() {
   const t = clock.t;
 
   const probeX = (probePct / 100) * CHAMBER;
-  const probeDisp = displacement(WAVE, probeX, t);
+  const probeDispRaw = displacement(WAVE, probeX, t);
+  // Zero-clamp float noise (e.g. sin(3π) ≈ 2e-16) at the DISPLAY layer only.
+  const probeDisp = Math.abs(probeDispRaw) < 1e-9 ? 0 : probeDispRaw;
   const T = periodOfWave(WAVE);
   const lambda = wavelengthOf(WAVE);
 
