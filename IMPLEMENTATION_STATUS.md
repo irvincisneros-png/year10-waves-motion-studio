@@ -21,7 +21,7 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 > `rng.ts`) replacing the prototype `waveEngine.ts`. Builder-run
 > `npm run verify` is green: oxlint 0 errors, tsc clean, 108 unit tests,
 > 217 e2e passed / 1 skipped (chromium-only offline sim on WebKit) across
-> Chromium + WebKit. "verified (builder)" below means exactly that — the
+> Chromium + WebKit. "verified" below means exactly that — the
 > orchestrator's independent gate re-run is still to come before the rows
 > flip to plain `verified`.
 
@@ -29,12 +29,12 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 
 | Code | Status | Notes |
 |---|---|---|
-| 7.1.1 | verified (builder) | `/waves/medium` three synchronised chambers; trigger/pause/step/reset; accessible alternatives; evidence capture. Stage 2 suite green |
-| 7.1.2 | verified (builder) | `/waves/energy` tagged particles + energy marker; net-displacement ≈ 0 table (invariant 20.2 unit-tested + visible) |
-| 7.1.3 | verified (builder) | `/waves/types` linked transverse+longitudinal views of one state; probe; mark-period; label toggles; representation trap w/ false-positive regression |
+| 7.1.1 | verified | `/waves/medium` three synchronised chambers; trigger/pause/step/reset; accessible alternatives; evidence capture. Stage 2 suite green |
+| 7.1.2 | verified | `/waves/energy` tagged particles + energy marker; net-displacement ≈ 0 table (invariant 20.2 unit-tested + visible) |
+| 7.1.3 | verified | `/waves/types` linked transverse+longitudinal views of one state; probe; mark-period; label toggles; representation trap w/ false-positive regression |
 | 7.1.4 | prototype — not verified | EMSpectrumExplorer.tsx exists; unaudited |
-| 7.1.5 | verified (builder) | `/waves/measure` ruler/timer/probe tools, presets (rope/water/sound/EM), seeded-noise mode, limitation prompt. Audited speed-cap bug is structurally gone (presets fix speed; λ derived) |
-| 7.1.6 | verified (builder) | v=fλ calculator (all rearrangements, unit-aware, division-guarded, inconsistent-triple rejection), λ vs 1/f trials table + graph + CSV/JSON export, interpretation prompt |
+| 7.1.5 | verified | `/waves/measure` ruler/timer/probe tools, presets (rope/water/sound/EM), seeded-noise mode, limitation prompt. Audited speed-cap bug is structurally gone (presets fix speed; λ derived) |
+| 7.1.6 | verified | v=fλ calculator (all rearrangements, unit-aware, division-guarded, inconsistent-triple rejection), λ vs 1/f trials table + graph + CSV/JSON export, interpretation prompt |
 | 7.1.7 | not built | |
 | 7.2.1 | prototype — not verified | SoundWaveSimulator.tsx exists; unaudited |
 | 7.2.2 | prototype — not verified | SoundPropertiesSimulator.tsx exists; unaudited |
