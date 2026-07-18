@@ -168,8 +168,12 @@ export function LineGraph({
           return <path key={s.label} d={d} fill="none" stroke={colour} strokeWidth={2.5} />;
         })}
       </svg>
-      {/* Accessible data-table equivalent (always present). */}
-      <table className="u-visually-hidden">
+      {/* Accessible data-table equivalent (always present). The hidden class
+          sits on a wrapper div: a table's min-content width ignores width:1px
+          and would otherwise poke out of the clip box and cause page-level
+          horizontal overflow. */}
+      <div className="u-visually-hidden">
+      <table>
         <caption>
           Data table for {title}: {xLabel} against {yLabel}
         </caption>
@@ -196,6 +200,7 @@ export function LineGraph({
             : null}
         </tbody>
       </table>
+      </div>
     </figure>
   );
 }

@@ -1,7 +1,12 @@
 .line-graph {
   margin: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
+}
+
+.line-graph > * {
+  min-width: 0;
 }
 
 .line-graph__title {

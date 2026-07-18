@@ -3,6 +3,10 @@
 
 .wave-lab {
   display: grid;
+  /* minmax(0, 1fr): never let the phase nav's max-content width (a long
+     horizontal list, scrollable via overflow-x) inflate the column track —
+     that would force page-level horizontal scroll at narrow widths. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-5);
 }
 
@@ -50,7 +54,18 @@
 /* ---------- Simulation stage ---------- */
 .wave-stage {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
+}
+
+/* Never let intrinsic min-content widths (canvases, SVGs, wide tables inside
+   scroll wrappers) propagate up through grid items and force page-level
+   horizontal scroll — the Stage 1/2 gates forbid horizontal overflow AND
+   forbid masking it with overflow-x: hidden. */
+.wave-stage > *,
+.wave-controls > *,
+.wave-lab > * {
+  min-width: 0;
 }
 
 .wave-stage__readouts {
@@ -68,7 +83,7 @@
 
 .wave-controls {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
   gap: var(--space-2) var(--space-5);
   align-items: start;
 }

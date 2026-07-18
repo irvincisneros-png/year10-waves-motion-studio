@@ -1,11 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { SHELL_ROUTES } from './helpers';
+import { SHELL_ROUTES, WAVES_ROUTES } from './helpers';
 
 /**
- * Stage 1 gate: zero console errors/warnings and zero unhandled rejections on
- * every route (including the not-found page).
+ * Stage 1+2 gate: zero console errors/warnings and zero unhandled rejections
+ * on every route (including the not-found page and the wave laboratory).
  */
-const ROUTES = [...SHELL_ROUTES.map((r) => r.url), '/#/not-a-real-route'];
+const ROUTES = [
+  ...SHELL_ROUTES.map((r) => r.url),
+  ...WAVES_ROUTES.map((r) => r.url),
+  '/#/not-a-real-route',
+];
 
 test.describe('console hygiene', () => {
   for (const url of ROUTES) {

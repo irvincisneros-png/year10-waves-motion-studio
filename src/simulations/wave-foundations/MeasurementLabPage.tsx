@@ -578,13 +578,13 @@ export default function MeasurementLabPage() {
         </div>
 
         <p className="notice">
-          This virtual investigation does <strong>not</strong> replace
+          <span>This virtual investigation does <strong>not</strong> replace
           supervised hands-on practical work. Model: uniform, lossless,
           non-dispersive medium; the vertical displacement scale is relative
           (exaggerated for visibility). Speeds:{' '}
           {preset.medium.modelled
             ? 'modelled teaching value, not a measured constant.'
-            : `${preset.medium.source} (reviewed ${preset.medium.reviewDate}).`}
+            : `${preset.medium.source} (reviewed ${preset.medium.reviewDate}).`}</span>
         </p>
       </div>
     </Page>

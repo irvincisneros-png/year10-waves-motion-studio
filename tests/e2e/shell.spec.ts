@@ -59,17 +59,19 @@ test.describe('shell routes', () => {
     ).toBeVisible();
   });
 
-  test('home learning map shows every workspace as non-interactive "In development"', async ({
+  test('home learning map: available workspaces link, the rest are non-interactive "In development"', async ({
     page,
   }) => {
     await page.goto('/#/');
-    const badges = page.getByText('In development');
-    await expect(badges).toHaveCount(11);
-    // The cards expose no links/buttons — no dead controls in the map.
+    // Stage 2: the wave-foundations card is unlocked; the other 10 remain
+    // non-interactive "In development" panels (never dead links/buttons).
+    await expect(page.getByText('In development')).toHaveCount(10);
+    await expect(page.getByText('Available')).toHaveCount(1);
     const cardControls = page.locator(
       'article.workspace-card a, article.workspace-card button',
     );
-    await expect(cardControls).toHaveCount(0);
+    await expect(cardControls).toHaveCount(1);
+    await expect(cardControls.first()).toHaveText('Wave foundations');
   });
 
   test('offline: shell and visited routes still work after first load', async ({

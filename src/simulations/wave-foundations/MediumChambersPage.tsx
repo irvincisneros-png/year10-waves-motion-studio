@@ -533,10 +533,10 @@ export default function MediumChambersPage() {
         </div>
 
         <p className="notice">
-          Model honesty: chamber speeds are illustrative, not to scale — real
+          <span>Model honesty: chamber speeds are illustrative, not to scale — real
           light travels about a million times faster than sound. The EM arrows
           are a <strong>field-vector representation</strong>, not particles
-          moving through space.
+          moving through space.</span>
         </p>
 
         <NoticeCapture

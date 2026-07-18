@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useEffect, useId } from 'react';
 import { useSettingsStore } from '../../store/settingsStore';
 import './SimToolbar.css';
 
@@ -51,6 +51,17 @@ export function SimToolbar({
   const setPresentationMode = useSettingsStore((s) => s.setPresentationMode);
   const speedGroup = useId();
   const presetSelectId = useId();
+
+  // Escape exits presentation mode from anywhere on the page
+  // (CONTROL_INVENTORY `global.presentation-mode-toggle`).
+  useEffect(() => {
+    if (!presentationMode) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPresentationMode(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [presentationMode, setPresentationMode]);
 
   // Step is available whenever the scene is paused, and always in reduced-motion
   // mode (which never autoplays).

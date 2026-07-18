@@ -418,9 +418,9 @@ export default function WaveTypesPage() {
         </div>
 
         <p className="notice">
-          Model honesty: water-surface waves are <em>not</em> perfectly
+          <span>Model honesty: water-surface waves are <em>not</em> perfectly
           transverse — real water particles move in near-circular paths — so
-          ropes and springs are the clean transverse examples here.
+          ropes and springs are the clean transverse examples here.</span>
         </p>
       </div>
     </Page>

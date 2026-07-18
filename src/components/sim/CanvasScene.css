@@ -1,10 +1,16 @@
 .canvas-scene {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
+}
+
+.canvas-scene > * {
+  min-width: 0;
 }
 
 .canvas-scene__canvas {
   width: 100%;
+  max-width: 100%;
   display: block;
   background: var(--surface-card);
   border: 1px solid var(--line-subtle);

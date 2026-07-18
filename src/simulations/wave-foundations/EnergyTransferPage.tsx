@@ -277,10 +277,10 @@ export default function EnergyTransferPage() {
         </div>
 
         <p className="notice">
-          The <strong>energy marker</strong> crosses the whole chamber; the{' '}
+          <span>The <strong>energy marker</strong> crosses the whole chamber; the{' '}
           <strong>particles do not</strong> — each one oscillates about its home
           position and finishes where it started (net displacement ≈ 0). Energy
-          is transferred without any net transfer of particles.
+          is transferred without any net transfer of particles.</span>
         </p>
 
         <NoticeCapture
