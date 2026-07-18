@@ -126,6 +126,59 @@ Covers app-plan §4.1–4.3. Uses `global.pause-button`, `global.step-button`,
 
 ---
 
+## 2.4 Stage 2 as-built notes and divergences (2026-07-18)
+
+Every §2 control shipped with its inventoried accessible name and keyboard
+behaviour, exercised by `tests/e2e/waves.spec.ts`. Divergences and additions,
+flagged per the stage brief:
+
+**Divergences from the rows above**
+- `global.pause-button`: the `P` keyboard shortcut is NOT implemented — the
+  canvas is not a focusable control (it is `role="img"` with a live text
+  alternative), so "when a simulation canvas has focus" never occurs. Pause is
+  a Tab-reachable toggle button. Revisit if a focusable canvas ever ships.
+- `global.preset-select` (measurement lab): there is no leading "Custom"
+  option; the preset list is exactly the four §2.3 presets and
+  `global.reset-button` returns to the documented default (Rope). An unknown
+  preset id in a deep link falls back to Rope silently (safe state, no broken
+  UI) rather than showing the inline notice described above.
+- `wave-lab.frequency-slider` exists on `/waves/medium` per §2.1. The
+  measurement lab needed its own source-frequency control with per-preset
+  ranges, added as **`wave-lab.measure-frequency-slider`** ("Source
+  frequency" is still unique per route).
+- `wave-lab.ruler-tool-drag`: PageUp/PageDown coarse-step the ruler END
+  (Shift+arrows fine-step it); Home collapses to the zero-length origin
+  default, End stretches across the chamber. Span, not start, is the
+  `aria-valuenow`.
+- `wave-lab.clock-readout-control` ("Mark period") lives on `/waves/types`.
+  Equivalence of the two marked points is checked by whole-period timing
+  (|Δt − n·T| < 12% of T): mismatched pairs (e.g. crest→trough) show "Not a
+  full period — mark two crests or two troughs", never a wrong number.
+- `wave-lab.trial-table` records the MEASURED wavelength (ruler reading) and
+  shows computed speed f×λ(measured) plus a 1/frequency column for the
+  λ vs 1/f investigation.
+- `wave-lab.point-probe-drag` / `wave-lab.probe-tool-drag`: implemented as
+  native range sliders (drag AND keyboard operable) rather than free-drag
+  markers with a slider fallback — one control, both input methods.
+
+**Controls added beyond the S2 rows (new IDs, same conventions)**
+- `wave-lab.medium-notice-input`, `wave-lab.energy-notice-input` — "What do
+  you notice?" capture, saved to the progress store as evidence (empty text
+  rejected).
+- `wave-lab.energy-pulse-button` ("Send energy pulse"),
+  `wave-lab.tag-particle-toggles` ("Tag particle B/D/F/H"),
+  `wave-lab.tagged-particle-table` — the 7.1.2 tagged-particle view.
+- `wave-lab.noise-mode-toggle` ("Seeded measurement noise") + seed input —
+  deterministic seeded measurement-noise mode (ruler readings only; never the
+  wave state).
+- `wave-lab.export-csv-button`, `wave-lab.export-json-button` — trial exports.
+- `wave-lab.check-question`, `wave-lab.check-hint-button` — Check runner with
+  three-level progressive hints.
+- `wave-lab.cer-editor` — Explain-phase claim–evidence–reasoning scaffold
+  (missing part named specifically on submit).
+- Interpretation and limitation prompts on `/waves/measure` (saved as
+  investigation evidence for 7.1.6 / 7.1.5).
+
 ## 3. Electromagnetic spectrum workspace (`em-spectrum`) — Stage S3*
 
 Covers app-plan §5. See the stage-inference note in Conventions above.
