@@ -6,7 +6,7 @@ the NSW Junior Science Syllabus, focus area 7 "Waves and motion", 2026-07-17 —
 teaching content, interaction, representation, student task, assessable evidence,
 misconception addressed, model limitation, and build stage.
 
-**Status legend:** `not built` · `in build` · `verified` (builder ran the stage-gate checks green; orchestrator re-run pending) · `verified` (passed its stage gate with evidence) · `deferred`.
+**Status legend:** `not built` · `in build` · `verified (builder)` (builder gate-checks green; orchestrator re-run pending) · `verified` (passed its stage gate with evidence) · `deferred`.
 Prototype code from the pre-audit build does **not** count as coverage — every row starts
 `not built` until it passes `docs/plans/stage-gates.md`.
 

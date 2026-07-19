@@ -60,6 +60,16 @@ export const SOUND_FRESH_WATER: MediumPreset = {
   reviewDate: CONSTANTS_REVIEW_DATE,
 };
 
+export const SOUND_SEAWATER: MediumPreset = {
+  id: 'sound-seawater',
+  label: 'Sound in seawater',
+  speedMps: 1500,
+  kind: 'mechanical',
+  conditions: 'seawater, ≈20 °C, typical salinity (nominal teaching value)',
+  source: 'Standard oceanographic acoustics reference',
+  reviewDate: CONSTANTS_REVIEW_DATE,
+};
+
 export const SOUND_STEEL: MediumPreset = {
   id: 'sound-steel',
   label: 'Sound in steel',

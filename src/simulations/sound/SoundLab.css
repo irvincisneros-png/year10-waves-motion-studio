@@ -1,0 +1,77 @@
+/* Sound-laboratory workspace styles. Reuses the shared wave-lab primitives
+ * (.wave-lab, .wave-stage, .wave-controls, .seg-control, .data-table, .field,
+ * .feedback, .notice, .card, .btn) which are loaded globally; only sound-
+ * specific additions live here. Light theme only. */
+
+/* Audio safety panel */
+.audio-panel__enabled {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Detected-frequency + siren readout row */
+.doppler-readouts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.doppler-readouts strong {
+  color: var(--ink-strong);
+}
+
+/* Emphasise that the source frequency does NOT change while detected does. */
+.doppler-readouts .fixed-badge {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-violet-ink);
+}
+
+/* Four-linked-representation grid for the compression view */
+.linked-reps {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+.rep-panel {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.rep-panel__label {
+  font-weight: var(--weight-medium);
+  color: var(--ink-strong);
+  font-size: var(--text-sm);
+}
+
+/* Level / pitch meter bars (never colour-only — always paired with a number) */
+.meter {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.meter__track {
+  position: relative;
+  height: 14px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-subtle);
+  overflow: hidden;
+}
+
+.meter__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--accent-cyan-ink);
+}
+
+.meter__fill--violet {
+  background: var(--accent-violet-ink);
+}
