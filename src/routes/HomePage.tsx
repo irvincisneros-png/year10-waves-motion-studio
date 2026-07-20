@@ -18,9 +18,9 @@ export default function HomePage() {
       lead="Interactive laboratories for the NSW Year 10 Waves & Motion topic — model waves, sound, light and motion, collect evidence, and check your understanding."
     >
       <p className="home__status-note">
-        The laboratories below unlock as they are completed and verified. The
-        Wave foundations, Sound, Light &amp; optics, Vision, Motion, and Forces laboratories are open now, along with the
-        Glossary, Progress, Teacher and About pages.
+        All builder-complete laboratories are open. The cultural sound-material
+        outcome remains absent until attributable, community-approved sources
+        are supplied. Glossary, Progress, Teacher and About are also available.
       </p>
 
       {learningMap.map((group) => (

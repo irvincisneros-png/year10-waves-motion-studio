@@ -55,7 +55,7 @@ test.describe("responsive layout", () => {
         // Primary nav stays available at every width (no collapsed dead end).
         const nav = page.getByRole("navigation", { name: "Primary" });
         await expect(
-          nav.getByRole("link", { name: route.navLabel }),
+          nav.getByRole("link", { name: route.navLabel, exact: true }),
         ).toBeVisible();
       }
     });

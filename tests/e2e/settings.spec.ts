@@ -148,6 +148,6 @@ test.describe('progress export / import / reset', () => {
 
     // …and the reset persists across reload
     await page.reload();
-    await expect(page.getByText('0 of 25 outcomes attempted')).toBeVisible();
+    await expect(page.getByText('0 of 24 outcomes attempted')).toBeVisible();
   });
 });

@@ -25,7 +25,7 @@ test.describe('light and vision routing', () => {
   test('home cards and the seven-phase path reach all Stage 4 activities', async ({ page }) => {
     await page.goto('/#/');
     await expect(page.locator('.workspace-card', { hasText: 'Light & optics' }).getByText('Available')).toBeVisible();
-    await expect(page.locator('.workspace-card', { hasText: 'Vision' }).getByText('Available')).toBeVisible();
+    await expect(page.locator('article.workspace-card', { has: page.getByRole('link', { name: 'Vision', exact: true }) }).getByText('Available')).toBeVisible();
     await expect(page.locator('.workspace-card', { hasText: 'Reading starlight' }).getByText('Available')).toBeVisible();
     await page.locator('.workspace-card', { hasText: 'Light & optics' }).getByRole('link').click();
     const nav = page.getByRole('navigation', { name: 'Light and vision phases' });

@@ -16,7 +16,7 @@ test.describe('keyboard-only operation', () => {
       let reached = false;
       // Keep enough headroom for all shipped workspace links plus the shell
       // links that precede the target; the bound still catches focus traps.
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 50; i++) {
         await page.keyboard.press(key);
         if (await link.evaluate((el) => el === document.activeElement)) {
           reached = true;
@@ -40,7 +40,7 @@ test.describe('keyboard-only operation', () => {
     const settingsButton = page.getByRole('button', { name: 'Settings', exact: true });
 
     // Reach the settings button by keyboard
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 50; i++) {
       await page.keyboard.press(key);
       if (await settingsButton.evaluate((el) => el === document.activeElement))
         break;
@@ -80,7 +80,7 @@ test.describe('keyboard-only operation', () => {
     const key = tabKey(browserName);
     await page.goto('/#/progress');
     const resetButton = page.getByRole('button', { name: 'Reset all progress' });
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 50; i++) {
       await page.keyboard.press(key);
       if (await resetButton.evaluate((el) => el === document.activeElement))
         break;
@@ -103,7 +103,7 @@ test.describe('keyboard-only operation', () => {
     const key = tabKey(browserName);
     await page.goto('/#/teacher');
     const toggle = page.getByTestId('toggle-presentation');
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 50; i++) {
       await page.keyboard.press(key);
       if (await toggle.evaluate((el) => el === document.activeElement)) break;
     }
