@@ -45,6 +45,8 @@ import { MotionForcesCheckPage } from '../simulations/motion-forces/MotionForces
 import { MotionForcesExplainPage } from '../simulations/motion-forces/MotionForcesExplainPage';
 import { ForcesConnectPage, MotionConnectPage } from '../simulations/motion-forces/MotionForcesConnectPage';
 import { SettingsEffects } from './SettingsEffects';
+import { AstronomyPage, HearingPage, SocietyPage, SpectrumPage, UltrasoundPage } from '../simulations/completion/StageSixPages';
+import MasteryPage from '../simulations/completion/MasteryPage';
 
 /**
  * Route table — shell routes (Stage 1) + the wave-foundations workspace
@@ -108,6 +110,12 @@ export default function App() {
             <Route path="forces/explain" element={<MotionForcesExplainPage group="forces" />} />
             <Route path="forces/connect" element={<ForcesConnectPage />} />
           </Route>
+          <Route path="spectrum" element={<SpectrumPage />} />
+          <Route path="hearing" element={<HearingPage />} />
+          <Route path="ultrasound" element={<UltrasoundPage />} />
+          <Route path="astronomy" element={<AstronomyPage />} />
+          <Route path="society" element={<SocietyPage />} />
+          <Route path="mastery" element={<MasteryPage />} />
           <Route path="glossary" element={<GlossaryPage />} />
           <Route path="progress" element={<ProgressPage />} />
           <Route path="teacher" element={<TeacherPage />} />

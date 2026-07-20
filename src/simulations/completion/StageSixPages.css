@@ -1,0 +1,20 @@
+.s6-grid { display: grid; gap: var(--space-4); }
+.s6-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.s6-spectrum { display: grid; grid-template-columns: repeat(7, minmax(5rem, 1fr)); gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--line-subtle); border-radius: var(--radius-md); overflow-x: auto; }
+.s6-spectrum button { min-height: 3.5rem; border: 2px solid transparent; border-radius: var(--radius-sm); background: var(--surface-card); color: var(--ink-strong); }
+.s6-spectrum button.is-active { border-color: var(--accent-cyan); background: var(--status-info-surface); }
+.s6-spectrum--overlay { box-shadow: inset 0 -0.5rem 0 color-mix(in srgb, var(--accent-violet) 45%, transparent); }
+.s6-ear { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); }
+.s6-ear button { min-height: 4rem; border: 1px solid var(--line-subtle); border-radius: var(--radius-md); background: var(--surface-card); color: var(--ink-strong); }
+.s6-ear button.is-active { border-color: var(--accent-violet); box-shadow: inset 0 0 0 1px var(--accent-violet); }
+.s6-table-wrap { max-width: 100%; overflow-x: auto; contain: inline-size; border: 1px solid var(--line-subtle); border-radius: var(--radius-md); }
+.s6-table-wrap table { width: 100%; min-width: 42rem; border-collapse: collapse; }
+.s6-table-wrap th, .s6-table-wrap td { padding: 0.65rem; border-bottom: 1px solid var(--line-subtle); text-align: left; vertical-align: top; }
+.s6-table-wrap tr.is-selected { background: var(--status-info-surface); }
+.s6-bmode { position: relative; height: 14rem; border-radius: var(--radius-md); overflow: hidden; background: linear-gradient(90deg, #131722, #273043 55%, #10131c); }
+.s6-bmode span { position: absolute; left: 8%; width: 84%; height: 0.35rem; background: #fff; }
+.s6-inline, .s6-evidence-row { display: flex; align-items: end; gap: var(--space-3); flex-wrap: wrap; }
+.s6-inline label, .s6-evidence-row label { flex: 1 1 12rem; }
+.s6-evidence-row { padding: var(--space-3); border: 1px solid var(--line-subtle); border-radius: var(--radius-md); }
+@media (max-width: 700px) { .s6-grid--3, .s6-ear { grid-template-columns: 1fr; } .s6-spectrum { grid-template-columns: repeat(7, minmax(7rem, 1fr)); } }
+@media print { .button-row, .primary-nav, .settings-panel, .shell__footer { display: none !important; } }

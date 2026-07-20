@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import {
   FORCE_ROUTES,
+  COMPLETION_ROUTES,
   LIGHT_ROUTES,
   MOTION_ROUTES,
   SHELL_ROUTES,
@@ -24,6 +25,7 @@ test.describe("responsive layout", () => {
         ...LIGHT_ROUTES,
         ...MOTION_ROUTES,
         ...FORCE_ROUTES,
+        ...COMPLETION_ROUTES,
       ]) {
         await page.goto(route.url);
         await expect(
@@ -64,7 +66,7 @@ test.describe("responsive layout", () => {
   }) => {
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto("/#/progress");
-    for (const name of ["Export progress (JSON)", "Reset all progress"]) {
+    for (const name of ["Export anonymous summary (JSON)", "Reset all progress"]) {
       const box = await page.getByRole("button", { name }).boundingBox();
       expect(box, `${name} has a bounding box`).not.toBeNull();
       expect(box!.height, `${name} height`).toBeGreaterThanOrEqual(44);

@@ -332,6 +332,16 @@ export const FORCE_ROUTES: ShellRoute[] = [
   },
 ];
 
+/** Stage 6 cross-cutting completion routes. */
+export const COMPLETION_ROUTES: ShellRoute[] = [
+  { path: "/spectrum", url: "/#/spectrum", heading: "Electromagnetic spectrum", title: "Electromagnetic spectrum — WaveMotion Studio", navLabel: "Spectrum" },
+  { path: "/hearing", url: "/#/hearing", heading: "How the ear responds to sound", title: "How the ear responds to sound — WaveMotion Studio", navLabel: "Hearing" },
+  { path: "/ultrasound", url: "/#/ultrasound", heading: "Medical ultrasound: pulse and echo", title: "Medical ultrasound: pulse and echo — WaveMotion Studio", navLabel: "Ultrasound" },
+  { path: "/astronomy", url: "/#/astronomy", heading: "Reading starlight", title: "Reading starlight — WaveMotion Studio", navLabel: "Astronomy" },
+  { path: "/society", url: "/#/society", heading: "Waves and motion in society", title: "Waves and motion in society — WaveMotion Studio", navLabel: "Society" },
+  { path: "/mastery", url: "/#/mastery", heading: "Mastery challenge", title: "Mastery challenge — WaveMotion Studio", navLabel: "Mastery" },
+];
+
 /**
  * Key that moves focus to the next focusable element INCLUDING links.
  * WebKit (Safari) skips links on plain Tab; Option+Tab visits everything.

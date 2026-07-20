@@ -14,6 +14,7 @@ import type {
   NumericQuestion,
   Question,
   UnitSelectQuestion,
+  ConstructedQuestion,
 } from './types';
 
 const result = (
@@ -33,6 +34,23 @@ export function checkMcq(q: McqQuestion, selectedOptionId: string | null): Attem
   return option.correct
     ? result('correct', option.feedback)
     : result('incorrect', option.feedback);
+}
+
+export function checkConstructed(q: ConstructedQuestion, raw: string): AttemptResult {
+  const trimmed = raw.trim();
+  if (!trimmed) return result('unattempted', 'Write a response before submitting.');
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  if (words.length < q.minWords) {
+    return result('invalid', `Develop the response to at least ${q.minWords} words.`);
+  }
+  const lower = trimmed.toLocaleLowerCase('en-AU');
+  const missing = q.requiredConceptGroups.filter(
+    (group) => !group.some((term) => lower.includes(term.toLocaleLowerCase('en-AU'))),
+  );
+  if (missing.length > 0) {
+    return result('incorrect', `Add evidence about: ${missing.map((group) => group.join(' or ')).join('; ')}.`);
+  }
+  return result('correct', `Response meets this activity’s concept checklist. ${q.explanation}`);
 }
 
 /** Numeric entry: empty/non-numeric/negative rejected; then §3.5 tolerance. */
@@ -104,5 +122,7 @@ export function checkAnswer(
       return checkNumeric(q, answer.raw ?? '');
     case 'unit-select':
       return checkUnitSelect(q, answer.raw ?? '', answer.unit ?? null);
+    case 'constructed':
+      return checkConstructed(q, answer.raw ?? '');
   }
 }

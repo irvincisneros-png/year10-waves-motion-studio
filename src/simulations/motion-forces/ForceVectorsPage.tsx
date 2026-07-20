@@ -231,6 +231,7 @@ export default function ForceVectorsPage() {
             <div
               key={force.id}
               className={`mf-force-arrow mf-force-arrow--${force.physicalDirection}`}
+              data-teacher-layer="vectors"
               style={{ top: `${15 + index * 12}%` }}
               aria-hidden="true"
             >

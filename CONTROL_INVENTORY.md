@@ -633,6 +633,34 @@ Cross-cutting per the shared spec's "Shared teacher experience". References `glo
 
 ---
 
+## Stage 6 as-built reconciliation (2026-07-20)
+
+The Stage 6 routes use semantic HTML/CSS and native controls. Every control below
+is exercised in `tests/e2e/stage-six.spec.ts` in Chromium and WebKit; shared axe,
+console and five-width responsive matrices import `COMPLETION_ROUTES`. Static
+tables/readouts are not activation targets but remain keyboard-scrollable where
+they can overflow locally.
+
+| Route | As-built IDs / controls | Default, validation and observable effect |
+|---|---|---|
+| `/spectrum` | `em-spectrum.zoom-pan-slider`; `region-select`; `wavelength-frequency-input-toggle`; `log-axis-toggle`; `atmospheric-overlay-toggle`; `source-detector-toggle`; `interaction-toggle`; `application-risk-toggle`; `evidence-card-toggle`; `scale-comparison-strip`; `dataset-property-select`; `dataset-citation-input` | X-ray/visible deep-link preset supported; exact f↔λ state; linear-axis warning; four disclosures and overlay are independent; empty citation never saves |
+| `/hearing` | `hearing.anatomy-part-outer-ear`, `-canal`, `-eardrum`, `-ossicles`, `-oval-window`, `-cochlear-fluid`, `-hair-cells`, `-auditory-nerve`; `frequency-location-slider`; `representation-ladder-toggle`; `protection-info-toggle` | Eight named stages are separate buttons; 20–20,000 Hz simplified place map; explanation under 30 characters is rejected |
+| `/ultrasound` | `ultrasound.probe-angle-slider`; `probe-frequency-slider`; `tissue-phantom-select`; `pulse-trigger-button`; `bmode-image-toggle` | Angle −45…+45°, frequency 2…12 MHz, three synthetic phantoms; evidence requires a sent pulse and ≥30-character interpretation; table remains when B-mode is hidden |
+| `/astronomy` | planned five IDs in §7.2 | Band/star/velocity/window/line controls operate over curated data only; unmatched wavelengths say no line; velocity sign is paired with approaching/receding text |
+| `/society` | planned nine IDs in §10 plus `society.export-argument-button` | Repeatable criteria/evidence/bibliography controls; every named argument component is required before save/export; export is local JSON |
+| `/mastery` | planned five IDs in §11 plus `mastery.question-submit-button` | 20-item session drawn from a 101-question bank; empty responses never score; next is gated by an attempt; retry clears only the current question |
+| `/teacher` | `teacher.show-hide-labels-toggle`; `show-hide-values-toggle`; `show-hide-equations-toggle`; `show-hide-particles-toggle`; `show-hide-vectors-toggle`; `show-hide-trails-toggle`; `show-hide-answers-toggle`; `deep-link-generator`; `outcome-coverage-view`; `misconception-prompts-panel`; `printable-sheet-generator`; `progress-export-button`; `progress-import-button`; `reset-module-button`; `reset-all-button` | Seven persisted display layers affect tagged overlays; only whitelisted, student-data-free presets are generated; coverage is release-registry-backed; three print sheets; import capped at 1 MB; native confirmations cancel without mutation |
+
+Planned teacher annotation/model-limitation toggles were reconciled to the shipped
+equations/trails layers because those correspond to actual tagged representations.
+The teacher deep-link control is a fixed preset selector plus read-only URL; it
+deliberately has no free-text assignment encoder. Native `window.confirm` is retained
+for destructive resets, so the browser—not application code—owns focus trapping and
+Escape cancellation.
+
+Outcome 7.2.5's six planned `cultural-sound.*` controls are deferred and resolve to
+zero rendered elements. No substitute controls or placeholder route ship.
+
 ## Summary counts
 
 | Section | Controls listed |
@@ -649,4 +677,4 @@ Cross-cutting per the shared spec's "Shared teacher experience". References `glo
 | §10 Waves and motion in society (`society`) | 9 |
 | §11 Mastery challenge (`mastery`) | 5 |
 | §12 Teacher tools (`teacher`) | 15 |
-| **Total** | **181 planned rows** (175 in active release scope + 6 deferred cultural-sound controls), plus the uniquely identified Stage 5 as-built evidence/assessment controls in §§8.4–9.4 |
+| **Total** | **181 planned rows** (175 in active release scope + 6 deferred cultural-sound controls), plus reconciled Stage 5/6 as-built evidence, assessment and teacher controls documented above |

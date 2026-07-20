@@ -55,7 +55,7 @@ export function SimControl({
 
   return (
     <div className="sim-control" data-control-id={id}>
-      <label className="sim-control__label" htmlFor={inputId}>
+      <label className="sim-control__label" htmlFor={inputId} data-teacher-layer="labels">
         {label}
       </label>
       <input
@@ -72,7 +72,7 @@ export function SimControl({
         data-testid={testId}
         onChange={(e) => handle(Number(e.target.value))}
       />
-      <output className="sim-control__value" htmlFor={inputId} aria-hidden="true">
+      <output className="sim-control__value" htmlFor={inputId} aria-hidden="true" data-teacher-layer="values">
         {valueText}
       </output>
       {hint ? <p className="sim-control__hint">{hint}</p> : null}

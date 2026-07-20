@@ -41,9 +41,9 @@ export default function SoundHubPage() {
           ))}
         </ul>
         <p className="wave-lab__deferral-note">
-          How the ear responds to sound (7.2.4), sound in Aboriginal and Torres
-          Strait Islander instruments (7.2.5) and medical ultrasound (7.2.6) are
-          covered in later stages of this app.
+          Continue to the verified <Link to="/hearing">Hearing explorer</Link>
+          {' '}for 7.2.4 or the <Link to="/ultrasound">synthetic ultrasound lab</Link>
+          {' '}for 7.2.6.
         </p>
       </section>
 

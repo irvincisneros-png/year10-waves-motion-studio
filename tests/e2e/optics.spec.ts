@@ -26,7 +26,7 @@ test.describe('light and vision routing', () => {
     await page.goto('/#/');
     await expect(page.locator('.workspace-card', { hasText: 'Light & optics' }).getByText('Available')).toBeVisible();
     await expect(page.locator('.workspace-card', { hasText: 'Vision' }).getByText('Available')).toBeVisible();
-    await expect(page.locator('.workspace-card', { hasText: 'Reading starlight' }).getByText('In development')).toBeVisible();
+    await expect(page.locator('.workspace-card', { hasText: 'Reading starlight' }).getByText('Available')).toBeVisible();
     await page.locator('.workspace-card', { hasText: 'Light & optics' }).getByRole('link').click();
     const nav = page.getByRole('navigation', { name: 'Light and vision phases' });
     for (const [label, heading] of [
@@ -42,11 +42,11 @@ test.describe('light and vision routing', () => {
     }
   });
 
-  test('astronomy is not prematurely exposed and its direct route is a 404', async ({ page }) => {
+  test('astronomy is exposed after Stage 6 completion', async ({ page }) => {
     await page.goto('/#/light');
-    await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Astronomy' })).toHaveCount(0);
+    await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Astronomy' })).toBeVisible();
     await page.goto('/#/astronomy');
-    await expect(page.getByRole('heading', { level: 1, name: 'Page not found' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Reading starlight' })).toBeVisible();
   });
 });
 

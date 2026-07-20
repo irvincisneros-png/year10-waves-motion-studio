@@ -162,7 +162,7 @@ export default function WaveCheckPage() {
                     ))}
                   </select>
                 ) : (
-                  <span>{q.unit}</span>
+              <span>{q.kind === 'numeric' ? q.unit : ''}</span>
                 )}
               </div>
             </div>

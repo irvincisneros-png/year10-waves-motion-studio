@@ -140,7 +140,7 @@ export function MotionForcesCheckPage({
               />
               {q.kind === "numeric" ? (
                 <span>{q.unit}</span>
-              ) : (
+              ) : q.kind === "unit-select" ? (
                 <select
                   aria-label="Answer unit"
                   value={unit}
@@ -153,7 +153,7 @@ export function MotionForcesCheckPage({
                     <option key={item}>{item}</option>
                   ))}
                 </select>
-              )}
+              ) : null}
             </div>
           </div>
         )}

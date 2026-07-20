@@ -14,7 +14,7 @@ const mathMlSupported =
 
 export function WaveEquation({ compact = false }: { compact?: boolean }) {
   return (
-    <div className={`wave-equation${compact ? ' wave-equation--compact' : ''}`}>
+    <div className={`wave-equation${compact ? ' wave-equation--compact' : ''}`} data-teacher-layer="equations">
       {mathMlSupported ? (
         <math display="inline" aria-label="v equals f times lambda">
           <mrow>
