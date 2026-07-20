@@ -483,6 +483,22 @@ calibrated colour-matching or spectral-power-distribution calculation.
 EM region band edges are stored as **approximate** ranges with the same "standard
 optics/physics reference, 2026-07-17" provenance and are labelled approximate in-app.
 
+### 11.1 Stage 6 EM fixtures (as built)
+
+`src/science/emSpectrum.ts` stores a continuous logarithmic teaching span from
+10³ m to 10⁻¹² m. The named-region edges are approximate, overlap in real
+classification systems and are navigation/classification aids—not seven distinct
+physical wave types. The representative wavelengths used to jump to regions are
+1 m, 10⁻² m, 10 µm, 550 nm, 200 nm, 0.1 nm and 0.001 nm. Every selected position
+uses the exact stored `c = 299 792 458 m/s` relationship; display rounds only at
+the UI boundary.
+
+The Stage 6 region dataset records a qualitative energy trend, common source,
+detector, interactions, applications and risk control with review date. The app
+treats ultraviolet, X-ray and gamma as ionising in its explicit Year 10 teaching
+classification while stating that boundary conventions and UV energy vary. It
+never equates ionising with radioactive or treats “non-ionising” as “harmless”.
+
 ---
 
 ## 12. Sound: pitch, loudness, intensity, hearing, Doppler, ultrasound
@@ -527,6 +543,17 @@ optics/physics reference, 2026-07-17" provenance and are labelled approximate in
   penetration; coupling gel reduces reflection at the skin.
 - Boundary: **no real patient data, no medical diagnosis, no claim of clinical
   accuracy** (app plan §7.3).
+
+Stage 6 uses a clearly labelled synthetic teaching fixture. The assumed soft-
+tissue sound speed is **1540 m/s**, consistent with US FDA device summaries that
+describe diagnostic systems estimating ultrasound propagation in tissue at
+1540 m/s (FDA 510(k) K102901; reviewed 2026-07-20). The three synthetic phantoms
+contain authored boundary depths from 20–95 mm and relative echo strengths from
+0.25–0.80; these are not measurements or patient data. Probe frequency is limited
+to 2–12 MHz and teaches only the qualitative resolution/penetration trade-off.
+Probe angle is −45° to +45° and applies a labelled `cos²(angle)` relative echo-
+visibility fixture; it does not model refraction, beam shape or clinical settings.
+Depth is calculated exactly from round-trip time: `depth = speed × time / 2`.
 
 ### 12.5 Web Audio safety contract
 Mandatory (shared spec: *Privacy, security, and safety*; app plan §6.2):
@@ -599,6 +626,22 @@ teaching activity distinguishes nearby lines (e.g. the Na doublet), else 3 sig f
 
 Note: values are air wavelengths; a human reviewer must confirm each against the
 NIST Atomic Spectra Database on the review date before release.
+
+### 14.4 Stage 6 astronomy fixtures (as built)
+
+The observatory offers three explicitly curated examples: the Sun as a teaching
+reference, a generic hot blue-star model and a generic cool red-star model. The
+latter two are labelled models, never represented as measured individual-star
+spectra. Each example uses only a subset of the NIST line list above and links
+every composition claim to that table.
+
+The signed radial-velocity teaching control is limited to −300…+300 km/s. For
+this small fraction of `c`, the app uses the labelled non-relativistic
+approximation `λ_observed = λ_rest(1 + v/c)`: negative is approaching/blueshift,
+positive is receding/redshift and zero preserves the rest wavelength. The line
+inspector identifies a catalogue line only within ±0.25 nm; otherwise it reports
+“No catalogued line here”. The activity does not infer abundance, exact stellar
+temperature or velocity from decorative imagery.
 
 ---
 
