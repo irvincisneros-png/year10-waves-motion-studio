@@ -666,6 +666,32 @@ Escape cancellation.
 Outcome 7.2.5's six planned `cultural-sound.*` controls are deferred and resolve to
 zero rendered elements. No substitute controls or placeholder route ship.
 
+## Release-audit control reconciliation (2026-07-20)
+
+The all-route runtime parity test now rejects every button, input, select,
+textarea or summary that has neither its own stable ID nor an inventoried
+ancestor group. These IDs close the controls that were previously named but
+not structurally mapped:
+
+| ID | Shipped control/effect | Executable evidence |
+|---|---|---|
+| `global.settings-panel` | Opens/closes the persisted display-and-sound settings; owns the Close action while the three preference toggles retain their individual IDs | `settings.spec.ts`; `keyboard.spec.ts`; runtime parity |
+| `wave-lab.lambda-v-f-submit-button` | Calculates/checks `v = fλ`; invalid, empty and wrong-unit paths never pass | `waves.spec.ts`; equation/validation unit suites |
+| `wave-lab.investigation-prompts` | Groups the measured-pattern and limitation textareas with their independent save actions | `waves.spec.ts` evidence/validation path |
+| `sound-lab.pulse-timing-button` | Plays a gated pulse or shows equivalent visual timing/cycle evidence | `sound.spec.ts` visual/audio paths |
+| `sound-lab.interpretation-input`; `sound-lab.interpretation-save-button` | Captures and validates the fair-test interpretation before saving evidence | `sound.spec.ts` investigation path |
+| `em-spectrum.region-buttons`; `em-spectrum.numeric-entry`; `em-spectrum.dataset-save-button` | Seven named spectrum jumps, positive SI numeric entry and cited-comparison validation/save | `stage-six.spec.ts` spectrum path |
+| `hearing.explanation-editor`; `ultrasound.interpretation-editor`; `astronomy.inference-editor` | Labelled writing + validation/save groups for the three completion activities | `stage-six.spec.ts` learner controls/evidence path |
+| `society.argument-actions` | Groups Save, Export and Print actions; all share the complete argument validator | `stage-six.spec.ts`; `release-controls.spec.ts` |
+| `progress.export-anonymous-json-button`; `progress.export-anonymous-csv-button`; `progress.print-summary-button` | Anonymous JSON/CSV download and print actions | `settings.spec.ts`; `release-controls.spec.ts` |
+| `progress.export-backup-button`; `progress.import-backup-input`; `progress.reset-all-button` | Schema-v2 backup export/import and native-confirmed persistent reset | `settings.spec.ts` |
+| `teacher.progress-export-backup-button`; `teacher.reset-controls` | Local backup download and grouped strand-select/reset actions | `stage-six.spec.ts`; `release-controls.spec.ts` |
+
+`teacher.deep-link-generator` and `teacher.printable-sheet-generator` are now
+semantic ancestor groups, so their paired selector/read-only-link and
+selector/Print controls cannot drift outside the inventory. The Teacher page's
+presentation checkbox reuses `global.presentation-mode-toggle`.
+
 ## Summary counts
 
 | Section | Controls listed |

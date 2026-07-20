@@ -255,7 +255,7 @@ export function LambdaCalculator({ resetKey }: { resetKey: number }) {
         </div>
       </div>
 
-      <button type="button" className="btn btn--primary" onClick={calculate} data-testid="calc-submit">
+      <button type="button" className="btn btn--primary" onClick={calculate} data-testid="calc-submit" data-control-id="wave-lab.lambda-v-f-submit-button">
         Calculate / check with v = fλ
       </button>
 

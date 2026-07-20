@@ -54,6 +54,7 @@ export function SettingsPanel() {
   return (
     <div
       className="settings"
+      data-control-id="global.settings-panel"
       onKeyDown={(e) => {
         if (e.key === 'Escape' && open) {
           e.stopPropagation();

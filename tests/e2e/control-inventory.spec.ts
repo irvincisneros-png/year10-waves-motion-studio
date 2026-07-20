@@ -63,6 +63,26 @@ const INTERACTIVE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
+/**
+ * Product controls must be explicitly mapped to an inventoried ID, either on
+ * the control itself or on a semantic group that owns a repeatable family.
+ * Ordinary in-content links remain covered by the accessible-name and route
+ * suites; buttons and form controls may never escape the inventory this way.
+ */
+const INVENTORIED_PRODUCT_CONTROL_SELECTOR = [
+  'button',
+  'input:not([type="hidden"])',
+  'select',
+  'textarea',
+  'summary',
+  '[contenteditable="true"]',
+  '[role="button"]',
+  '[role="checkbox"]',
+  '[role="radio"]',
+  '[role="slider"]',
+  '[role="switch"]',
+].join(',');
+
 test.describe('runtime control-inventory parity', () => {
   for (const route of SHIPPED_ROUTES) {
     test(`${route.path} has documented, unique runtime IDs and named controls`, async ({
@@ -108,6 +128,31 @@ test.describe('runtime control-inventory parity', () => {
           `interactive element ${index + 1} on ${route.path} has no accessible name`,
         ).toHaveAccessibleName(/\S/);
       }
+
+      const ungroupedProductControls = await page
+        .locator(INVENTORIED_PRODUCT_CONTROL_SELECTOR)
+        .evaluateAll((elements) =>
+          elements
+            .filter((element) => !element.closest('[data-control-id]'))
+            .map((element) => {
+              const htmlElement = element as HTMLElement;
+              const input = element as HTMLInputElement;
+              return {
+                name:
+                  element.getAttribute('aria-label') ||
+                  element.getAttribute('title') ||
+                  htmlElement.innerText ||
+                  input.value ||
+                  element.tagName.toLowerCase(),
+                testId: element.getAttribute('data-testid'),
+                type: input.type || element.tagName.toLowerCase(),
+              };
+            }),
+        );
+      expect(
+        ungroupedProductControls,
+        `product controls outside the inventory on ${route.path}`,
+      ).toEqual([]);
     });
   }
 

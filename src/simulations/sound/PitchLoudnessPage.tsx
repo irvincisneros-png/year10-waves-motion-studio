@@ -417,7 +417,7 @@ export default function PitchLoudnessPage() {
         </div>
 
         {emissionMode === 'pulse' ? (
-          <div className="seg-control__options">
+          <div className="seg-control__options" data-control-id="sound-lab.pulse-timing-button">
             <button type="button" className="btn" onClick={playPulse} data-testid="play-pulse">
               <span aria-hidden="true">▶</span>{' '}
               {audio.phase === 'enabled' && !visualOnly ? 'Play a pulse' : 'Show pulse timing'}
@@ -615,7 +615,7 @@ export default function PitchLoudnessPage() {
             </button>
           </div>
 
-          <label className="notice-capture__label">
+          <label className="notice-capture__label" data-control-id="sound-lab.interpretation-input">
             What did your trials show about how frequency and amplitude affect pitch and loudness?
             <textarea
               className="notice-capture__input"
@@ -644,7 +644,7 @@ export default function PitchLoudnessPage() {
               data-testid="limitation-input"
             />
           </label>
-          <div className="seg-control__options">
+          <div className="seg-control__options" data-control-id="sound-lab.interpretation-save-button">
             <button type="button" className="btn" onClick={saveInterpretation} data-testid="interpretation-save">
               Save interpretation as evidence
             </button>

@@ -49,6 +49,54 @@ test.describe('settings persistence', () => {
   });
 });
 
+test.describe('settings environmental fallbacks', () => {
+  test('denied localStorage falls back to a usable memory-only session', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      for (const method of ['getItem', 'setItem', 'removeItem'] as const) {
+        Object.defineProperty(Storage.prototype, method, {
+          configurable: true,
+          value: () => {
+            throw new DOMException('Storage denied', 'QuotaExceededError');
+          },
+        });
+      }
+    });
+
+    await page.goto('/#/');
+    await expect(page.locator('.notice--warn[role="status"]')).toContainText(
+      'settings and progress will work for this session but will not be kept',
+    );
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.getByTestId('toggle-low-graphics').check();
+    await expect(page.locator('html')).toHaveAttribute('data-low-graphics', 'true');
+    await page.goto('/#/progress');
+    await expect(page.getByText('0 of 24 outcomes attempted')).toBeVisible();
+  });
+
+  test.describe('when the OS requests reduced motion', () => {
+    test('the first load is static and manual stepping remains available', async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.goto('/#/waves/types');
+      await expect(page.locator('html')).toHaveAttribute('data-reduced-motion', 'true');
+      await expect(page.getByTestId('sim-pause')).toHaveCount(0);
+      await expect(page.getByTestId('sim-step')).toBeEnabled();
+
+      const before = await page.getByTestId('probe-readout').textContent();
+      await page.getByTestId('sim-step').click();
+      await expect(page.getByTestId('probe-readout')).not.toHaveText(before ?? '');
+
+      await page.getByRole('button', { name: 'Settings' }).click();
+      await expect(page.getByTestId('toggle-reduced-motion')).toBeChecked();
+      await page.getByTestId('toggle-reduced-motion').uncheck();
+      await expect(page.locator('html')).toHaveAttribute('data-reduced-motion', 'false');
+    });
+  });
+});
+
 test.describe('progress export / import / reset', () => {
   test('export downloads valid schema-wrapped JSON', async ({ page }) => {
     await page.goto('/#/progress');

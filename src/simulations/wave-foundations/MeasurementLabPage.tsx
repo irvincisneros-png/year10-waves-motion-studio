@@ -508,7 +508,7 @@ export default function MeasurementLabPage() {
 
         <LambdaCalculator resetKey={calcResetKey} />
 
-        <div className="card stack">
+        <div className="card stack" data-control-id="wave-lab.investigation-prompts">
           <h2>Interpret your investigation</h2>
           <p>
             Keep the medium (speed) fixed and change only the frequency — that

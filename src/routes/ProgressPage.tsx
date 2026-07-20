@@ -100,16 +100,16 @@ export default function ProgressPage() {
       lead="Your evidence level for each syllabus outcome. Evidence is collected as you work through the laboratories; everything stays on this device."
     >
       <div className="progress-actions">
-        <button type="button" className="btn btn--primary" onClick={() => downloadText(exportAnonymousJSON(), 'application/json', 'wavemotion-anonymous-summary.json')}>
+        <button type="button" className="btn btn--primary" data-control-id="progress.export-anonymous-json-button" onClick={() => downloadText(exportAnonymousJSON(), 'application/json', 'wavemotion-anonymous-summary.json')}>
           Export anonymous summary (JSON)
         </button>
-        <button type="button" className="btn" onClick={() => downloadText(exportAnonymousCSV(), 'text/csv', 'wavemotion-anonymous-summary.csv')}>
+        <button type="button" className="btn" data-control-id="progress.export-anonymous-csv-button" onClick={() => downloadText(exportAnonymousCSV(), 'text/csv', 'wavemotion-anonymous-summary.csv')}>
           Export anonymous summary (CSV)
         </button>
-        <button type="button" className="btn" onClick={() => window.print()}>
+        <button type="button" className="btn" data-control-id="progress.print-summary-button" onClick={() => window.print()}>
           Print anonymous summary
         </button>
-        <button type="button" className="btn" onClick={() => downloadText(exportJSON(), 'application/json', 'wavemotion-local-backup.json')}>
+        <button type="button" className="btn" data-control-id="progress.export-backup-button" onClick={() => downloadText(exportJSON(), 'application/json', 'wavemotion-local-backup.json')}>
           Export local backup (includes written evidence)
         </button>
         <label className="btn progress-actions__import">
@@ -121,10 +121,11 @@ export default function ProgressPage() {
             className="u-visually-hidden"
             aria-label="Import progress from a JSON file"
             data-testid="import-input"
+            data-control-id="progress.import-backup-input"
             onChange={(e) => handleImportFile(e.target.files?.[0])}
           />
         </label>
-        <button type="button" className="btn btn--danger" onClick={handleResetAll}>
+        <button type="button" className="btn btn--danger" data-control-id="progress.reset-all-button" onClick={handleResetAll}>
           Reset all progress
         </button>
       </div>
