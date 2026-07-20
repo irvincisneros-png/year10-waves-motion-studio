@@ -24,7 +24,7 @@ export default function MasteryPage() {
       addEvidence({ outcomeCode: question.outcomeCode, kind: 'mastery', activityId: question.id, result: next.correct ? 'successful' : 'attempted', summary: `${question.id}: ${next.status}` });
     }
   };
-  return <Page title="Mastery challenge" lead={`A balanced 20-question session drawn from ${masteryQuestionBank.length} validated questions. Constructed responses make up more than one third of the complete bank.`}>
+  return <Page title="Mastery challenge" lead={`A 24-question classroom session with one question for every active outcome, drawn from ${masteryQuestionBank.length} validated questions and alternating objective and constructed responses.`}>
     <section className="card stack" data-control-id="mastery.answer-input"><div className="eyebrow">Question {index + 1} of {masterySessionQuestions.length}</div><p><strong>{question.outcomeCode} · {question.concept}</strong></p><h2>{question.prompt}</h2>
       {question.kind === 'mcq' ? <fieldset><legend>Choose one answer</legend>{question.options.map((option) => <label className="toggle" key={option.id}><input type="radio" name="mastery-answer" checked={optionId === option.id} onChange={() => { setOptionId(option.id); setResult(null); }} /><span className="toggle__text">{option.text}</span></label>)}</fieldset> : null}
       {question.kind === 'numeric' ? <label>Numeric answer ({question.unit})<input type="text" inputMode="decimal" value={raw} onChange={(event) => { setRaw(event.target.value); setResult(null); }} /></label> : null}

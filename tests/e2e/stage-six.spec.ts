@@ -1,5 +1,23 @@
 import { expect, test } from '@playwright/test';
-import { COMPLETION_ROUTES } from './helpers';
+import {
+  COMPLETION_ROUTES,
+  FORCE_ROUTES,
+  LIGHT_ROUTES,
+  MOTION_ROUTES,
+  SHELL_ROUTES,
+  SOUND_ROUTES,
+  WAVES_ROUTES,
+} from './helpers';
+
+const RELEASE_ROUTES = [
+  ...SHELL_ROUTES,
+  ...WAVES_ROUTES,
+  ...SOUND_ROUTES,
+  ...LIGHT_ROUTES,
+  ...MOTION_ROUTES,
+  ...FORCE_ROUTES,
+  ...COMPLETION_ROUTES,
+];
 
 test.describe('Stage 6 routes and deferral', () => {
   for (const route of COMPLETION_ROUTES) {
@@ -16,6 +34,8 @@ test.describe('Stage 6 routes and deferral', () => {
     await page.goto('/#/sound/cultural-materials');
     await expect(page.getByRole('heading', { level: 1, name: 'Page not found' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'Primary' })).not.toContainText('Cultural');
+    await page.goto('/#/');
+    await expect(page.locator('main')).not.toContainText('7.2.5');
     await page.goto('/#/mastery');
     await expect(page.locator('main')).not.toContainText('7.2.5');
   });
@@ -138,9 +158,20 @@ test.describe('Stage 6 learner interactions', () => {
 test.describe('Stage 6 teacher, update and offline hardening', () => {
   test('teacher layers, presets, coverage and print templates have observable effects', async ({ page }) => {
     await page.goto('/#/teacher');
-    await page.getByTestId('teacher-layer-equations').uncheck();
-    await expect(page.locator('html')).toHaveAttribute('data-layer-equations', 'false');
-    await expect(page.locator('[data-teacher-layer="equations"]')).toBeHidden();
+    for (const layer of ['labels', 'values', 'equations', 'particles', 'vectors', 'trails', 'answers']) {
+      const toggle = page.getByTestId(`teacher-layer-${layer}`);
+      await toggle.uncheck();
+      await expect(page.locator('html')).toHaveAttribute(`data-layer-${layer}`, 'false');
+      await expect(page.locator(`[data-teacher-layer~="${layer}"]`).first()).toBeHidden();
+      await toggle.check();
+      await expect(page.locator(`[data-teacher-layer~="${layer}"]`).first()).toBeVisible();
+    }
+    await page.getByTestId('teacher-layer-particles').uncheck();
+    await page.goto('/#/waves/medium');
+    await expect(page.getByTestId('chamber-mechanical')).toBeHidden();
+    await expect(page.getByTestId('chamber-mechanical-alt')).toBeVisible();
+    await page.goto('/#/teacher');
+    await page.getByTestId('teacher-layer-particles').check();
     await page.getByTestId('teacher-preset-select').selectOption('/spectrum?region=xray');
     await expect(page.getByTestId('teacher-deep-link')).toHaveValue(/#\/spectrum\?region=xray$/);
     await page.getByLabel('Filter coverage').selectOption('deferred');
@@ -167,15 +198,27 @@ test.describe('Stage 6 teacher, update and offline hardening', () => {
     expect(await page.evaluate(() => (window as typeof window & { __updateCalled?: boolean }).__updateCalled)).toBe(true);
   });
 
-  test('every completion route reloads offline after the production app is cached', async ({ page, context, browserName }) => {
+  test('service-worker registration failure gives a visible online-only fallback', async ({ page }) => {
+    await page.goto('/#/');
+    await page.evaluate(() =>
+      window.dispatchEvent(new CustomEvent('wavemotion:sw-registration-error')),
+    );
+    await expect(page.getByTestId('sw-registration-error')).toContainText(
+      'Keep a connection while using the app',
+    );
+  });
+
+  test('every released route reloads offline after one production-app load', async ({ page, context, browserName }) => {
+    test.setTimeout(180_000);
     test.skip(browserName !== 'chromium', 'Service-worker offline emulation is Chromium-only.');
     await page.goto('/#/');
     await page.evaluate(async () => { await navigator.serviceWorker.ready; });
     await page.reload();
     await context.setOffline(true);
     try {
-      for (const route of COMPLETION_ROUTES) {
+      for (const route of RELEASE_ROUTES) {
         await page.goto(route.url);
+        await page.reload();
         await expect(page.getByRole('heading', { level: 1, name: route.heading })).toBeVisible();
       }
     } finally {

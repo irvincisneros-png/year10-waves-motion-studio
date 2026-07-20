@@ -174,4 +174,32 @@ test.describe("responsive layout", () => {
         .boundingBox())!.height,
     ).toBeGreaterThanOrEqual(44);
   });
+
+  test("native text and selection controls meet the 44px minimum on every route", async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 320, height: 800 });
+    for (const route of [
+      ...SHELL_ROUTES,
+      ...WAVES_ROUTES,
+      ...SOUND_ROUTES,
+      ...LIGHT_ROUTES,
+      ...MOTION_ROUTES,
+      ...FORCE_ROUTES,
+      ...COMPLETION_ROUTES,
+    ]) {
+      await page.goto(route.url);
+      const controls = page.locator(
+        'select, textarea, input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="file"])',
+      );
+      for (let index = 0; index < (await controls.count()); index++) {
+        const control = controls.nth(index);
+        if (!(await control.isVisible())) continue;
+        const box = await control.boundingBox();
+        expect(box, `${route.path} control ${index} has a box`).not.toBeNull();
+        expect(box!.height, `${route.path} control ${index} target height`).toBeGreaterThanOrEqual(44);
+      }
+    }
+  });
 });

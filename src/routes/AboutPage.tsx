@@ -17,9 +17,9 @@ export default function AboutPage() {
           WaveMotion Studio is an interactive learning environment for the NSW
           Year 10 (Stage 5) <em>Waves and motion</em> focus area. It is built
           for classroom demonstration, guided learning, open exploration,
-          virtual investigation and revision. It is being delivered in stages;
-          the home page shows which laboratories are available and which are
-          still in development.
+          virtual investigation and revision. All builder-complete active
+          laboratories are available; the one deferred cultural outcome is
+          documented for teachers and is not represented by placeholder content.
         </p>
       </section>
 
@@ -73,15 +73,20 @@ export default function AboutPage() {
         <ul>
           <li>No sign-in, no student names, and no analytics or tracking.</li>
           <li>
-            After the first load the app makes no network requests; it works
-            offline.
+            After the first load the app makes no automatic external runtime
+            requests and works offline. Source links open only when you choose
+            them.
           </li>
           <li>
             Progress and settings are stored only in this browser on this
             device. You can export, import or reset them at any time from the
             Progress page.
           </li>
-          <li>Sound is off by default and volume-limited when enabled.</li>
+          <li>
+            Optional sound permission is off by default. Each audio activity
+            also requires a separate explicit enable action, starts muted and
+            remains volume-limited.
+          </li>
         </ul>
       </section>
 

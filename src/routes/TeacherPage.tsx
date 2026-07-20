@@ -10,8 +10,13 @@ import { TEACHER_LAYERS, useSettingsStore, type TeacherLayer } from '../store/se
 import './TeacherPage.css';
 
 const LAYER_LABELS: Record<TeacherLayer, string> = {
-  labels: 'Diagram labels', values: 'Live values', equations: 'Equations',
-  particles: 'Particles', vectors: 'Force vectors', trails: 'Motion trails', answers: 'Answer feedback',
+  labels: 'Tagged simulation-control labels',
+  values: 'Tagged simulation-control values',
+  equations: 'Tagged wave-equation panels',
+  particles: 'Particle-bearing Canvas views',
+  vectors: 'Tagged force-vector overlays',
+  trails: 'Canvas motion and trail views',
+  answers: 'Tagged mastery answer feedback',
 };
 
 const PRESETS = [
@@ -70,7 +75,10 @@ export default function TeacherPage() {
   const sheet = SHEETS[sheetKey];
   const deepLink = `${window.location.href.split('#')[0]}#${presetPath}`;
   const coverageRows = OUTCOME_RELEASE_REGISTRY.filter((entry) =>
-    coverageFilter === 'all' || entry.status === coverageFilter || outcomeMap[entry.code].strand === coverageFilter,
+    coverageFilter === 'all'
+    || entry.status === coverageFilter
+    || entry.verificationStatus === coverageFilter
+    || outcomeMap[entry.code].strand === coverageFilter,
   );
   const misconceptionPrompts = useMemo(() => {
     const seen = new Set<string>();
@@ -100,9 +108,10 @@ export default function TeacherPage() {
   return (
     <Page title="Teacher tools" lead="Projection, lesson-link, coverage, print and local progress tools. No account is needed and no student data leaves the device.">
       <section className="card stack" aria-labelledby="teacher-presentation">
-        <h2 id="teacher-presentation">Presentation and display layers</h2>
-        <label className="toggle"><input type="checkbox" checked={presentationMode} onChange={(event) => setPresentationMode(event.target.checked)} data-testid="toggle-presentation" /><span className="toggle__text"><span className="toggle__label">Presentation mode</span><span className="toggle__hint">Larger text and simulation equations for projection.</span></span></label>
-        <fieldset className="teacher-layer-grid"><legend>Show or hide demonstration layers</legend>{TEACHER_LAYERS.map((layer) => <label className="toggle" key={layer}><input type="checkbox" checked={layerVisibility[layer]} onChange={(event) => setLayerVisibility(layer, event.target.checked)} data-testid={`teacher-layer-${layer}`} data-control-id={`teacher.show-hide-${layer}-toggle`} /><span className="toggle__text"><span className="toggle__label">{LAYER_LABELS[layer]}</span></span></label>)}</fieldset>
+        <h2 id="teacher-presentation">Presentation mode and tagged overlays</h2>
+        <label className="toggle"><input type="checkbox" checked={presentationMode} onChange={(event) => setPresentationMode(event.target.checked)} data-testid="toggle-presentation" /><span className="toggle__text"><span className="toggle__label">Presentation mode</span><span className="toggle__hint">Enlarges the base text; tagged equation panels also use their projection size.</span></span></label>
+        <p>Overlay switches affect only elements explicitly tagged for that layer. Canvas layers hide the visual scene while its text/table alternative remains available.</p>
+        <fieldset className="teacher-layer-grid"><legend>Show or hide tagged overlays</legend>{TEACHER_LAYERS.map((layer) => <label className="toggle" key={layer}><input type="checkbox" checked={layerVisibility[layer]} onChange={(event) => setLayerVisibility(layer, event.target.checked)} data-testid={`teacher-layer-${layer}`} data-control-id={`teacher.show-hide-${layer}-toggle`} /><span className="toggle__text"><span className="toggle__label">{LAYER_LABELS[layer]}</span></span></label>)}</fieldset>
         <div className="teacher-preview" aria-label="Display layer preview"><span data-teacher-layer="labels">Label: wave crest</span><output data-teacher-layer="values">2.0 Hz</output><strong data-teacher-layer="equations">v = fλ</strong><span data-teacher-layer="particles">● ● ●</span><span data-teacher-layer="vectors">→ force</span><span data-teacher-layer="trails">···· trail</span><span data-teacher-layer="answers">✓ answer feedback</span></div>
       </section>
 
@@ -116,8 +125,22 @@ export default function TeacherPage() {
 
       <section className="card stack" aria-labelledby="teacher-coverage">
         <h2 id="teacher-coverage">Outcome coverage</h2>
-        <label>Filter coverage<select value={coverageFilter} onChange={(event) => setCoverageFilter(event.target.value)} data-control-id="teacher.outcome-coverage-view"><option value="all">All outcomes</option><option value="active">Active only</option><option value="deferred">Deferred only</option><option value="waves">Waves</option><option value="sound">Sound</option><option value="light">Light</option><option value="motion">Motion</option><option value="forces">Forces</option><option value="society">Society</option></select></label>
-        <div className="teacher-table-wrap" tabIndex={0} role="region" aria-label="Outcome coverage table"><table><thead><tr><th>Outcome</th><th>Status</th><th>Activity</th><th>Route</th></tr></thead><tbody>{coverageRows.map((entry) => <tr key={entry.code}><th>{entry.code}</th><td>{entry.status}</td><td>{entry.activity}</td><td>{entry.route ? <Link to={entry.route}>{entry.route}</Link> : 'Not shipped'}</td></tr>)}</tbody></table></div>
+        <p>Release scope and verification are separate: “active” means shipped, while “verified (builder)” still awaits independent review.</p>
+        <label>Filter coverage<select value={coverageFilter} onChange={(event) => setCoverageFilter(event.target.value)} data-control-id="teacher.outcome-coverage-view"><option value="all">All outcomes</option><option value="active">Active release only</option><option value="deferred">Deferred only</option><option value="verified">Independently verified</option><option value="verified (builder)">Builder-verified</option><option value="waves">Waves</option><option value="sound">Sound</option><option value="light">Light</option><option value="motion">Motion</option><option value="forces">Forces</option><option value="society">Society</option></select></label>
+        <div className="teacher-table-wrap" tabIndex={0} role="region" aria-label="Outcome coverage table">
+          <table>
+            <thead><tr><th>Outcome</th><th>Release scope</th><th>Verification</th><th>Activity</th><th>Implementation routes</th></tr></thead>
+            <tbody>{coverageRows.map((entry) => (
+              <tr key={entry.code}>
+                <th>{entry.code}</th>
+                <td>{entry.status}</td>
+                <td>{entry.verificationStatus}</td>
+                <td>{entry.activity}</td>
+                <td>{entry.routes.length > 0 ? entry.routes.map((route, index) => <span key={route}>{index > 0 ? ', ' : ''}<Link to={route}>{route}</Link></span>) : 'Not shipped'}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
         <p>{ACTIVE_OUTCOME_CODES.length} active outcomes; {DEFERRED_OUTCOME_CODES.length} explicitly deferred.</p>
       </section>
 

@@ -8,10 +8,14 @@ import './UpdatePrompt.css';
  * refresh action instead of silently swapping versions mid-lesson.
  */
 export function UpdatePrompt() {
+  const [registrationError, setRegistrationError] = useState(false);
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
-  } = useRegisterSW({ immediate: true });
+  } = useRegisterSW({
+    immediate: true,
+    onRegisterError: () => setRegistrationError(true),
+  });
   const [manualUpdate, setManualUpdate] = useState<(() => void) | null>(null);
 
   useEffect(() => {
@@ -19,14 +23,28 @@ export function UpdatePrompt() {
       const detail = (event as CustomEvent<{ update?: () => void }>).detail;
       setManualUpdate(() => detail?.update ?? (() => window.location.reload()));
     };
+    const showRegistrationError = () => setRegistrationError(true);
     window.addEventListener('wavemotion:update-available', showTestablePrompt);
-    return () => window.removeEventListener('wavemotion:update-available', showTestablePrompt);
+    window.addEventListener('wavemotion:sw-registration-error', showRegistrationError);
+    return () => {
+      window.removeEventListener('wavemotion:update-available', showTestablePrompt);
+      window.removeEventListener('wavemotion:sw-registration-error', showRegistrationError);
+    };
   }, []);
 
-  if (!needRefresh && !manualUpdate) return null;
+  if (!needRefresh && !manualUpdate && !registrationError) return null;
 
   return (
-    <div className="update-prompt" role="status">
+    <>
+      {registrationError ? (
+        <div className="update-prompt" role="status" data-testid="sw-registration-error">
+          <p className="update-prompt__text">
+            Offline installation is unavailable in this browser session. Keep a
+            connection while using the app; your local progress still works.
+          </p>
+        </div>
+      ) : null}
+      {needRefresh || manualUpdate ? <div className="update-prompt" role="status">
       <p className="update-prompt__text">
         A new version of WaveMotion Studio is available.
       </p>
@@ -52,6 +70,7 @@ export function UpdatePrompt() {
           Not now
         </button>
       </div>
-    </div>
+    </div> : null}
+    </>
   );
 }

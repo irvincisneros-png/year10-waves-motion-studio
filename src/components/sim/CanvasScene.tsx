@@ -75,6 +75,7 @@ export function CanvasScene({ label, height, frameKey, draw, alternative, testId
           role="img"
           aria-label={label}
           data-testid={testId}
+          data-teacher-layer="particles trails"
         />
       ) : (
         <p className="notice notice--warn canvas-scene__unsupported" data-testid="canvas-unsupported-notice">

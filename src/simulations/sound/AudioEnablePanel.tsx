@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { useAnnouncer } from '../../accessibility/LiveRegion';
+import { useSettingsStore } from '../../store/settingsStore';
 import { MAX_SAFE_GAIN } from './toneAudio';
 import type { ToneAudio } from './useToneAudio';
 
@@ -33,12 +35,19 @@ export function AudioEnablePanel({
   level,
 }: AudioEnablePanelProps) {
   const { announce } = useAnnouncer();
+  const globalAudioEnabled = useSettingsStore((state) => state.audioEnabled);
 
   // Audio is unavailable when the API is absent, enabling failed, or the student
   // chose visual-only. In every case the module is fully usable without sound.
   const audioUnavailable = !audio.supported || audio.phase === 'failed';
-  const forcedVisualOnly = audioUnavailable; // auto-enable + lock the toggle
+  const forcedVisualOnly = audioUnavailable || !globalAudioEnabled;
   const effectiveVisualOnly = visualOnly || forcedVisualOnly;
+
+  // The persisted header preference is a real master opt-out. If it changes
+  // while an activity is enabled, silence the graph immediately.
+  useEffect(() => {
+    if (!globalAudioEnabled) audio.setMuted(true);
+  }, [audio, globalAudioEnabled]);
 
   const enable = async () => {
     const ok = await audio.enable();
@@ -59,9 +68,11 @@ export function AudioEnablePanel({
         <p className="notice notice--warn" data-testid="audio-unavailable-notice">
           <span aria-hidden="true">🔇</span>
           <span>
-            Sound unavailable — visual mode only. Everything in this activity works
-            without sound: the oscilloscope, spectrum and readouts show exactly
-            what the tone is doing.
+            {audioUnavailable
+              ? 'Sound unavailable on this device — visual mode only.'
+              : 'Optional sound is disabled in the header Settings — visual mode only.'}{' '}
+            Everything in this activity works without sound: the oscilloscope,
+            spectrum and readouts show exactly what the tone is doing.
           </span>
         </p>
       ) : (

@@ -10,6 +10,10 @@ import { defineConfig, devices } from '@playwright/test';
  * a different app's preview server.
  */
 const PORT = 4611;
+const chromiumChannel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL as
+  | 'chrome'
+  | 'msedge'
+  | undefined;
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -31,7 +35,13 @@ export default defineConfig({
     reducedMotion: 'no-preference',
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        ...(chromiumChannel ? { channel: chromiumChannel } : {}),
+      },
+    },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
   webServer: {

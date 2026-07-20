@@ -170,11 +170,10 @@ export const learningMap: StrandGroup[] = [
         id: 'mastery',
         name: 'Mastery challenge',
         summary:
-          'Mixed revision across every strand, drawing on validated questions once the workspaces are built.',
+          'One classroom-session question for every active outcome, with mixed objective and constructed responses across every strand.',
         outcomeCodes: [],
         status: 'available',
         route: '/mastery',
-        note: 'Reviews all active outcomes; deferred outcome 7.2.5 is not assessed.',
       },
     ],
   },

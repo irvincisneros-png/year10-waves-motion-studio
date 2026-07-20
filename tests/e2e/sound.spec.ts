@@ -28,8 +28,14 @@ async function readDownload(page: Page, trigger: () => Promise<void>): Promise<s
   return Buffer.concat(chunks).toString('utf8');
 }
 
-async function installAudioProbe(page: Page, rejectResume = false) {
-  await page.addInitScript(({ reject }) => {
+async function installAudioProbe(page: Page, rejectResume = false, allowGlobalAudio = true) {
+  await page.addInitScript(({ reject, allow }) => {
+    if (allow) {
+      localStorage.setItem(
+        'wavemotion.settings.v1',
+        JSON.stringify({ state: { audioEnabled: true }, version: 2 }),
+      );
+    }
     const probe = { constructed: 0, started: 0, closed: 0, targets: [] as number[] };
     class FakeParam {
       value = 0;
@@ -76,7 +82,7 @@ async function installAudioProbe(page: Page, rejectResume = false) {
     Object.defineProperty(target, 'AudioContext', { configurable: true, value: FakeContext });
     Object.defineProperty(target, 'webkitAudioContext', { configurable: true, value: FakeContext });
     target.__audioProbe = probe;
-  }, { reject: rejectResume });
+  }, { reject: rejectResume, allow: allowGlobalAudio });
 }
 
 test.describe('sound-lab routing and integration', () => {
@@ -235,6 +241,31 @@ test.describe('pitch and loudness investigation (7.2.2)', () => {
 });
 
 test.describe('Web Audio safety and fallbacks', () => {
+  test('the header sound preference is a real master opt-out for activity audio', async ({ page }) => {
+    await installAudioProbe(page, false, false);
+    await page.goto('/#/sound/pitch-loudness');
+    await expect(page.getByTestId('audio-unavailable-notice')).toContainText(
+      'disabled in the header Settings',
+    );
+
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.getByTestId('toggle-audio').check();
+    await page.getByRole('button', { name: 'Close settings' }).click();
+    await page.getByRole('button', { name: 'Acknowledge headphone safety warning' }).click();
+    await page.getByTestId('enable-sound').click();
+    await expect(page.getByTestId('sound-enabled-status')).toContainText('muted');
+
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.getByTestId('toggle-audio').uncheck();
+    await expect(page.getByTestId('audio-unavailable-notice')).toContainText(
+      'disabled in the header Settings',
+    );
+    const targets = await page.evaluate(
+      () => (window as unknown as { __audioProbe: { targets: number[] } }).__audioProbe.targets,
+    );
+    expect(targets.at(-1)).toBe(0);
+  });
+
   test('explicit acknowledgement then enable starts muted, capped, and visual-only can never unmute', async ({ page }) => {
     await installAudioProbe(page);
     await page.goto('/#/sound/pitch-loudness');

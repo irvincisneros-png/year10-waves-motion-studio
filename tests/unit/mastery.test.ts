@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { masteryQuestionBank, masterySessionQuestions } from '../../src/assessment/masteryQuestions';
 import { checkConstructed } from '../../src/assessment/validate';
+import { outcomeMap } from '../../src/content/outcomes';
 import { ACTIVE_OUTCOME_CODES, DEFERRED_OUTCOME_CODES } from '../../src/content/releaseRegistry';
 
 describe('Stage 6 mastery bank gate', () => {
@@ -19,10 +20,13 @@ describe('Stage 6 mastery bank gate', () => {
     }
   });
 
-  it('covers every active outcome, excludes deferred content, and builds a 20-item mixed session', () => {
+  it('covers every active outcome, excludes deferred content, and builds a 24-item mixed session', () => {
     expect(new Set(masteryQuestionBank.map((question) => question.outcomeCode))).toEqual(new Set(ACTIVE_OUTCOME_CODES));
     for (const code of DEFERRED_OUTCOME_CODES) expect(masteryQuestionBank.some((question) => question.outcomeCode === code)).toBe(false);
-    expect(masterySessionQuestions).toHaveLength(20);
+    expect(masterySessionQuestions).toHaveLength(ACTIVE_OUTCOME_CODES.length);
+    expect(new Set(masterySessionQuestions.map((question) => question.outcomeCode))).toEqual(new Set(ACTIVE_OUTCOME_CODES));
+    expect(new Set(masterySessionQuestions.map((question) => outcomeMap[question.outcomeCode].strand)))
+      .toEqual(new Set(['waves', 'sound', 'light', 'motion', 'forces', 'society']));
     expect(masterySessionQuestions.some((question) => question.kind === 'constructed')).toBe(true);
     expect(masterySessionQuestions.some((question) => question.kind !== 'constructed')).toBe(true);
   });
