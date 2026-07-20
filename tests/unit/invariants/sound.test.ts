@@ -120,6 +120,25 @@ describe('compression/rarefaction bands and longitudinal particles', () => {
       expect(part.position).toBeCloseTo(part.equilibrium + part.displacement, 12);
     }
   });
+
+  it('particle-density maxima align with pressure maxima (compression), not minima', () => {
+    const p: WaveParams = { amplitude: 1, frequency: 2, speed: 6, phase: 0 };
+    const lambda = p.speed / p.frequency;
+    const dx = lambda / 2000;
+    const localSpacing = (x: number) => {
+      const particles = longitudinalParticles(p, [x - dx, x + dx], 0, 0.1);
+      return particles[1].position - particles[0].position;
+    };
+    // At λ/2, neighbouring particles are closer than their equilibrium
+    // spacing and pressure is positive: this is a compression.
+    expect(localSpacing(lambda / 2)).toBeLessThan(2 * dx);
+    expect(pressureAt(p, lambda / 2, 0)).toBeGreaterThan(0);
+    expect(bandAt(p, lambda / 2, 0)).toBe('compression');
+    // At x=0 the same snapshot is sparse and pressure is negative.
+    expect(localSpacing(0)).toBeGreaterThan(2 * dx);
+    expect(pressureAt(p, 0, 0)).toBeLessThan(0);
+    expect(bandAt(p, 0, 0)).toBe('rarefaction');
+  });
 });
 
 describe('invariant 20.4 — pitch/amplitude independence', () => {

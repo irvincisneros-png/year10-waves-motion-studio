@@ -114,6 +114,59 @@ export const WAVES_ROUTES: ShellRoute[] = [
   },
 ];
 
+/** Stage 3 sound-laboratory routes (nested under /sound). */
+export const SOUND_ROUTES: ShellRoute[] = [
+  {
+    path: '/sound',
+    url: '/#/sound',
+    heading: 'Sound laboratory',
+    title: 'Sound laboratory — WaveMotion Studio',
+    navLabel: 'Sound',
+  },
+  {
+    path: '/sound/compression',
+    url: '/#/sound/compression',
+    heading: 'Compression & rarefaction',
+    title: 'Compression & rarefaction — WaveMotion Studio',
+    navLabel: 'Sound',
+  },
+  {
+    path: '/sound/pitch-loudness',
+    url: '/#/sound/pitch-loudness',
+    heading: 'Pitch & loudness',
+    title: 'Pitch & loudness — WaveMotion Studio',
+    navLabel: 'Sound',
+  },
+  {
+    path: '/sound/doppler',
+    url: '/#/sound/doppler',
+    heading: 'Doppler effect',
+    title: 'Doppler effect — WaveMotion Studio',
+    navLabel: 'Sound',
+  },
+  {
+    path: '/sound/check',
+    url: '/#/sound/check',
+    heading: 'Check questions',
+    title: 'Check questions — WaveMotion Studio',
+    navLabel: 'Sound',
+  },
+  {
+    path: '/sound/explain',
+    url: '/#/sound/explain',
+    heading: 'Explain',
+    title: 'Explain — WaveMotion Studio',
+    navLabel: 'Sound',
+  },
+  {
+    path: '/sound/connect',
+    url: '/#/sound/connect',
+    heading: 'Sound in the real world',
+    title: 'Sound in the real world — WaveMotion Studio',
+    navLabel: 'Sound',
+  },
+];
+
 /**
  * Key that moves focus to the next focusable element INCLUDING links.
  * WebKit (Safari) skips links on plain Tab; Option+Tab visits everything.

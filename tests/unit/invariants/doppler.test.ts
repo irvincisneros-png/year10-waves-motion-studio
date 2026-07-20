@@ -3,7 +3,6 @@ import { createRng } from '../../../src/science/rng';
 import {
   detectedFrequencyClosedForm,
   detectedFrequencyModel,
-  detectedIntervalModel,
   detectedFrequencySeries,
   emissionTimes,
   arrivalTime,
