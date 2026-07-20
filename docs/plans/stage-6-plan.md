@@ -30,6 +30,16 @@ Stage 6 also closes the cross-cutting gate: ≥60-question tagged mastery bank w
 anonymous export/print, whole-app offline operation/update prompt testing and a
 complete asset manifest.
 
+## Foundation package — registry and evidence integrity
+
+- [ ] Add one typed release registry for active/deferred outcomes, routes and
+  activities; use it for progress, mastery eligibility and teacher coverage.
+- [ ] Migrate progress to schema v2 before adding Stage 6 evidence producers.
+  Store stable evidence keys/results, derive levels from evidence and prevent
+  imports or direct setters from manufacturing `secure`.
+- [ ] Keep full local backups distinct from anonymous JSON/CSV/print summaries;
+  anonymous artefacts contain no written text, generated IDs or timestamps.
+
 ## Package A — pure science and curated content
 
 - [ ] Add React-free EM spectrum, hearing, ultrasound and astronomy engines/data.

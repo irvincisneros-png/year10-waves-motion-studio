@@ -6,9 +6,9 @@ describe('progressStore', () => {
     useProgressStore.getState().resetAll();
   });
 
-  it('sets and reads outcome levels', () => {
-    useProgressStore.getState().setOutcomeLevel('7.1.1', 'developing');
-    expect(useProgressStore.getState().outcomes['7.1.1']).toBe('developing');
+  it('cannot promote an outcome without supporting evidence', () => {
+    useProgressStore.getState().setOutcomeLevel('7.1.1', 'secure');
+    expect(useProgressStore.getState().outcomes['7.1.1']).toBeUndefined();
   });
 
   it('adds evidence entries with generated id + timestamp', () => {
@@ -21,10 +21,12 @@ describe('progressStore', () => {
     expect(evidence).toHaveLength(1);
     expect(evidence[0].id).toBeTruthy();
     expect(evidence[0].createdAt).toBeTruthy();
+    expect(useProgressStore.getState().outcomes['7.1.1']).toBe('developing');
   });
 
   it('exportJSON produces importable JSON', () => {
-    useProgressStore.getState().setOutcomeLevel('7.2.1', 'secure');
+    useProgressStore.getState().addEvidence({ outcomeCode: '7.2.1', kind: 'check', activityId: 'sound-q1', result: 'successful', summary: 'correct' });
+    useProgressStore.getState().addEvidence({ outcomeCode: '7.2.1', kind: 'explanation', activityId: 'sound-cer', result: 'successful', summary: 'complete' });
     const json = useProgressStore.getState().exportJSON();
     useProgressStore.getState().resetAll();
     expect(useProgressStore.getState().outcomes['7.2.1']).toBeUndefined();
@@ -34,25 +36,25 @@ describe('progressStore', () => {
   });
 
   it('importJSON rejects malformed input without changing state', () => {
-    useProgressStore.getState().setOutcomeLevel('7.1.1', 'secure');
+    useProgressStore.getState().addEvidence({ outcomeCode: '7.1.1', kind: 'check', activityId: 'q1', result: 'successful', summary: 'correct' });
     const result = useProgressStore.getState().importJSON('{{{');
     expect(result.ok).toBe(false);
-    expect(useProgressStore.getState().outcomes['7.1.1']).toBe('secure');
+    expect(useProgressStore.getState().outcomes['7.1.1']).toBe('developing');
   });
 
   it('resetModule clears only the given strand', () => {
     const s = useProgressStore.getState();
-    s.setOutcomeLevel('7.1.1', 'secure'); // waves strand
-    s.setOutcomeLevel('7.2.1', 'secure'); // sound strand
-    s.addEvidence({ outcomeCode: '7.1.1', kind: 'check', summary: 'waves ev' });
-    s.addEvidence({ outcomeCode: '7.2.1', kind: 'check', summary: 'sound ev' });
+    s.addEvidence({ outcomeCode: '7.1.1', kind: 'check', activityId: 'waves-q', result: 'successful', summary: 'waves ev' });
+    s.addEvidence({ outcomeCode: '7.1.1', kind: 'explanation', activityId: 'waves-cer', result: 'successful', summary: 'waves explanation' });
+    s.addEvidence({ outcomeCode: '7.2.1', kind: 'check', activityId: 'sound-q', result: 'successful', summary: 'sound ev' });
+    s.addEvidence({ outcomeCode: '7.2.1', kind: 'explanation', activityId: 'sound-cer', result: 'successful', summary: 'sound explanation' });
 
     useProgressStore.getState().resetModule('waves');
 
     const after = useProgressStore.getState();
     expect(after.outcomes['7.1.1']).toBeUndefined();
     expect(after.outcomes['7.2.1']).toBe('secure');
-    expect(after.evidence).toHaveLength(1);
+    expect(after.evidence).toHaveLength(2);
     expect(after.evidence[0].outcomeCode).toBe('7.2.1');
   });
 

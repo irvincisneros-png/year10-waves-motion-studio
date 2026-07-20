@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Page } from '../components/Page';
 import { outcomeMap } from '../content/outcomes';
+import { ACTIVE_OUTCOME_CODES, DEFERRED_OUTCOME_CODES } from '../content/releaseRegistry';
 import { useProgressStore } from '../store/progressStore';
 import { IMPORT_MAX_BYTES, type OutcomeLevel } from '../store/progressData';
 import './ProgressPage.css';
@@ -32,24 +33,25 @@ export default function ProgressPage() {
   const outcomes = useProgressStore((s) => s.outcomes);
   const evidence = useProgressStore((s) => s.evidence);
   const exportJSON = useProgressStore((s) => s.exportJSON);
+  const exportAnonymousJSON = useProgressStore((s) => s.exportAnonymousJSON);
+  const exportAnonymousCSV = useProgressStore((s) => s.exportAnonymousCSV);
   const importJSON = useProgressStore((s) => s.importJSON);
   const resetAll = useProgressStore((s) => s.resetAll);
 
   const [feedback, setFeedback] = useState<Feedback>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleExport = () => {
-    const json = exportJSON();
-    const blob = new Blob([json], { type: 'application/json' });
+  const downloadText = (content: string, type: string, filename: string) => {
+    const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'wavemotion-progress.json';
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    setFeedback({ kind: 'success', text: 'Progress exported as wavemotion-progress.json.' });
+    setFeedback({ kind: 'success', text: `Exported ${filename}.` });
   };
 
   const handleImportFile = (file: File | undefined) => {
@@ -89,7 +91,7 @@ export default function ProgressPage() {
     }
   };
 
-  const codes = Object.keys(outcomeMap);
+  const codes = ACTIVE_OUTCOME_CODES;
   const attempted = codes.filter((c) => (outcomes[c] ?? 'not-attempted') !== 'not-attempted');
 
   return (
@@ -98,8 +100,17 @@ export default function ProgressPage() {
       lead="Your evidence level for each syllabus outcome. Evidence is collected as you work through the laboratories; everything stays on this device."
     >
       <div className="progress-actions">
-        <button type="button" className="btn btn--primary" onClick={handleExport}>
-          Export progress (JSON)
+        <button type="button" className="btn btn--primary" onClick={() => downloadText(exportAnonymousJSON(), 'application/json', 'wavemotion-anonymous-summary.json')}>
+          Export anonymous summary (JSON)
+        </button>
+        <button type="button" className="btn" onClick={() => downloadText(exportAnonymousCSV(), 'text/csv', 'wavemotion-anonymous-summary.csv')}>
+          Export anonymous summary (CSV)
+        </button>
+        <button type="button" className="btn" onClick={() => window.print()}>
+          Print anonymous summary
+        </button>
+        <button type="button" className="btn" onClick={() => downloadText(exportJSON(), 'application/json', 'wavemotion-local-backup.json')}>
+          Export local backup (includes written evidence)
         </button>
         <label className="btn progress-actions__import">
           Import progress…
@@ -133,6 +144,12 @@ export default function ProgressPage() {
         {attempted.length} of {codes.length} outcomes attempted ·{' '}
         {evidence.length} evidence {evidence.length === 1 ? 'entry' : 'entries'}{' '}
         recorded
+      </p>
+
+      <p className="notice">
+        Anonymous summaries contain only outcome levels and evidence counts—no
+        written responses, names, IDs or timestamps. The local backup is for
+        transfer between your own devices and may contain student-written text.
       </p>
 
       <div className="progress-table-wrap">
@@ -170,6 +187,17 @@ export default function ProgressPage() {
           </tbody>
         </table>
       </div>
+
+      <section className="card stack" aria-labelledby="deferred-outcomes-heading">
+        <h2 id="deferred-outcomes-heading">Deferred outcome</h2>
+        {DEFERRED_OUTCOME_CODES.map((code) => (
+          <p key={code}>
+            <strong>{code}</strong> — {outcomeMap[code].text}. This outcome is
+            not part of the current learning or mastery denominator because
+            attributable, community-approved sources have not been supplied.
+          </p>
+        ))}
+      </section>
     </Page>
   );
 }

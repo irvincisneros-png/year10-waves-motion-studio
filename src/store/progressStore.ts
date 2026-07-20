@@ -4,7 +4,10 @@ import { safeStorage } from './safeStorage';
 import { outcomeMap, type Outcome } from '../content/outcomes';
 import {
   emptyProgress,
+  anonymousProgressCsv,
+  deriveOutcomeLevels,
   sanitiseImport,
+  serialiseAnonymousProgress,
   serialiseProgress,
   type EvidenceEntry,
   type ImportResult,
@@ -24,6 +27,8 @@ export interface ProgressStoreState extends ProgressData {
   setOutcomeLevel: (code: string, level: OutcomeLevel) => void;
   addEvidence: (entry: Omit<EvidenceEntry, 'id' | 'createdAt'>) => void;
   exportJSON: () => string;
+  exportAnonymousJSON: () => string;
+  exportAnonymousCSV: () => string;
   importJSON: (raw: string) => ImportResult;
   /** Reset every outcome + evidence belonging to one strand id. */
   resetModule: (strandId: Outcome['strand']) => void;
@@ -38,24 +43,36 @@ export const useProgressStore = create<ProgressStoreState>()(
     (set, get) => ({
       ...emptyProgress(),
 
-      setOutcomeLevel: (code, level) =>
-        set((state) => ({ outcomes: { ...state.outcomes, [code]: level } })),
+      // Retained as a compatibility shim for older activity components. Levels
+      // are now derived only from evidence and cannot be promoted directly.
+      setOutcomeLevel: () => set((state) => ({ outcomes: deriveOutcomeLevels(state.evidence) })),
 
       addEvidence: (entry) =>
-        set((state) => ({
-          evidence: [
+        set((state) => {
+          const nextEvidence = [
             ...state.evidence,
             {
               ...entry,
               id: crypto.randomUUID(),
               createdAt: new Date().toISOString(),
             },
-          ],
-        })),
+          ];
+          return { evidence: nextEvidence, outcomes: deriveOutcomeLevels(nextEvidence) };
+        }),
 
       exportJSON: () => {
         const { outcomes, evidence } = get();
         return serialiseProgress({ outcomes, evidence });
+      },
+
+      exportAnonymousJSON: () => {
+        const { outcomes, evidence } = get();
+        return serialiseAnonymousProgress({ outcomes, evidence }, Object.keys(outcomeMap).filter((code) => code !== '7.2.5'));
+      },
+
+      exportAnonymousCSV: () => {
+        const { outcomes, evidence } = get();
+        return anonymousProgressCsv({ outcomes, evidence }, Object.keys(outcomeMap).filter((code) => code !== '7.2.5'));
       },
 
       importJSON: (raw) => {
@@ -80,7 +97,7 @@ export const useProgressStore = create<ProgressStoreState>()(
           const evidence = state.evidence.filter(
             (e) => e.outcomeCode === null || !codes.has(e.outcomeCode),
           );
-          return { outcomes, evidence };
+          return { outcomes: deriveOutcomeLevels(evidence), evidence };
         }),
 
       resetAll: () => set({ ...emptyProgress() }),
@@ -98,7 +115,7 @@ export const useProgressStore = create<ProgressStoreState>()(
         }
         const p = persisted as Partial<ProgressData>;
         return {
-          outcomes: p.outcomes ?? {},
+          outcomes: deriveOutcomeLevels(p.evidence ?? []),
           evidence: p.evidence ?? [],
         };
       },

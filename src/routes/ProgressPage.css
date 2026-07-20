@@ -33,6 +33,20 @@
   background: var(--surface-card);
 }
 
+@media print {
+  .progress-actions,
+  .progress-feedback,
+  .shell__header,
+  .shell__footer,
+  .shell__notices {
+    display: none !important;
+  }
+
+  .progress-table-wrap {
+    overflow: visible;
+  }
+}
+
 .progress-table {
   width: 100%;
   min-width: 40rem;

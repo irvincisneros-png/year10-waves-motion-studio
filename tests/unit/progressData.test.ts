@@ -4,6 +4,9 @@ import {
   PROGRESS_SCHEMA,
   PROGRESS_SCHEMA_VERSION,
   emptyProgress,
+  deriveOutcomeLevel,
+  anonymousProgressCsv,
+  serialiseAnonymousProgress,
   sanitiseImport,
   serialiseProgress,
 } from '../../src/store/progressData';
@@ -12,7 +15,10 @@ describe('serialiseProgress', () => {
   it('wraps data in a versioned schema envelope', () => {
     const json = serialiseProgress({
       outcomes: { '7.1.1': 'secure' },
-      evidence: [],
+      evidence: [
+        { id: 'a', outcomeCode: '7.1.1', kind: 'check', activityId: 'q1', result: 'successful', summary: 'name: Ada', createdAt: '2026-07-17' },
+        { id: 'b', outcomeCode: '7.1.1', kind: 'explanation', activityId: 'cer1', result: 'successful', summary: 'written response', createdAt: '2026-07-18' },
+      ],
     });
     const parsed = JSON.parse(json);
     expect(parsed.schema).toBe(PROGRESS_SCHEMA);
@@ -34,12 +40,30 @@ describe('sanitiseImport', () => {
           summary: 'Answered the amplitude check correctly',
           createdAt: '2026-07-17T00:00:00.000Z',
         },
+        {
+          id: 'def',
+          outcomeCode: '7.1.1',
+          kind: 'explanation',
+          activityId: 'wave-cer',
+          result: 'successful' as const,
+          summary: 'Completed wave explanation',
+          createdAt: '2026-07-18T00:00:00.000Z',
+        },
+        {
+          id: 'ghi',
+          outcomeCode: '7.2.1',
+          kind: 'check',
+          activityId: 'sound-q1',
+          result: 'attempted' as const,
+          summary: 'Attempted sound check',
+          createdAt: '2026-07-18T00:00:00.000Z',
+        },
       ],
     };
     const result = sanitiseImport(serialiseProgress(original));
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.data.outcomes).toEqual(original.outcomes);
+      expect(result.data.outcomes).toEqual({ '7.1.1': 'secure', '7.2.1': 'developing' });
       expect(result.data.evidence).toEqual(original.evidence);
     }
   });
@@ -49,7 +73,7 @@ describe('sanitiseImport', () => {
       JSON.stringify({ outcomes: { '7.3.1': 'developing' }, evidence: [] }),
     );
     expect(result.ok).toBe(true);
-    if (result.ok) expect(result.data.outcomes['7.3.1']).toBe('developing');
+    if (result.ok) expect(result.data.outcomes).toEqual({});
   });
 
   it('rejects empty input', () => {
@@ -85,7 +109,7 @@ describe('sanitiseImport', () => {
     expect(sanitiseImport(JSON.stringify({ evidence: 'nope' })).ok).toBe(false);
   });
 
-  it('drops invalid outcome levels and preserves valid ones', () => {
+  it('does not trust imported outcome levels without supporting evidence', () => {
     const result = sanitiseImport(
       JSON.stringify({
         outcomes: {
@@ -98,7 +122,7 @@ describe('sanitiseImport', () => {
     );
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.data.outcomes).toEqual({ '7.1.1': 'secure' });
+      expect(result.data.outcomes).toEqual({});
     }
   });
 
@@ -148,6 +172,32 @@ describe('sanitiseImport', () => {
       // Prototype not polluted:
       expect(({} as Record<string, unknown>).polluted).toBeUndefined();
     }
+  });
+});
+
+describe('evidence-derived progress and anonymous summaries', () => {
+  const evidence = [
+    { id: 'a', outcomeCode: '7.1.1', kind: 'check', activityId: 'q1', result: 'successful' as const, summary: 'Student name: Ada', createdAt: '2026-07-17T10:12:30Z' },
+    { id: 'b', outcomeCode: '7.1.1', kind: 'check', activityId: 'q1', result: 'successful' as const, summary: 'duplicate', createdAt: '2026-07-17T10:13:30Z' },
+    { id: 'c', outcomeCode: '7.1.1', kind: 'explanation', activityId: 'cer1', result: 'successful' as const, summary: 'Private response', createdAt: '2026-07-17T10:14:30Z' },
+  ];
+
+  it('requires two distinct successful evidence keys for secure', () => {
+    expect(deriveOutcomeLevel(evidence.slice(0, 1), '7.1.1')).toBe('developing');
+    expect(deriveOutcomeLevel(evidence.slice(0, 2), '7.1.1')).toBe('developing');
+    expect(deriveOutcomeLevel(evidence, '7.1.1')).toBe('secure');
+  });
+
+  it('anonymous JSON and CSV never contain free text, IDs or timestamps', () => {
+    const data = { outcomes: {}, evidence };
+    const json = serialiseAnonymousProgress(data, ['7.1.1']);
+    const csv = anonymousProgressCsv(data, ['7.1.1']);
+    for (const privateValue of ['Ada', 'Private response', '2026-07-17', '"id"']) {
+      expect(json).not.toContain(privateValue);
+      expect(csv).not.toContain(privateValue);
+    }
+    expect(json).toContain('"level": "secure"');
+    expect(csv).toContain('7.1.1,secure,2,2');
   });
 });
 
