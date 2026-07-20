@@ -17,10 +17,9 @@ import {
   wavefrontEdges,
   sourcePosition,
   observerPosition,
-  observerStart,
   type DopplerConfig,
 } from '../../science/doppler';
-import { SOUND_SPEED_AIR_20C } from './constants';
+import { SOUND_SPEED_AIR_20C } from '../../science/sound';
 import { AudioEnablePanel } from './AudioEnablePanel';
 import { useToneAudio } from './useToneAudio';
 
