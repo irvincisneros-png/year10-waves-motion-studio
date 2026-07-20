@@ -16,7 +16,15 @@ async function pauseAndStep(page: Page, n: number) {
     if (pressed === 'false') await pause.click();
   }
   const step = page.getByTestId('sim-step');
-  for (let i = 0; i < n; i++) await step.click();
+  for (let remaining = n; remaining > 0; remaining -= 10) {
+    const batch = Math.min(10, remaining);
+    await step.evaluate((element, count) => {
+      for (let index = 0; index < count; index += 1) {
+        (element as HTMLButtonElement).click();
+      }
+    }, batch);
+    await page.waitForTimeout(0);
+  }
 }
 
 /** Tab (browser-appropriately) until the locator has focus. */
@@ -102,6 +110,8 @@ test.describe('medium or vacuum? (7.1.1)', () => {
   test('trigger fires all three chambers; vacuum transmits nothing; trigger disabled mid-pulse', async ({
     page,
   }) => {
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.getByTestId('toggle-reduced-motion').check();
     await page.getByTestId('trigger-disturbance').click();
     await expect(page.getByTestId('trigger-disturbance')).toBeDisabled();
     await pauseAndStep(page, 15); // 0.5 s
@@ -228,6 +238,8 @@ test.describe('medium or vacuum? (7.1.1)', () => {
 test.describe('energy transfer (7.1.2)', () => {
   test('tagged particles show ≈0 net displacement after the pulse crosses', async ({ page }) => {
     await page.goto('/#/waves/energy');
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.getByTestId('toggle-reduced-motion').check();
     await page.getByTestId('tag-B').check();
     await expect(page.getByTestId('tag-B')).toBeChecked();
     await page.getByTestId('send-pulse').click();
