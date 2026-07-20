@@ -9,6 +9,9 @@ const pkg = JSON.parse(
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // Keep the release archive deployable from a domain root, a school-site
+  // subdirectory, or another static folder. HashRouter handles route state.
+  base: './',
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
@@ -33,6 +36,8 @@ export default defineConfig({
         theme_color: '#141b2e',
         background_color: '#f7f4ee',
         display: 'standalone',
+        start_url: './',
+        scope: './',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },

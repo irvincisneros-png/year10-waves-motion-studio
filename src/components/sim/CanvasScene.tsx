@@ -24,9 +24,11 @@ export interface CanvasSceneProps {
   alternative: ReactNode;
   /** Test id for the canvas element. */
   testId?: string;
+  /** Optional teacher layer represented by this visual scene. */
+  teacherLayer?: 'particles' | 'vectors' | 'trails';
 }
 
-export function CanvasScene({ label, height, frameKey, draw, alternative, testId }: CanvasSceneProps) {
+export function CanvasScene({ label, height, frameKey, draw, alternative, testId, teacherLayer }: CanvasSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [supported, setSupported] = useState(true);
@@ -75,6 +77,7 @@ export function CanvasScene({ label, height, frameKey, draw, alternative, testId
           role="img"
           aria-label={label}
           data-testid={testId}
+          data-teacher-layer={teacherLayer}
         />
       ) : (
         <p className="notice notice--warn canvas-scene__unsupported" data-testid="canvas-unsupported-notice">

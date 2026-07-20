@@ -8,23 +8,23 @@ import { SettingsPanel } from './SettingsPanel';
 import './AppLayout.css';
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/waves', label: 'Waves', end: false },
-  { to: '/sound', label: 'Sound', end: false },
-  { to: '/light', label: 'Light', end: false },
-  { to: '/vision', label: 'Vision', end: false },
-  { to: '/motion', label: 'Motion', end: false },
-  { to: '/forces', label: 'Forces', end: false },
-  { to: '/spectrum', label: 'Spectrum', end: false },
-  { to: '/hearing', label: 'Hearing', end: false },
-  { to: '/ultrasound', label: 'Ultrasound', end: false },
-  { to: '/astronomy', label: 'Astronomy', end: false },
-  { to: '/society', label: 'Society', end: false },
-  { to: '/mastery', label: 'Mastery', end: false },
-  { to: '/glossary', label: 'Glossary', end: false },
-  { to: '/progress', label: 'Progress', end: false },
-  { to: '/teacher', label: 'Teacher', end: false },
-  { to: '/about', label: 'About', end: false },
+  { id: 'shell.nav-home', to: '/', label: 'Home', end: true },
+  { id: 'shell.nav-waves', to: '/waves', label: 'Waves', end: false },
+  { id: 'shell.nav-sound', to: '/sound', label: 'Sound', end: false },
+  { id: 'shell.nav-light', to: '/light', label: 'Light', end: false },
+  { id: 'shell.nav-vision', to: '/vision', label: 'Vision', end: false },
+  { id: 'shell.nav-motion', to: '/motion', label: 'Motion', end: false },
+  { id: 'shell.nav-forces', to: '/forces', label: 'Forces', end: false },
+  { id: 'shell.nav-spectrum', to: '/spectrum', label: 'Spectrum', end: false },
+  { id: 'shell.nav-hearing', to: '/hearing', label: 'Hearing', end: false },
+  { id: 'shell.nav-ultrasound', to: '/ultrasound', label: 'Ultrasound', end: false },
+  { id: 'shell.nav-astronomy', to: '/astronomy', label: 'Astronomy', end: false },
+  { id: 'shell.nav-society', to: '/society', label: 'Society', end: false },
+  { id: 'shell.nav-mastery', to: '/mastery', label: 'Mastery', end: false },
+  { id: 'shell.nav-glossary', to: '/glossary', label: 'Glossary', end: false },
+  { id: 'shell.nav-progress', to: '/progress', label: 'Progress', end: false },
+  { id: 'shell.nav-teacher', to: '/teacher', label: 'Teacher', end: false },
+  { id: 'shell.nav-about', to: '/about', label: 'About', end: false },
 ];
 
 function BrandMark() {
@@ -77,7 +77,12 @@ export function AppLayout() {
             <ul role="list" className="primary-nav__list">
               {NAV_ITEMS.map((item) => (
                 <li key={item.to}>
-                  <NavLink to={item.to} end={item.end} className="primary-nav__link">
+                  <NavLink
+                    to={item.to}
+                    end={item.end}
+                    className="primary-nav__link"
+                    data-control-id={item.id}
+                  >
                     {item.label}
                   </NavLink>
                 </li>

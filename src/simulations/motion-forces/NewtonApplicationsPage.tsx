@@ -51,7 +51,7 @@ const CASES = [
     law: "Third law",
     outcome:
       "During contact, each cart exerts an equal-magnitude opposite force on the other, even when their masses differ.",
-    pair: "Cart A-on-B and Cart B-on-A are an interaction pair on different objects. The model does not simulate deformation or impulse.",
+    pair: "Cart A-on-B and Cart B-on-A are an interaction pair on different objects. The model does not simulate deformation or collision duration.",
   },
   {
     id: "spacecraft",

@@ -8,9 +8,10 @@ interface ToggleRowProps {
   checked: boolean;
   onChange: (v: boolean) => void;
   testId: string;
+  controlId: string;
 }
 
-function ToggleRow({ label, hint, checked, onChange, testId }: ToggleRowProps) {
+function ToggleRow({ label, hint, checked, onChange, testId, controlId }: ToggleRowProps) {
   return (
     <label className="toggle">
       <input
@@ -18,6 +19,7 @@ function ToggleRow({ label, hint, checked, onChange, testId }: ToggleRowProps) {
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
         data-testid={testId}
+        data-control-id={controlId}
       />
       <span className="toggle__text">
         <span className="toggle__label">{label}</span>
@@ -78,6 +80,7 @@ export function SettingsPanel() {
             checked={reducedMotion}
             onChange={setReducedMotion}
             testId="toggle-reduced-motion"
+            controlId="global.reduced-motion-toggle"
           />
           <ToggleRow
             label="Low graphics"
@@ -85,13 +88,15 @@ export function SettingsPanel() {
             checked={lowGraphics}
             onChange={setLowGraphics}
             testId="toggle-low-graphics"
+            controlId="global.low-graphics-toggle"
           />
           <ToggleRow
             label="Enable sound"
-            hint="Sound stays off until you turn it on. Volume is limited."
+            hint="Allows optional audio controls. Each activity still requires its own explicit enable action and starts muted."
             checked={audioEnabled}
             onChange={setAudioEnabled}
             testId="toggle-audio"
+            controlId="global.audio-permission-toggle"
           />
           <button type="button" className="btn settings__close" onClick={close}>
             Close settings

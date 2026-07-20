@@ -86,8 +86,22 @@ export const masteryQuestionBank: readonly MasteryQuestion[] = [
   ...constructedQuestions.map(tagQuestion),
 ];
 
-/** A balanced 20-question classroom session: objective then constructed across strands. */
-export const masterySessionQuestions: readonly MasteryQuestion[] = [
-  ...objectiveQuestions.filter((_, index) => index % 5 === 0).slice(0, 10),
-  ...constructedQuestions.filter((_, index) => index % 4 === 0).slice(0, 10),
-].map(tagQuestion);
+const firstQuestionByOutcome = (questions: readonly Question[]) => {
+  const result = new Map<string, Question>();
+  for (const question of questions) {
+    if (!result.has(question.outcomeCode)) result.set(question.outcomeCode, question);
+  }
+  return result;
+};
+
+const objectiveByOutcome = firstQuestionByOutcome(objectiveQuestions);
+const constructedByOutcome = firstQuestionByOutcome(constructedQuestions);
+
+/** One question per active outcome, alternating objective and constructed response modes. */
+export const masterySessionQuestions: readonly MasteryQuestion[] = ACTIVE_OUTCOME_CODES.map((outcomeCode, index) => {
+  const preferred = index % 2 === 0 ? objectiveByOutcome : constructedByOutcome;
+  const fallback = index % 2 === 0 ? constructedByOutcome : objectiveByOutcome;
+  const question = preferred.get(outcomeCode) ?? fallback.get(outcomeCode);
+  if (!question) throw new Error(`Missing mastery session question for ${outcomeCode}`);
+  return tagQuestion(question);
+});

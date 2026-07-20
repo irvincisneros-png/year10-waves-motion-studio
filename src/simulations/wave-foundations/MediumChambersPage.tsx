@@ -505,6 +505,7 @@ export default function MediumChambersPage() {
             draw={drawChamber('mechanical')}
             alternative={<p>{altText('mechanical')}</p>}
             testId="chamber-mechanical"
+            teacherLayer="particles"
           />
           <p className="chamber-caption">
             <strong>2 · Vacuum</strong>
@@ -529,6 +530,7 @@ export default function MediumChambersPage() {
             draw={drawChamber('em')}
             alternative={<p>{altText('em')}</p>}
             testId="chamber-em"
+            teacherLayer="vectors"
           />
         </div>
 

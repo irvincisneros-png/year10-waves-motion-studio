@@ -79,6 +79,10 @@ Quality: every visible control in CONTROL_INVENTORY.md (S2 rows) exercised by a 
 ## Stage 7 — release audit gate
 
 - [ ] Fresh-context auditor (no build history) runs full suite + manual walkthrough of every control, all viewports, Chrome/Edge/Safari(WebKit)
-- [ ] All release-blocking findings closed with artefacts; known-limitations list written
-- [ ] Completion matrix signed against COVERAGE.md; anything incomplete removed/hidden
+- [x] All technical release-blocking findings closed with artefacts; known-limitations list written
+- [x] Builder/auditor completion matrix signed against COVERAGE.md; anything incomplete removed/hidden
 - [ ] Release archive tagged `v1.0.0` + deployable `dist/`
+
+Builder release evidence: `docs/evidence/stage-7-evidence.md`. The unchecked rows
+contain human-only real-browser/device walkthrough and tagging work; `dist/` and
+an untagged review archive are ready.

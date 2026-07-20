@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Page } from '../components/Page';
 import { outcomeMap } from '../content/outcomes';
-import { ACTIVE_OUTCOME_CODES, DEFERRED_OUTCOME_CODES } from '../content/releaseRegistry';
+import { ACTIVE_OUTCOME_CODES } from '../content/releaseRegistry';
 import { useProgressStore } from '../store/progressStore';
 import { IMPORT_MAX_BYTES, type OutcomeLevel } from '../store/progressData';
 import './ProgressPage.css';
@@ -188,16 +188,6 @@ export default function ProgressPage() {
         </table>
       </div>
 
-      <section className="card stack" aria-labelledby="deferred-outcomes-heading">
-        <h2 id="deferred-outcomes-heading">Deferred outcome</h2>
-        {DEFERRED_OUTCOME_CODES.map((code) => (
-          <p key={code}>
-            <strong>{code}</strong> — {outcomeMap[code].text}. This outcome is
-            not part of the current learning or mastery denominator because
-            attributable, community-approved sources have not been supplied.
-          </p>
-        ))}
-      </section>
     </Page>
   );
 }

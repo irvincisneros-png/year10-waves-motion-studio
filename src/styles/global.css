@@ -69,6 +69,20 @@ select {
   color: inherit;
 }
 
+/* Native form controls must retain a classroom-friendly 44 px target. Range,
+   checkbox and radio inputs get their target from their labelled wrappers. */
+select,
+textarea,
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="file"]) {
+  min-height: var(--target-min);
+}
+
+/* WebKit's native single-line select ignores min-height while appearance is
+   automatic; an explicit block size preserves the platform picker and target. */
+select {
+  height: var(--target-min);
+}
+
 h1,
 h2,
 h3,
@@ -115,13 +129,13 @@ a:hover {
 
 /* Teacher display layers. Semantic controls remain in the accessibility tree;
    only explicitly tagged demonstration overlays are hidden. */
-:root[data-layer-labels="false"] [data-teacher-layer="labels"],
-:root[data-layer-values="false"] [data-teacher-layer="values"],
-:root[data-layer-equations="false"] [data-teacher-layer="equations"],
-:root[data-layer-particles="false"] [data-teacher-layer="particles"],
-:root[data-layer-vectors="false"] [data-teacher-layer="vectors"],
-:root[data-layer-trails="false"] [data-teacher-layer="trails"],
-:root[data-layer-answers="false"] [data-teacher-layer="answers"] {
+:root[data-layer-labels="false"] [data-teacher-layer~="labels"],
+:root[data-layer-values="false"] [data-teacher-layer~="values"],
+:root[data-layer-equations="false"] [data-teacher-layer~="equations"],
+:root[data-layer-particles="false"] [data-teacher-layer~="particles"],
+:root[data-layer-vectors="false"] [data-teacher-layer~="vectors"],
+:root[data-layer-trails="false"] [data-teacher-layer~="trails"],
+:root[data-layer-answers="false"] [data-teacher-layer~="answers"] {
   display: none !important;
 }
 

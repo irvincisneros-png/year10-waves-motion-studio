@@ -54,9 +54,10 @@ support, non-visual alternatives for Canvas/audio content.
 
 ## Privacy model
 
-No login, no student names, no analytics, no network calls after first load.
-Optional progress lives in versioned local storage on the device only, with
-export/import/reset under user control. Audio is off by default and
+No login, no student names, and no analytics or tracking. The app makes no
+automatic external runtime requests; source links open only when the user
+chooses them. Optional progress lives in versioned local storage on the device
+only, with export/import/reset under user control. Audio is off by default and
 volume-limited when enabled.
 
 ## Language

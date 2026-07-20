@@ -1,5 +1,10 @@
 # WaveMotion Studio — Codex builder handover
 
+> Historical handover completed through the Stage 7 technical audit on 2026-07-20.
+> Current release evidence and remaining human-only gates are recorded in
+> `docs/evidence/stage-7-evidence.md`; the original instructions below are retained
+> as the build-history contract.
+
 You are taking over as the implementation builder for **WaveMotion Studio**, a NSW Year 10
 Waves & Motion learning PWA for real classrooms. The project is mid-build under a staged,
 gate-driven protocol. Previous stages were built by Claude agents under a Fable 5

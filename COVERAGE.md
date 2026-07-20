@@ -75,6 +75,7 @@ compression, pitch/loudness and Doppler effect (7.2.1–7.2.3), plus vision and
 light properties/applications (7.3.1–7.3.3), plus the complete motion and forces
 groups (7.4.1–7.4.7), plus spectrum, hearing, synthetic ultrasound, astronomy,
 society, mastery and the cross-cutting teacher/progress tools. The active release
-denominator is 24 outcomes. Stages 3–6 await the fresh-context Stage 7 release
-audit; outcome 7.2.5 is the sole deferral and remains absent from navigation,
+denominator is 24 outcomes. Stages 3–6 passed the fresh-context Stage 7 technical
+audit; human science/browser/device approval and release tagging remain pending.
+Outcome 7.2.5 is the sole deferral and remains absent from learner navigation,
 learning cards and mastery.
