@@ -240,9 +240,12 @@ test.describe('Stage 6 teacher, update and offline hardening', () => {
 
   test('service-worker registration failure gives a visible online-only fallback', async ({ page }) => {
     await page.goto('/#/');
-    await page.evaluate(() =>
-      window.dispatchEvent(new CustomEvent('wavemotion:sw-registration-error')),
-    );
+    await expect.poll(async () => {
+      await page.evaluate(() =>
+        window.dispatchEvent(new CustomEvent('wavemotion:sw-registration-error')),
+      );
+      return page.getByTestId('sw-registration-error').count();
+    }).toBe(1);
     await expect(page.getByTestId('sw-registration-error')).toContainText(
       'Keep a connection while using the app',
     );
