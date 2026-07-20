@@ -56,7 +56,9 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 > mastery bank has 101 validated questions across all 24 active outcomes, 48
 > of them constructed-response. Outcome 7.2.5 is explicitly deferred and has
 > no route/nav/card/question. Exact final suite counts are recorded in
-> `docs/evidence/stage-6-evidence.md` after the full gate run.
+> `docs/evidence/stage-6-evidence.md`. Builder-run `npm run verify` is green:
+> oxlint 0 errors, TypeScript clean, 202 unit tests, 536 browser tests passed
+> and 2 expected WebKit offline-emulation skips across Chromium + WebKit.
 
 ## Outcomes
 
@@ -98,5 +100,5 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 3 — Sound module group | built — builder verification green (138 unit, 295 e2e passed / 1 skipped across Chromium+WebKit); evidence in `docs/evidence/stage-3-evidence.md`; awaiting independent review |
 | 4 — Light and vision module group | built — builder verification green (152 unit, 367 e2e passed / 1 skipped across Chromium+WebKit); evidence in `docs/evidence/stage-4-evidence.md`; awaiting independent review |
 | 5 — Motion and force module group | built — builder verification green (187 unit, 481 e2e passed / 1 expected skip across Chromium+WebKit); evidence in `docs/evidence/stage-5-evidence.md`; awaiting independent review |
-| 6 — Spectrum/hearing/ultrasound/astronomy/society/mastery/teacher/progress/offline | built — builder verification in progress; evidence pack written after full green gate |
+| 6 — Spectrum/hearing/ultrasound/astronomy/society/mastery/teacher/progress/offline | built — builder verification green (202 unit, 536 browser tests passed / 2 expected WebKit offline-emulation skips across Chromium+WebKit); evidence in `docs/evidence/stage-6-evidence.md`; awaiting independent release audit |
 | 7 — Independent release audit | not started |

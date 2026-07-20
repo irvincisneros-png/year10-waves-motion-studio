@@ -32,82 +32,82 @@ complete asset manifest.
 
 ## Foundation package — registry and evidence integrity
 
-- [ ] Add one typed release registry for active/deferred outcomes, routes and
+- [x] Add one typed release registry for active/deferred outcomes, routes and
   activities; use it for progress, mastery eligibility and teacher coverage.
-- [ ] Migrate progress to schema v2 before adding Stage 6 evidence producers.
+- [x] Migrate progress to schema v2 before adding Stage 6 evidence producers.
   Store stable evidence keys/results, derive levels from evidence and prevent
   imports or direct setters from manufacturing `secure`.
-- [ ] Keep full local backups distinct from anonymous JSON/CSV/print summaries;
+- [x] Keep full local backups distinct from anonymous JSON/CSV/print summaries;
   anonymous artefacts contain no written text, generated IDs or timestamps.
 
 ## Package A — pure science and curated content
 
-- [ ] Add React-free EM spectrum, hearing, ultrasound and astronomy engines/data.
-- [ ] Preserve `c = 3.00 × 10⁸ m/s`; spectrum bands are continuous on a log axis,
+- [x] Add React-free EM spectrum, hearing, ultrasound and astronomy engines/data.
+- [x] Preserve `c = 3.00 × 10⁸ m/s`; spectrum bands are continuous on a log axis,
   approximate/overlapping and never described as seven exact boxes.
-- [ ] Keep ionising distinct from radioactive and risk dependent on exposure,
+- [x] Keep ionising distinct from radioactive and risk dependent on exposure,
   interaction and dose—not frequency alone.
-- [ ] Model ear response as mechanical → fluid → electrical signal with a
+- [x] Model ear response as mechanical → fluid → electrical signal with a
   simplified frequency-place map and no diagnosis.
-- [ ] Calculate pulse-echo depth as `speed × round-trip time / 2`; synthetic
+- [x] Calculate pulse-echo depth as `speed × round-trip time / 2`; synthetic
   phantoms only; qualitative resolution/penetration trade-off.
-- [ ] Use only curated stellar lines already recorded in `SCIENCE_REVIEW.md`;
+- [x] Use only curated stellar lines already recorded in `SCIENCE_REVIEW.md`;
   line identification must fail honestly outside tolerance. Red/blueshift keeps
   sign and direction text paired.
-- [ ] Add ≥50-case deterministic invariant sweeps plus boundary/false-positive
+- [x] Add ≥50-case deterministic invariant sweeps plus boundary/false-positive
   tests before UI integration.
-- [ ] Add typed, sourced society evidence packs with benefits, limitations,
+- [x] Add typed, sourced society evidence packs with benefits, limitations,
   affected groups, historical change, quantitative evidence and competing
   considerations.
 
 ## Package B — learner routes and mastery
 
-- [ ] Implement `/spectrum`, `/hearing`, `/ultrasound`, `/astronomy` and
+- [x] Implement `/spectrum`, `/hearing`, `/ultrasound`, `/astronomy` and
   `/society` with semantic SVG/CSS plus always-present text/table alternatives.
-- [ ] Inventory every as-built control with unique IDs and exercise each control
+- [x] Inventory every as-built control with unique IDs and exercise each control
   in Chromium and WebKit. No autoplay, decorative simulation or dead control.
-- [ ] Provide non-empty evidence capture for each outcome; society export needs a
+- [x] Provide non-empty evidence capture for each outcome; society export needs a
   contention, criterion, sourced evidence, CER, counterclaim, proportional
   conclusion and bibliography.
-- [ ] Expose the five routes in the learning map/nav only when real; keep the
+- [x] Expose the five routes in the learning map/nav only when real; keep the
   deferred cultural route absent and 404.
-- [ ] Expand the typed assessment model for constructed responses with explicit
+- [x] Expand the typed assessment model for constructed responses with explicit
   completeness/concept validation and no empty/malformed false positives.
-- [ ] Build `/mastery` over a schema-validated bank of at least 60 questions,
+- [x] Build `/mastery` over a schema-validated bank of at least 60 questions,
   tagged by outcome/concept/difficulty/representation/misconception, assessing
   only implemented outcomes; at least one third are constructed response.
-- [ ] Mastery provides three progressive hints, retry, keyboard-complete answer
+- [x] Mastery provides three progressive hints, retry, keyboard-complete answer
   paths and records attempts as evidence without claiming secure from one point.
 
 ## Package C — teacher, progress, offline and assets
 
-- [ ] Derive `not attempted`/`developing`/`secure` from evidence: secure requires
+- [x] Derive `not attempted`/`developing`/`secure` from evidence: secure requires
   multiple distinct evidence points. Imports cannot manufacture secure status
   without supporting evidence.
-- [ ] Progress provides anonymous JSON and CSV export, a print view, evidence
+- [x] Progress provides anonymous JSON and CSV export, a print view, evidence
   counts/sources and sanitised versioned import/reset.
-- [ ] Teacher tools provide presentation mode, effective show/hide layers,
+- [x] Teacher tools provide presentation mode, effective show/hide layers,
   student-data-free deep-link presets, an outcome coverage view, misconception
   prompts, suggested questions and printable investigation/report sheets.
-- [ ] Teacher reset-module and reset-all paths are confirmed, scoped and tested;
+- [x] Teacher reset-module and reset-all paths are confirmed, scoped and tested;
   export/import delegates to the same safe progress schema.
-- [ ] Whole production app is available offline after first load; every shipped
+- [x] Whole production app is available offline after first load; every shipped
   route reloads without network in Chromium. WebKit's service-worker exclusion
   remains an explicit expected skip, not a hidden pass.
-- [ ] Test the visible service-worker update prompt (refresh/defer actions) and
+- [x] Test the visible service-worker update prompt (refresh/defer actions) and
   confirm no unexpected external runtime requests.
-- [ ] Complete `ASSET_MANIFEST.md` for PWA icons and every informative/decorative
+- [x] Complete `ASSET_MANIFEST.md` for PWA icons and every informative/decorative
   code-native visual, with provenance, alt decision and review state.
 
 ## Stage gate and evidence
 
-- [ ] Shared axe, console, keyboard, responsive and route matrices include every
+- [x] Shared axe, console, keyboard, responsive and route matrices include every
   new route at 320, 375, 768, 1024 and 1440 px in Chromium and WebKit.
-- [ ] `npm run verify` exits 0 after all earlier-stage regressions.
-- [ ] Production build succeeds and deployable `dist/` is inspected.
-- [ ] Update `COVERAGE.md`, `IMPLEMENTATION_STATUS.md`, `CONTROL_INVENTORY.md`,
+- [x] `npm run verify` exits 0 after all earlier-stage regressions.
+- [x] Production build succeeds and deployable `dist/` is inspected.
+- [x] Update `COVERAGE.md`, `IMPLEMENTATION_STATUS.md`, `CONTROL_INVENTORY.md`,
   `SCIENCE_REVIEW.md`, `TEST_PLAN.md`, `ASSET_MANIFEST.md` and README/status text.
-- [ ] Write `docs/evidence/stage-6-evidence.md` with exact counts, gate mapping,
+- [x] Write `docs/evidence/stage-6-evidence.md` with exact counts, gate mapping,
   divergences, source/deferral statement and known limitations.
 - [ ] Merge `stage-6-wip` to `main` only after the complete gate is green. Do not
   tag or push; those remain human review actions.
