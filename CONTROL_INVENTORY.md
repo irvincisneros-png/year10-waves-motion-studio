@@ -694,18 +694,9 @@ presentation checkbox reuses `global.presentation-mode-toggle`.
 
 ## Summary counts
 
-| Section | Controls listed |
-|---|---|
-| §1 Global/shared (incl. 17 shipped shell-nav links) | 28 |
-| §2 Wave foundations (`wave-lab`) | 25 |
-| §3 EM spectrum (`em-spectrum`) | 13 |
-| §4 Sound laboratory (`sound-lab`) | 22 |
-| §5 Hearing/cultural/ultrasound | 15 (6 deferred, not built) |
-| §6 Light and optics (`optics`) | 16 |
-| §7 Vision and astronomy | 11 |
-| §8 Describing motion (`motion`) | 15 planned rows + as-built ID splits/evidence controls in §8.4 |
-| §9 Forces and Newton's laws (`forces`) | 15 planned rows + as-built ID splits/evidence controls in §9.4 |
-| §10 Waves and motion in society (`society`) | 9 |
-| §11 Mastery challenge (`mastery`) | 6 |
-| §12 Teacher tools (`teacher`) | 15 |
-| **Total** | **190 planned/as-built rows** (184 in active release scope + 6 deferred cultural-sound controls), plus reconciled Stage 5/6 as-built evidence, assessment and teacher controls documented above |
+The earlier planning-row total was retired because reconciled rows can own multiple
+controls and therefore drift from the executable inventory. The source of truth is
+the set of stable, namespaced IDs in this document, read directly by
+`control-inventory.spec.ts`: **358 unique product control/family IDs**, comprising
+**352 active release IDs** and **6 deferred `cultural-sound.*` IDs**. Runtime parity
+also proves the six deferred IDs render zero elements.

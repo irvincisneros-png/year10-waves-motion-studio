@@ -187,10 +187,11 @@ workspace spec and the common route fixtures in `tests/e2e/helpers.ts`.
   completion routes in Chromium and WebKit. Stage 6 uses no Canvas, audio,
   randomness, clinical/patient data or runtime network fetch.
 
-As-built location: `tests/e2e/responsive.spec.ts`, parametrised over the five
-required widths at 800 px height. Native text/select targets are swept on every
-route at 320 px; device-height and physical-tablet sampling remain human audit
-items rather than automated claims.
+As-built locations: `tests/e2e/responsive.spec.ts`, parametrised over the five
+required widths at 800 px height, and `tests/e2e/touch-responsive.spec.ts` for
+touch-enabled 768×1024 portrait and 1024×768 landscape contexts. Native
+text/select targets are swept on every route at 320 px; physical-device sampling
+remains a human audit item rather than an automated claim.
 
 | Test name | Asserts |
 |---|---|
@@ -198,6 +199,7 @@ items rather than automated claims.
 | `responsive.spec.ts › interactive targets meet the 44px minimum at 320px` | Samples shared Progress/Settings buttons at 320 px. |
 | Route-specific 44 px tests at 320 px | Samples representative wave, sound, light, motion and forces buttons/sliders. |
 | `responsive.spec.ts › native text and selection controls meet the 44px minimum on every route` | Sweeps every visible text input, select and textarea across all released routes at 320 px. |
+| `touch-responsive.spec.ts › representative controls respond to touch without horizontal clipping` | In portrait and landscape tablet contexts, taps the ultrasound pulse, Settings and Low graphics controls and verifies their effects with no horizontal page clipping. |
 
 Physical tablet/device-height checks and exhaustive target sampling at widths other than 320 px
 remain human audit items.
@@ -240,6 +242,7 @@ As-built locations: degraded-capability cases in `tests/e2e/waves.spec.ts`,
 | `sound.spec.ts › unsupported and denied audio both fall back to a complete visual-only activity` | Audio construction denial keeps the activity usable and visible. |
 | `sound.spec.ts › resume denial is caught and changes the panel to visual-only without a page error` | Audio resume rejection is handled without an uncaught error. |
 | `stage-six.spec.ts › service-worker registration failure gives a visible online-only fallback` | A deterministic registration-error event produces the online-only notice. |
+| `settings.spec.ts › denied localStorage falls back to a usable memory-only session` | Quota/permission exceptions from every localStorage method surface the visible session-only warning while Settings and Progress remain usable. |
 
 ## 12. Safe and optional audio with equivalent visual information
 
@@ -274,7 +277,7 @@ the shared route fixtures. There is no generated JSON fixture or generator scrip
 
 | Test name | Asserts |
 |---|---|
-| `runtime control-inventory parity › [route] has documented, unique runtime IDs and named controls` | Every rendered `data-control-id` is well formed and documented here; non-repeatable IDs occur at most once on that route; every rendered interactive element has a non-empty computed accessible name; no deferred `cultural-sound.*` control renders |
+| `runtime control-inventory parity › [route] has documented, unique runtime IDs and named controls` | Every rendered `data-control-id` is well formed and documented here; non-repeatable IDs occur at most once on that route; every rendered interactive element has a non-empty computed accessible name; every button/form control belongs to an inventoried ID or semantic ancestor group; no deferred `cultural-sound.*` control renders |
 | `runtime control-inventory parity › the deferred cultural route remains absent` | The attempted cultural-sound URL resolves to the real not-found page and exposes zero deferred control IDs |
 
 This is deliberately a **runtime documentation-parity** check, not an interaction generator.
@@ -300,11 +303,22 @@ separate determinism directory or e2e file.
 
 ## 16. Performance and memory/animation-lifecycle checks
 
-No dedicated automated performance suite is shipped. The release evidence records production
-bundle sizes and browser smoke observations only. Throttled school-device time-to-interaction,
-long-run frame rate, background-tab lifecycle, repeated mount/unmount memory growth, listener
-counts and compressed-transfer budgets remain explicit known limitations and human follow-up
-items; none is counted as an automated pass.
+As-built locations: `tests/e2e/performance.spec.ts` and
+`tests/unit/simLifecycle.test.tsx`. These are deterministic release budgets on the production
+bundle and lifecycle contracts; they do not claim equivalence to physical low-end school
+hardware.
+
+| Test | Asserts |
+|---|---|
+| `performance.spec.ts › full static app compressed payload stays under the release budget` | Every deployable production file's gzip transfer size sums to less than 2 MiB. |
+| `performance.spec.ts › warm-cache useful interaction completes within the school-device budget` | A warm-cache route load and first meaningful control effect complete within 3 seconds. |
+| `performance.spec.ts › animated controls remain responsive in normal and low-graphics modes` | A sampled animation maintains at least 28 fps normally and 20 fps in low-graphics mode. |
+| `performance.spec.ts › repeated route churn stays within the Chromium heap-growth budget` | With forced GC in Chromium, repeated mount/unmount route churn grows the used JS heap by less than 5 MiB; WebKit is an explicit expected skip because it exposes no equivalent protocol metric. |
+| `performance.spec.ts › high-DPR Canvas backing stores are capped` | Canvas backing-store scaling never exceeds device-pixel-ratio 2. |
+| `simLifecycle.test.tsx` | Animation schedules only in active running states, reduced/static/hidden states do not autoplay, 20 repeated mounts balance visibility listeners and animation-frame cancellation, and Canvas disconnects its ResizeObserver. |
+
+Physical-device thermal throttling and installed-PWA multi-hour soak testing remain human
+follow-up items.
 
 ---
 

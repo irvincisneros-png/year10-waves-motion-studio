@@ -26,11 +26,13 @@ const inventorySource = readFileSync(
   'utf8',
 );
 
+const PRODUCT_CONTROL_NAMESPACE = /^(?:global|shell|wave-lab|em-spectrum|sound-lab|hearing|cultural-sound|ultrasound|optics|vision|astronomy|motion|forces|society|mastery|teacher|progress)\./;
+
 /** Stable control IDs are documented as backtick-delimited workspace.control tokens. */
 const DOCUMENTED_CONTROL_IDS = new Set(
-  [...inventorySource.matchAll(/`([a-z][a-z0-9-]*\.[a-z0-9][a-z0-9.-]*)`/g)].map(
-    (match) => match[1],
-  ),
+  [...inventorySource.matchAll(/`([a-z][a-z0-9-]*\.[a-z0-9][a-z0-9.-]*)`/g)]
+    .map((match) => match[1])
+    .filter((id) => PRODUCT_CONTROL_NAMESPACE.test(id)),
 );
 
 /**
