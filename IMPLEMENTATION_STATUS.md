@@ -60,6 +60,13 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 > oxlint 0 errors, TypeScript clean, 202 unit tests, 536 browser tests passed
 > and 2 expected WebKit offline-emulation skips across Chromium + WebKit.
 
+> Stage 7 note (2026-07-20): fresh-context Terra and Luna audits found and then
+> passed the closed runtime/documentation findings. Final builder-run
+> `npm run verify` is green at `e9f0cec`: oxlint 0 errors, TypeScript clean,
+> 202 unit tests, 640 browser tests passed and 2 expected WebKit offline-emulation
+> skips. The deployable `dist/` and review ZIP are ready. Exact evidence and
+> human-only promotion gates are in `docs/evidence/stage-7-evidence.md`.
+
 ## Outcomes
 
 | Code | Status | Notes |
@@ -101,4 +108,4 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 4 — Light and vision module group | built — builder verification green (152 unit, 367 e2e passed / 1 skipped across Chromium+WebKit); evidence in `docs/evidence/stage-4-evidence.md`; awaiting independent review |
 | 5 — Motion and force module group | built — builder verification green (187 unit, 481 e2e passed / 1 expected skip across Chromium+WebKit); evidence in `docs/evidence/stage-5-evidence.md`; awaiting independent review |
 | 6 — Spectrum/hearing/ultrasound/astronomy/society/mastery/teacher/progress/offline | built — builder verification green (202 unit, 536 browser tests passed / 2 expected WebKit offline-emulation skips across Chromium+WebKit); evidence in `docs/evidence/stage-6-evidence.md`; awaiting independent release audit |
-| 7 — Independent release audit | not started |
+| 7 — Independent release audit | technical audit complete; human science/browser/device approval and `v1.0.0` tag pending |
