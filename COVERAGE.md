@@ -46,13 +46,13 @@ Prototype code from the pre-audit build does **not** count as coverage — every
 
 | Code | Route | Teaching content | Interaction / simulation | Representation | Student task | Assessable evidence | Misconception addressed | Model limitation | Stage | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 7.4.1 | `/motion/track` | Distance/time/speed vs displacement/velocity | 1D track, signed direction, readouts | Canvas track + SVG vectors | Compare scalar vs vector quantities | Distance-vs-displacement analysis | "Distance and displacement are the same" | 1D signed convention | 5 | not built |
-| 7.4.2 | `/motion/diagrams` | Motion diagrams | Strobe-dot editor, equal time intervals | SVG dots + optional vectors | Construct/interpret constant v, accel, rest, reversal | Correct motion diagram | "Dots and velocity arrows are the same overlay" | Dots = equal-time positions | 5 | not built |
-| 7.4.3 | `/motion/graphs` | Distance–time line graph & speed | Timed trials, table, graph, slope | SVG graph + data table | Collect trials, plot, read slope | Distance–time graph + slope=speed | "A d–t graph is a picture of the path" | Straight-line = constant speed | 5 | not built |
-| 7.4.4 | `/forces/cart` | Force, mass, acceleration relationships | Low-friction cart, sensors, graphs | Canvas + SVG graphs + table | Test a∝F and a∝1/m | Fair-test investigation with graphs | "Heavier always accelerates more" | Deterministic ideal; optional seeded noise | 5 | not built |
-| 7.4.5 | `/forces/applications` | Newton's laws applications | Short case scenarios | SVG free-body + animation | Explain seatbelt, walking, propulsion cases | Newton's-law explanations | "Constant velocity needs a net force"; "3rd-law pairs cancel" | Idealised friction/air | 5 | not built |
-| 7.4.6 | `/forces/vectors` | Net force in 1D (vector analysis) | Force-arrow builder on one object | SVG vectors + net-force readout | Add forces, compute net force | Correct net-force determination | "Forces on different objects cancel on one FBD" | 1D only; forces on one object | 5 | not built |
-| 7.4.7 | `/forces/calculations` | F=ma, v_av=Δs/Δt, a=Δv/Δt (quantitative) | Calculation workspace + graphs | MathML + graphs + table | Solve quantitative problems, interpret graphs | Correct multi-step calculations | Unit/dimension errors accepted as correct | Ideal-run values | 5 | not built |
+| 7.4.1 | `/motion/track`, `/motion/graphs` | Distance/time/speed vs position/displacement/velocity; instantaneous vs average | Exact discrete 1D commands; movable origin; selectable sign; timed trials | CSS track + static signed readouts + semantic tables | Complete a return-trip comparison and motion investigation | Saved track comparison + full graph investigation + Check/CER evidence | "Distance and displacement are the same" | −20…+20 m deterministic teaching track; 1D only | 5 | verified (builder) |
+| 7.4.2 | `/motion/diagrams` | Equal-time motion diagrams | Numeric strobe editor, four intervals, vector overlays, five pattern checks | CSS/SVG-like dot track + editable semantic table | Construct/interpret constant velocity, acceleration, deceleration, reversal and rest | Saved checked diagram + explanation + Check evidence | Negative acceleration always means slowing; dots are velocity arrows | 2–8 dots; stated tolerance fixtures | 5 | verified (builder) |
+| 7.4.3 | `/motion/graphs` | Distance–time/displacement–time line graphs and slope | Controlled timed trials, graph type, two-point slope, piecewise story | SVG graph + always-present data table | Record ≥3 trials, calculate slope, interpret and export | Full aim/hypothesis/table/graph/comparison/conclusion/limitation evidence | "A motion graph is a literal hill/path" | Exact constant-speed trials; real timing uncertainty discussed | 5 | verified (builder) |
+| 7.4.4 | `/forces/cart` | Force, mass, acceleration relationships | Separate force and mass sweeps; friction; ideal/seeded measurement modes | SVG graphs + units-bearing semantic table/readouts | Test a∝Fnet and a∝1/m with controlled variables/repeats | Saved two-series fair test + CSV/JSON/print + Check/CER | "Greater mass gives greater/same acceleration under the same force" | 1D point-cart; 0.5 N friction teaching fixture | 5 | verified (builder) |
+| 7.4.5 | `/forces/applications` | Newton's laws applications | Six named action/outcome cases with force-pair reveal | Text outcome and explicit different-object pair display | Explain seatbelt, carts, walking, balloon, collision or spacecraft | Saved case explanation + Check evidence | Constant velocity needs net force; third-law pairs cancel | Qualitative cases; only walking has authorised 400 N fixture | 5 | verified (builder) |
+| 7.4.6 | `/forces/vectors` | Net force in 1D vector analysis | Context-gated, max-six force builder; physical direction separate from coordinate sign | CSS arrows + signed semantic force table/readout | Build one-object FBD, flip convention, determine signed net | Saved vector configuration/explanation + Check evidence | Forces on different objects cancel on one FBD | 1D, one selected object, 3-s.f. display | 5 | verified (builder) |
+| 7.4.7 | `/forces/calculations`, `/forces/cart`, `/motion/graphs` | F=ma, v_av=Δs/Δt, a=Δv/Δt and graph interpretation | Nine guarded rearrangements; ideal sensor verification; unit-aware Check | Formula text, SVG graphs, units-bearing tables | Solve/rearrange, verify Fnet=ma and Δv/Δt, interpret sign/units | Saved calculation + cart verification + Check/CER evidence | Unit/dimension errors accepted; negative acceleration always slowing | SI teaching model; zero/nonphysical divisors rejected | 5 | verified (builder) |
 
 ## 7.5 Waves and motion in context — Stage 6
 
@@ -67,11 +67,12 @@ Prototype code from the pre-audit build does **not** count as coverage — every
   Until then it is absent from release navigation (not an "under construction" tease).
   This is the honest fallback; cultural content is never generated.
 
-## Builder-verified classroom release (Stages 0–4)
+## Builder-verified classroom release (Stages 0–5)
 
 Included and navigable: shell + learning map, wave-foundations workspace (7.1.1–7.1.6),
 v=fλ calculator + conversions, linked graphs, and the complete sound workspace for
 compression, pitch/loudness and Doppler effect (7.2.1–7.2.3), plus vision and
-light properties/applications (7.3.1–7.3.3), with Check, Explain, Connect and
-progress/evidence capture. Stages 3–4 are awaiting independent gate review;
-astronomy and everything marked Stage 5+ remain absent/hidden until built.
+light properties/applications (7.3.1–7.3.3), plus the complete motion and forces
+groups (7.4.1–7.4.7), with Check, Explain, Connect and progress/evidence capture.
+Stages 3–5 are awaiting independent gate review; Stage 6 astronomy, spectrum,
+mastery, society and deferred modules remain absent/hidden until built.

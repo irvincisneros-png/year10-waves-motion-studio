@@ -625,6 +625,30 @@ NIST Atomic Spectra Database on the review date before release.
   denotes displacement (signed) or distance in the chosen convention, and also shows
   `average speed = total distance / total time` when distance is used (app plan §10.3).
 
+### 15.3 Stage 5 teaching-model fixtures (as built)
+
+These values make the deterministic classroom model readable; they are not empirical
+constants.
+
+- The physical track is `−20 m … +20 m`. The coordinate origin can be placed from
+  `−10 m … +10 m` and defaults to `0 m`; physical right is the internal axis and
+  the student-selected positive direction derives displayed signs.
+- **Position** is relative to the selected coordinate origin. **Displacement** is
+  relative to the run start. They are deliberately not aliases.
+- Move/step commands advance the exact constant-velocity model by `1.0 s`. The
+  default move speed is `2.0 m/s`; speed controls are limited to `0 … 10 m/s`.
+  Pause, turn, speed-up and slow-down alter state without advancing time. There is
+  no frame-rate integration or autoplay, so keyboard stepping is the canonical
+  model and is also the reduced-motion equivalent.
+- Motion diagrams allow `2 … 8` equal-time positions at `0.1`, `0.2`, `0.5` or
+  `1.0 s` intervals (default `0.2 s`). Changing interval relabels existing dots
+  without moving them. Pattern checks use `0.1 m` rest/constant-gap absolute
+  tolerance, `15%` relative constant-gap tolerance, and `0.05 m` monotonic-gap
+  separation for acceleration/deceleration.
+- The graph investigation records exact timed distance trials with speed
+  `0.5 … 5.0 m/s` and duration `1 … 10 s`. SVG plots always have a semantic table
+  equivalent; slope uses two distinct stored points.
+
 ---
 
 ## 16. (reserved — see §15 for sign conventions)
@@ -662,6 +686,26 @@ Sign conventions are consolidated in §15; this section intentionally references
 - The cart investigation tests a ∝ F_net at fixed m, and a ∝ 1/m at fixed F_net, with
   controlled variables, repeat trials, tables, and graphs (§18, invariants §20).
 
+### 17.4 Stage 5 force/cart/application fixtures (as built)
+
+- Force diagrams contain one named object and at most six forces. Magnitude is
+  structurally non-negative (`0 … 50 N` in the builder); physical left/right is
+  stored separately from the selected coordinate sign. Normal is available only
+  in the supported context; weight only in supported/vertical contexts.
+- Cart applied force is `0 … 20 N` (default `2.0 N`) and mass is `0.1 … 10 kg`
+  (default `1.0 kg`). Ideal frictionless/no-noise mode is the reset state.
+- The optional friction fixture is a constant maximum `0.5 N` opposing the applied
+  force. From rest it is capped at the applied force, so it can reduce net force to
+  zero but never spontaneously propel the cart backwards. This is not a measured
+  coefficient or a static/kinetic friction model.
+- Each ideal sensor log contains velocity samples at `0, 1, 2, 3, 4 s`, calculated
+  from exact acceleration. The two controlled series are acceleration against net
+  force at fixed mass and acceleration against inverse mass at fixed force.
+- The six Newton cases are seatbelt, pushing carts, walking, balloon, collision and
+  spacecraft. Only walking carries an authorised numeric fixture: the foot–Earth
+  interaction pair is `400 N` equal/opposite on different objects. Every other case
+  is qualitative/modelled and displays no fabricated magnitude.
+
 ---
 
 ## 18. Deterministic mode and seeded measurement-noise mode
@@ -676,6 +720,10 @@ Sign conventions are consolidated in §15; this section intentionally references
 - Noise is applied only to the **measurement layer**, never to the underlying
   scientific state; turning noise off restores exact ideal values. Random motion is
   **never** used as a substitute for a scientific model.
+- Stage 5 cart noise uses default seed `4471` and a uniform deterministic offset of
+  `±max(0.02 m/s², 3% of the ideal acceleration magnitude)`. The visible seed and
+  repeat index reproduce the sequence bit-for-bit. Ideal acceleration and the
+  velocity–time state are identical with noise on or off.
 
 ---
 
@@ -701,8 +749,9 @@ teaching-sensible, not the full physical extent.
 | Motion | velocity | signed, module-dependent (e.g. −10 … +10 m/s) | 1D signed |
 | Motion | acceleration | signed, module-dependent | 1D signed |
 | Motion | time | 0 – trial duration (s) | |
-| Forces | mass m | > 0 (e.g. 0.1 – 10 kg cart range) | mass must be strictly positive |
-| Forces | force F | signed, module-dependent (e.g. −50 … +50 N) | 1D signed |
+| Forces | cart mass m | 0.1 – 10 kg | default 1.0 kg; mass must be strictly positive |
+| Forces | cart applied force | 0 – 20 N | default 2.0 N; net force is derived after friction |
+| Forces | force-builder magnitude | 0 – 50 N plus separate direction | maximum six forces; 1D signed display |
 
 Angles are always 0–90° measured from the normal (optics) or as track directions
 (motion). Mass is strictly positive; a zero or negative mass is rejected (F=ma

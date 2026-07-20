@@ -493,6 +493,32 @@ Covers app-plan §10.1–10.3.
 
 ---
 
+### 8.4 Stage 5 as-built additions and ID splits
+
+The shipped implementation splits the two planned grouped controls into unique,
+testable controls and adds the investigation/assessment/evidence controls required by
+the shared learning rhythm. All native inputs/buttons use standard Tab, arrow-key,
+Enter/Space and text-editing behaviour. Reset that would discard a non-empty log asks
+for confirmation; simple empty-state reset is immediate.
+
+| As-built IDs | Default / constraint | Evidence and browser coverage |
+|---|---|---|
+| `motion.origin-position-slider`; `motion.positive-direction-right-radio`; `motion.positive-direction-left-radio` | origin `0 m` in `−10…+10 m`; positive right | sign-convention/return-trip flow in `motion-forces.spec.ts` |
+| `motion.walker-move-positive-button`; `motion.walker-move-negative-button`; `motion.walker-pause-button`; `motion.walker-turn-button`; `motion.walker-speed-up-button`; `motion.walker-slow-down-button` | stationary at physical `0 m`; moves/steps are exact `1.0 s`; speed cap `10 m/s` | keyboard/reduced-motion exact-step test; text log fallback |
+| `motion.average-instantaneous-comparison-input`; `motion.save-track-evidence-button` | empty; requires two samples + comparison | saves 7.4.1 evidence; names missing requirements |
+| `motion.strobe-add-dot-button`; `motion.strobe-remove-dot-button`; `motion.diagram-check-button`; `motion.diagram-explanation-input`; `motion.save-diagram-evidence-button` | six preset dots; `2…8` allowed | interval-stability, reversal feedback and 7.4.2 evidence test |
+| `motion.trial-speed-slider`; `motion.trial-duration-slider`; `motion.trial-delete-button` | `2.0 m/s`; `1 s`; empty table | semantic units-bearing table; three-trial graph/export flow |
+| `motion.piecewise-story-submit-button` | no answer | literal-hill answer always fails with specific feedback |
+| `motion.investigation-aim-input`; `motion.investigation-hypothesis-input`; `motion.investigation-interpretation-input`; `motion.investigation-comparison-input`; `motion.investigation-conclusion-input`; `motion.investigation-limitation-input` | empty | each field required by name before 7.4.1/7.4.3 promotion |
+| `motion.export-csv-button`; `motion.export-json-button`; `motion.print-button`; `motion.save-investigation-button` | exports disabled until a trial; print available | CSV/JSON download test; complete investigation evidence |
+| `motion.check-question`; `motion.check-submit-button`; `motion.check-next-button`; `motion.check-hint-button`; `motion.check-restart-button` | first of six questions; 0 hints | outcomes 7.4.1–7.4.3; three hints; invalid input unscored |
+| `motion.cer-editor`; `motion.cer-0-input`…`motion.cer-3-input`; `motion.cer-save-button` | all empty | identifies the specific missing CER/limitation field |
+
+Static readouts `motion.distance-displacement-display`,
+`motion.speed-velocity-display` and `motion.trial-data-table` are semantic output, not
+activation targets; the inventory-wide “keyboard exercise” rule explicitly exempts
+static readouts while still requiring visible text and table equivalents.
+
 ## 9. Forces and Newton's laws (`forces`) — Stage S5
 
 Covers app-plan §11.1–11.3.
@@ -528,6 +554,26 @@ Covers app-plan §11.1–11.3.
 | `forces.newton-case-feedback-reveal-button` | Push button | Reveals the explanation correcting the case's target misconception after the student attempts the interaction | "Show explanation" | Tab-reachable; `Enter`/`Space` activates | N/A | Collapses again on case change | N/A | N/A | `e2e/forces.spec.ts › feedback reveal shows the specific misconception correction for the active case` |
 
 ---
+
+### 9.4 Stage 5 as-built additions and ID splits
+
+| As-built IDs | Default / constraint | Evidence and browser coverage |
+|---|---|---|
+| `forces.context-select`; `forces.delete-force-button` | horizontal context; no forces | weight/normal options are context-gated; maximum six forces |
+| `forces.cart-sweep-select`; `forces.noise-seed-input`; `forces.cart-delete-trial-button` | force sweep; seed `4471`; empty table | two independent controlled series; fixed-seed reload reproduction |
+| `forces.cart-hypothesis-input`; `forces.cart-interpretation-input`; `forces.cart-verification-input`; `forces.cart-uncertainty-input`; `forces.cart-conclusion-input`; `forces.cart-limitation-input` | empty | each required by name; noisy mode additionally requires an identical repeat |
+| `forces.export-csv-button`; `forces.export-json-button`; `forces.print-button`; `forces.save-investigation-button` | exports disabled until a trial | schema-wrapped JSON and units-bearing CSV; 7.4.4/7.4.7 evidence |
+| `forces.newton-seatbelt-action-button`; `forces.newton-carts-action-button`; `forces.newton-walking-action-button`; `forces.newton-balloon-action-button`; `forces.newton-collision-action-button`; `forces.newton-spacecraft-action-button` | selected case reset state | each action has text outcome; walking alone shows the `400 N` pair |
+| `forces.application-explanation-input`; `forces.save-application-evidence-button` | empty | requires interaction + explanation for 7.4.5 |
+| `forces.calculation-mode-select`; `forces.calculation-input-1`; `forces.calculation-input-2`; `forces.calculate-button`; `forces.calculation-interpretation-input`; `forces.save-calculation-evidence-button` | solve `a=F/m`; blank inputs | all nine rearrangements; zero/nonphysical denominators rejected; unit-labelled 7.4.7 evidence |
+| `forces.check-question`; `forces.check-submit-button`; `forces.check-next-button`; `forces.check-hint-button`; `forces.check-restart-button` | first of eight questions; 0 hints | outcomes 7.4.4–7.4.7; three hints; wrong-unit false positives |
+| `forces.cer-editor`; `forces.cer-0-input`…`forces.cer-3-input`; `forces.cer-save-button` | all empty | names the missing CER/limitation field before save |
+
+`forces.net-force-display` and `forces.newton-third-law-pair-display` are static
+text readouts and share the explicit static-readout keyboard exemption above. SVG
+and decorative track/force scenes never carry unique meaning: their semantic tables
+and text outcomes are always present. No Stage 5 route uses Canvas or autoplay, so
+Canvas denial and reduced-motion both retain the complete activity.
 
 ## 10. Waves and motion in society (`society`) — Stage S6
 
@@ -598,9 +644,9 @@ Cross-cutting per the shared spec's "Shared teacher experience". References `glo
 | §5 Hearing/cultural/ultrasound | 15 (6 deferred, not built) |
 | §6 Light and optics (`optics`) | 16 |
 | §7 Vision and astronomy | 11 |
-| §8 Describing motion (`motion`) | 14 |
-| §9 Forces and Newton's laws (`forces`) | 15 |
+| §8 Describing motion (`motion`) | 15 planned rows + as-built ID splits/evidence controls in §8.4 |
+| §9 Forces and Newton's laws (`forces`) | 15 planned rows + as-built ID splits/evidence controls in §9.4 |
 | §10 Waves and motion in society (`society`) | 9 |
 | §11 Mastery challenge (`mastery`) | 5 |
 | §12 Teacher tools (`teacher`) | 15 |
-| **Total** | **180** (174 in active release scope + 6 deferred cultural-sound controls not built) |
+| **Total** | **181 planned rows** (175 in active release scope + 6 deferred cultural-sound controls), plus the uniquely identified Stage 5 as-built evidence/assessment controls in §§8.4–9.4 |

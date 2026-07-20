@@ -40,6 +40,14 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 > is in `docs/evidence/stage-4-evidence.md`. `verified (builder)` awaits
 > independent review before it may become plain `verified`.
 
+> Stage 5 note (2026-07-20): the motion and forces workspaces (`/motion` and
+> `/forces`, each with seven-phase activity routes) are built from tested pure
+> kinematics, force and equation engines. Builder-run `npm run verify` is green:
+> oxlint 0 errors, TypeScript clean, 187 unit tests, 481 e2e passed / 1 expected
+> skip across Chromium + WebKit. Exact gate evidence is in
+> `docs/evidence/stage-5-evidence.md`. `verified (builder)` awaits independent
+> review before it may become plain `verified`.
+
 ## Outcomes
 
 | Code | Status | Notes |
@@ -61,13 +69,13 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 7.3.2 | verified (builder) | `/light/properties` reflection equality, Snell refraction/TIR, fixed boundary frequency, normalised T/R/A ledger, qualitative scattering; full controlled investigation/graph/export/print/evidence |
 | 7.3.3 | verified (builder) | `/light/applications` mirror, qualitative lens, optical-fibre and conditional surface/application reasoning with required justification and limitation evidence |
 | 7.3.4 | not built | Multiwavelength astronomy |
-| 7.4.1 | prototype — not verified | KinematicsLab.tsx exists; unaudited |
-| 7.4.2 | not built | Motion diagrams |
-| 7.4.3 | prototype — not verified | |
-| 7.4.4 | not built | Cart investigation (F–m–a) |
-| 7.4.5 | prototype — not verified | NewtonsLawsLab.tsx exists; unaudited |
-| 7.4.6 | not built | 1D force-vector builder |
-| 7.4.7 | not built | Calculations and graphs |
+| 7.4.1 | verified (builder) | `/motion/track` signed 1D position, distance, displacement, speed and average velocity with changeable origin, exact step history and reversal handling |
+| 7.4.2 | verified (builder) | `/motion/diagrams` 2–8-dot motion diagrams with independently changeable interval, spacing-pattern validation and reversal-specific feedback |
+| 7.4.3 | verified (builder) | `/motion/graphs` position–time and velocity–time representations, exact slope/area readouts, controlled investigation, graph/table/export and graph-as-path misconception check |
+| 7.4.4 | verified (builder) | `/forces/cart` F–m–a cart investigation with applied force, mass, capped 0.5 N friction, deterministic measurement noise, two fair-test sweeps, tables/graphs/export/evidence |
+| 7.4.5 | verified (builder) | `/forces/applications` six contextual Newton-law cases; third-law pairs name distinct objects and only the reviewed walking fixture uses a numeric force |
+| 7.4.6 | verified (builder) | `/forces/vectors` up-to-six-force 1D vector builder with exact signed sum, coordinate-sign convention and accessible force table |
+| 7.4.7 | verified (builder) | `/forces/calculations` unit-aware F=ma rearrangements plus motion average/slope/area calculations with zero-division and invalid-mass guards |
 | 7.5.1 | not built | Society argument studio |
 
 ## Stages
@@ -79,6 +87,6 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 2 — Wave laboratory vertical slice | verified — tagged `stage-2` (108 unit, 217 e2e passed / 1 skipped across Chromium+WebKit at its gate) |
 | 3 — Sound module group | built — builder verification green (138 unit, 295 e2e passed / 1 skipped across Chromium+WebKit); evidence in `docs/evidence/stage-3-evidence.md`; awaiting independent review |
 | 4 — Light and vision module group | built — builder verification green (152 unit, 367 e2e passed / 1 skipped across Chromium+WebKit); evidence in `docs/evidence/stage-4-evidence.md`; awaiting independent review |
-| 5 — Motion and force module group | not started |
+| 5 — Motion and force module group | built — builder verification green (187 unit, 481 e2e passed / 1 expected skip across Chromium+WebKit); evidence in `docs/evidence/stage-5-evidence.md`; awaiting independent review |
 | 6 — Astronomy/mastery/teacher/progress/offline | not started |
 | 7 — Independent release audit | not started |

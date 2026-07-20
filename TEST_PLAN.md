@@ -22,6 +22,21 @@ No test category is satisfied by agent narration. Every category below closes on
 named tests exist, run under `npm run verify`, and their pass/fail output is captured in the
 stage evidence pack, per the shared spec's "Stage evidence pack" and "Trust but verify" rules.
 
+### Stage 5 as-built test mapping
+
+- Pure engines: `src/science/motion.ts`, `src/science/forces.ts`; invariant and
+  determinism coverage: `tests/unit/invariants/motion-forces.test.ts`.
+- Equation rearrangements and division guards:
+  `tests/unit/equations/motion-forces-equations.test.ts`; dimensional schema:
+  `tests/unit/units.test.ts`.
+- Assessment metadata, six misconception regressions, malformed/empty/wrong-unit
+  false positives: `tests/unit/validation/assessment.test.ts`.
+- Route refresh, controls, evidence, export, reduced-motion, seeded-noise and
+  fallback paths: `tests/e2e/motion-forces.spec.ts`.
+- Every Stage 5 route is included in `a11y.spec.ts`, `console.spec.ts` and the
+  `320/375/768/1024/1440` responsive matrix. The invariant suite uses 64 fixed-seed
+  generated cases per critical motion/force relationship (minimum contract: 50).
+
 ## Per-stage vs release-audit cadence
 
 | Category | Runs every relevant stage (regression) | Also re-run at Stage 7 release audit |
