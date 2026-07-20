@@ -1,10 +1,79 @@
-import { Link } from 'react-router-dom';
-import { Page } from '../../components/Page';
+import { Link } from "react-router-dom";
+import { Page } from "../../components/Page";
 
 export function MotionConnectPage() {
-  return <Page title="Motion beyond the track" lead="The same signed quantities and graph slopes support transport, sport, robotics and practical data logging."><section className="card stack"><h2>Route planning</h2><p>A delivery route can have a large distance but small displacement. Fuel and total travel time relate to path length and average speed; navigation additionally needs signed displacement and direction.</p></section><section className="card stack"><h2>Motion sensors</h2><p>A sensor samples position at equal times. Dot gaps and graph slopes turn those samples into velocity and acceleration evidence. Sampling interval changes the resolution, not the positions already measured.</p><p>Build a case in the <Link to="/motion/diagrams">diagram studio</Link> and test its slope in the <Link to="/motion/graphs">investigation</Link>.</p></section><section className="card stack"><h2>Complete the cycle</h2><p>Try the <Link to="/motion/check">motion check</Link>, save an <Link to="/motion/explain">evidence explanation</Link>, then review local progress.</p></section></Page>;
+  return (
+    <Page
+      title="Motion beyond the track"
+      lead="The same signed quantities and graph slopes support transport, sport, robotics and practical data logging."
+    >
+      <section className="card stack">
+        <h2>Route planning</h2>
+        <p>
+          A delivery route can have a large distance but small displacement.
+          Fuel and total travel time relate to path length and average speed;
+          navigation additionally needs signed displacement and direction.
+        </p>
+      </section>
+      <section className="card stack">
+        <h2>Motion sensors</h2>
+        <p>
+          A sensor samples position at equal times. Dot gaps and graph slopes
+          turn those samples into velocity and acceleration evidence. Sampling
+          interval changes the resolution, not the positions already measured.
+        </p>
+        <p>
+          Build a case in the <Link to="/motion/diagrams">diagram studio</Link>{" "}
+          and test its slope in the{" "}
+          <Link to="/motion/graphs">investigation</Link>.
+        </p>
+      </section>
+      <section className="card stack">
+        <h2>Complete the cycle</h2>
+        <p>
+          Try the <Link to="/motion/check">motion check</Link>, save an{" "}
+          <Link to="/motion/explain">evidence explanation</Link>, then review
+          local progress.
+        </p>
+      </section>
+    </Page>
+  );
 }
 
 export function ForcesConnectPage() {
-  return <Page title="Forces beyond the cart" lead="One-object diagrams and controlled comparisons connect classroom carts to safety systems, walking, rockets and engineering tests."><section className="card stack"><h2>Safety engineering</h2><p>Seatbelts, airbags and crumple zones change how velocity changes over time. The full engineering problem includes deformation and human tolerance, beyond this point-particle model.</p></section><section className="card stack"><h2>Walking and spacecraft</h2><p>Walking depends on the foot–Earth interaction pair. A spacecraft can accelerate without air because expelled gas and spacecraft exert forces on different objects.</p><p>Compare all six <Link to="/forces/applications">Newton cases</Link> and check each selected object.</p></section><section className="card stack"><h2>Complete the cycle</h2><p>Try the <Link to="/forces/check">forces check</Link>, save an <Link to="/forces/explain">evidence explanation</Link>, and revisit your <Link to="/forces/cart">cart investigation</Link>.</p></section></Page>;
+  return (
+    <Page
+      title="Forces beyond the cart"
+      lead="One-object diagrams and controlled comparisons connect classroom carts to safety systems, walking, rockets and engineering tests."
+    >
+      <section className="card stack">
+        <h2>Safety engineering</h2>
+        <p>
+          Seatbelts, airbags and crumple zones change how velocity changes over
+          time. The full engineering problem includes deformation and human
+          tolerance, beyond this point-particle model.
+        </p>
+      </section>
+      <section className="card stack">
+        <h2>Walking and spacecraft</h2>
+        <p>
+          Walking depends on the foot–Earth interaction pair. A spacecraft can
+          accelerate without air because expelled gas and spacecraft exert
+          forces on different objects.
+        </p>
+        <p>
+          Compare all six <Link to="/forces/applications">Newton cases</Link>{" "}
+          and check each selected object.
+        </p>
+      </section>
+      <section className="card stack">
+        <h2>Complete the cycle</h2>
+        <p>
+          Try the <Link to="/forces/check">forces check</Link>, save an{" "}
+          <Link to="/forces/explain">evidence explanation</Link>, and revisit
+          your <Link to="/forces/cart">cart investigation</Link>.
+        </p>
+      </section>
+    </Page>
+  );
 }
