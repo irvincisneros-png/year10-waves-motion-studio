@@ -155,8 +155,7 @@ the full Orient→Connect rhythm for that workspace's primary activity.
 | `keyboard.spec.ts › em-spectrum: full keyboard walkthrough` | Every `em-spectrum.*` control operable by keyboard; region jump, dataset comparison, and citation submission complete without a mouse |
 | `keyboard.spec.ts › sound-lab: full keyboard walkthrough including enable-sound gate` | `global.enable-sound-button` and `sound-lab.headphone-warning-ack` are reachable and activatable by keyboard before any audio-bearing control becomes operable; Doppler preset cycling works via keyboard |
 | `keyboard.spec.ts › hearing/ultrasound: full keyboard walkthrough` | All 8 `hearing.anatomy-part-buttons` reachable in pathway order; ultrasound pulse/probe controls operable without a mouse |
-| `keyboard.spec.ts › optics: full keyboard walkthrough` | Draggable source/mirror/protractor controls in `optics.*` are each operable via their documented keyboard-stepping pattern, not only by drag |
-| `keyboard.spec.ts › vision/astronomy: full keyboard walkthrough` | Eye and starlight controls operable by keyboard; spectral-line inspector cursor moves via arrow keys |
+| `optics.spec.ts` + `vision.spec.ts › Stage 4 keyboard paths` | Native ray/source/angle/particle/brightness/distance/accommodation ranges accept arrow and `Home`/`End` keys; check, evidence, disclosure, select and radio controls retain native keyboard semantics. Astronomy remains Stage 6 and is absent/404. |
 | `keyboard.spec.ts › motion: full keyboard walkthrough including strobe-dot editor` | `motion.strobe-dot-editor` placement/removal fully keyboard-driven; graph slope tool selects two points via keyboard |
 | `keyboard.spec.ts › forces: full keyboard walkthrough` | Force add/remove/direction/type controls and the F-m-a trial run are keyboard-operable end to end |
 | `keyboard.spec.ts › society: full keyboard walkthrough` | Case-study tablist, evidence table, and CER editor are keyboard-navigable and submittable |
@@ -177,6 +176,28 @@ Location: `tests/e2e/routing/*.spec.ts`.
 | `routing.spec.ts › browser back/forward preserves scroll and focus sensibly` | Using browser back after opening a disclosure panel returns to the prior route without a focus trap or lost skip-link target |
 
 ## 8. Responsive tests at exactly 320, 375, 768, 1024, 1440 px
+
+## Stage 4 as-built gate additions (2026-07-20)
+
+- Pure invariants live in `tests/unit/invariants/optics.test.ts`: reflection equality;
+  Snell agreement; boundary-frequency constancy; TIR with no refracted ray; every
+  normalised T/R/A fixture totals 1; scattering thresholds; qualitative mirror/lens
+  outputs; relative pupil monotonicity and focus behaviour. The UI clamps angle input
+  to 0–89°; direct engine calls at 90° throw an explicit `RangeError` and never produce
+  `NaN`.
+- `tests/e2e/optics.spec.ts` covers seven Stage 4 cold/refresh routes, the seven-phase
+  path, hidden Stage 6 astronomy, every ray/refraction/energy/application control,
+  graph-worthy controlled trials, CSV/JSON, print, reset confirmation, invalid checks,
+  progressive hints, and CER validation.
+- `tests/e2e/vision.spec.ts` covers brightness extremes, distance/image-size response,
+  accommodation/focus text, the non-diagnostic problem extension, complete labelled
+  eye/neural pathway, blind-spot text fallback, evidence validation and reset.
+- Shared axe, console and 320/375/768/1024/1440 responsive matrices include every
+  Stage 4 route in Chromium and WebKit. Static manifest readouts are state-tested and
+  text-complete; they are not interactive controls and are exempt from focus/activation.
+- No Stage 4 activity uses Canvas, animation, audio, network access or random state.
+  SVG diagrams always have adjacent state readouts/explanations, so reduced-motion,
+  Canvas denial and audio denial do not reduce the learning task.
 
 Location: `tests/e2e/responsive/*.spec.ts`, parametrised over the five widths (heights fixed at
 a representative 800px, then re-run once at each width's common device height).

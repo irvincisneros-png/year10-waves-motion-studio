@@ -1,7 +1,7 @@
 /**
  * Learning-map data for the home page.
  *
- * The 11 planned workspaces of WaveMotion Studio, grouped by strand and
+ * The planned workspaces of WaveMotion Studio, grouped by strand and
  * labelled with the syllabus outcomes each will cover. A workspace is marked
  * `available` (with a real `route`) only once it has passed its builder gate;
  * everything else is `in-development` and rendered as a NON-interactive panel
@@ -102,14 +102,22 @@ export const learningMap: StrandGroup[] = [
         summary:
           'Absorption, reflection, refraction and scattering, and their everyday applications.',
         outcomeCodes: ['7.3.2', '7.3.3'],
-        status: 'in-development',
+        status: 'available',
+        route: '/light',
       },
       {
         id: 'vision',
-        name: 'Vision & astronomy',
-        summary:
-          'How the eye responds to light, and how the electromagnetic spectrum is used to learn about stars.',
-        outcomeCodes: ['7.3.1', '7.3.4'],
+        name: 'Vision',
+        summary: 'How the eye responds to light: pupil, accommodation, retinal image and neural interpretation.',
+        outcomeCodes: ['7.3.1'],
+        status: 'available',
+        route: '/vision',
+      },
+      {
+        id: 'astronomy',
+        name: 'Reading starlight',
+        summary: 'How the electromagnetic spectrum is used to learn about stars.',
+        outcomeCodes: ['7.3.4'],
         status: 'in-development',
       },
     ],

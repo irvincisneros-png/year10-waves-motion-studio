@@ -420,6 +420,31 @@ unless noted. Stored exactly; displayed to 3 sig figs.
 Note: dispersion (n varying with wavelength) is not taught; a single index per
 medium is used at Year 10, labelled as an approximation at ~589 nm.
 
+### 9.6 Stage 4 surface-response teaching fixtures
+
+The absorption/scattering investigation uses a **normalised teaching ledger**, not
+measured spectrophotometer data. Only the conservation relationship
+`transmitted + reflected + absorbed = 1` is a physical invariant. The response
+fractions below are deliberately separated from curated constants: they are
+modelled fixtures chosen to make controlled comparisons visible, are labelled
+“model” everywhere in-app, and must never be quoted as a property of real glass,
+paint, skin, sunscreen, or a named product.
+
+| Surface model | Illuminant model | Transmitted | Reflected | Absorbed |
+|---|---:|---:|---:|---:|
+| Clear glass | Daylight | 0.90 | 0.08 | 0.02 |
+| Smoked glass | Daylight | 0.10 | 0.08 | 0.82 |
+| White matte | Daylight | 0.02 | 0.78 | 0.20 |
+| Black matte | Daylight | 0.01 | 0.06 | 0.93 |
+| UV-screen | Daylight | 0.62 | 0.12 | 0.26 |
+
+Warm-LED and UV-rich variants remain modelled comparisons defined in
+`src/science/optics.ts`; every row is unit-tested to sum to 1. Their purpose is
+to show that the result depends on both surface and illuminant. Heating rate is
+**not** computed: convection, heat capacity, geometry, exposure and surroundings
+are outside this model. “D65” is not claimed because the app does not implement a
+calibrated colour-matching or spectral-power-distribution calculation.
+
 ---
 
 ## 10. Optical energy and ray/wave model limits
@@ -538,6 +563,15 @@ mirror/lens equation (offered only as an extension if at all).
   plan §9.1); it presents image formation (optics) and interpretation (neural)
   as two linked but distinct stages.
 - Focusing problems are optional extension, **not medical advice**.
+- Stage 4 uses only **relative teaching outputs** for pupil opening, accommodation,
+  retinal-image size and focus error. It does not display a pupil diameter in
+  millimetres or claim an individual physiological response. Brightness 0–100%
+  maps monotonically to a relative pupil opening of 100–25%; this is a visible
+  teaching interpolation, not a biometric equation. Accommodation demand is a
+  normalised inverse-distance model over the supported 10 cm–10 m range. A
+  ±5 percentage-point focus band is a UI classification threshold, not a clinical
+  tolerance. These equations are stored in `src/science/vision.ts` and labelled
+  “relative model” in-app.
 
 ### 14.2 Stellar-spectrum boundary
 - A virtual **multiwavelength observatory** with curated datasets. Continuous spectra

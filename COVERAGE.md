@@ -37,9 +37,9 @@ Prototype code from the pre-audit build does **not** count as coverage — every
 
 | Code | Route | Teaching content | Interaction / simulation | Representation | Student task | Assessable evidence | Misconception addressed | Model limitation | Stage | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 7.3.1 | `/vision` | Eye responds to light | Object distance/brightness, pupil, accommodation, retinal image | Precise SVG eye + ray model | Adjust conditions, observe pupil/focus/image | Optical vs neural separation explanation | "The brain just flips the image" | Optical formation only; not medical | 4 | not built |
-| 7.3.2 | `/light/properties` | Absorption, reflection, refraction, scattering | Draggable ray bench, media, protractor | Precise SVG rays + angle readout | Measure angles; observe bending & scattering | Law of reflection; refraction behaviour | "Light bends to take the shortest path" | Ray model; f constant at boundary | 4 | not built |
-| 7.3.3 | `/light/applications` | Everyday applications | Mirror/lens/fibre/surface challenges | SVG bench + scenarios | Solve applied optics tasks | Design justifications | "Black objects always heat fastest" | Stated illuminant/assumptions | 4 | not built |
+| 7.3.1 | `/vision` | Eye responds to light | Object distance/brightness, relative pupil/accommodation, retinal image/focus, guided blind-spot activity | Precise SVG eye + labelled optical/neural text pathway | Adjust conditions; distinguish optical image formation from neural interpretation | Saved optical-versus-neural explanation + validated Check evidence | "The brain just flips the image"; "pupil focuses" | Relative non-biometric model; not medical advice/diagnosis | 4 | verified (builder) |
+| 7.3.2 | `/light/properties` | Absorption, reflection, refraction, scattering | Keyboard/pointer ray bench; two media; protractor readout; TIR; normalised energy ledger; qualitative scattering | Precise SVG rays + angle/readout/table/graph equivalents | Hypothesise; record two reflection points plus refraction/energy trials; graph, interpret, conclude, limit, export/print | Complete saved investigation + CER + validated Check evidence | "Light bends to take the shortest path"; frequency changes; angles measured from surface | Ideal ray model; f constant at stationary boundary; response fractions are teaching fixtures | 4 | verified (builder) |
+| 7.3.3 | `/light/applications` | Everyday applications | Mirror challenge; qualitative lens; fibre/TIR; conditional surface/UV/remote-sensing scenarios | SVG/text models + stated evidence/guardrail cards | Select application; justify with property evidence and state assumption/limitation | Saved design justification + validated Check evidence | "Black objects always heat fastest" | Stated illuminant/model assumptions; no temperature or fabricated focal length | 4 | verified (builder) |
 | 7.3.4 | `/astronomy` | EM spectrum to learn about stars | Multiwavelength observatory, spectra | SVG spectra + line data | Infer temperature/composition/motion | Evidence-based inference | "Stars are just white points" | Curated real line positions; decorative art ≠ data | 6 | not built |
 
 ## 7.4 Motion — Stage 5
@@ -67,10 +67,11 @@ Prototype code from the pre-audit build does **not** count as coverage — every
   Until then it is absent from release navigation (not an "under construction" tease).
   This is the honest fallback; cultural content is never generated.
 
-## Builder-verified classroom release (Stages 0–3)
+## Builder-verified classroom release (Stages 0–4)
 
 Included and navigable: shell + learning map, wave-foundations workspace (7.1.1–7.1.6),
 v=fλ calculator + conversions, linked graphs, and the complete sound workspace for
-compression, pitch/loudness and Doppler effect (7.2.1–7.2.3), with Check, Explain,
-Connect and progress/evidence capture. Stage 3 is awaiting independent gate review;
-everything marked Stage 4+ is deferred and hidden until built.
+compression, pitch/loudness and Doppler effect (7.2.1–7.2.3), plus vision and
+light properties/applications (7.3.1–7.3.3), with Check, Explain, Connect and
+progress/evidence capture. Stages 3–4 are awaiting independent gate review;
+astronomy and everything marked Stage 5+ remain absent/hidden until built.

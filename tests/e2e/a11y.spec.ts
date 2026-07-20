@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { SHELL_ROUTES, SOUND_ROUTES, WAVES_ROUTES, tabKey } from './helpers';
+import { LIGHT_ROUTES, SHELL_ROUTES, SOUND_ROUTES, WAVES_ROUTES, tabKey } from './helpers';
 
 test.describe('accessibility audit', () => {
-  for (const route of [...SHELL_ROUTES, ...WAVES_ROUTES, ...SOUND_ROUTES]) {
+  for (const route of [...SHELL_ROUTES, ...WAVES_ROUTES, ...SOUND_ROUTES, ...LIGHT_ROUTES]) {
     test(`axe reports zero violations on ${route.path}`, async ({ page }) => {
       await page.goto(route.url);
       await expect(

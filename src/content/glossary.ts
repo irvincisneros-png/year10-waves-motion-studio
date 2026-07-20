@@ -91,6 +91,41 @@ export const glossary: GlossaryTerm[] = [
     strand: 'light',
   },
   {
+    term: 'Absorption',
+    definition: 'A transfer in which incoming light energy is taken up by a material rather than transmitted through it or reflected away.',
+    strand: 'light',
+  },
+  {
+    term: 'Scattering',
+    definition: 'The redirection of light in many directions by particles or variations in a material. The light energy is redirected, not destroyed.',
+    strand: 'light',
+  },
+  {
+    term: 'Normal (optics)',
+    definition: 'An imaginary line perpendicular to a surface at the point where a ray arrives. Incident, reflected and refracted angles are measured from it.',
+    strand: 'light',
+  },
+  {
+    term: 'Refractive index',
+    definition: 'A dimensionless comparison n = c/v showing how much slower light travels in a medium than in vacuum.',
+    strand: 'light',
+  },
+  {
+    term: 'Pupil',
+    definition: 'The opening in the iris that changes size to control how much light enters the eye; it does not focus the image.',
+    strand: 'light',
+  },
+  {
+    term: 'Accommodation',
+    definition: 'The adjustment of lens shape by the ciliary muscles to bring objects at different distances into focus on the retina.',
+    strand: 'light',
+  },
+  {
+    term: 'Retina',
+    definition: 'The light-sensitive layer at the back of the eye where an optical image forms and receptors begin converting light into neural signals.',
+    strand: 'light',
+  },
+  {
     term: 'Speed',
     definition:
       'How fast an object moves, found by dividing the distance travelled by the time taken. Speed has size but no direction.',
