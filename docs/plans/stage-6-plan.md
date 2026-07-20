@@ -109,7 +109,7 @@ complete asset manifest.
   `SCIENCE_REVIEW.md`, `TEST_PLAN.md`, `ASSET_MANIFEST.md` and README/status text.
 - [x] Write `docs/evidence/stage-6-evidence.md` with exact counts, gate mapping,
   divergences, source/deferral statement and known limitations.
-- [ ] Merge `stage-6-wip` to `main` only after the complete gate is green. Do not
+- [x] Merge `stage-6-wip` to `main` only after the complete gate is green. Do not
   tag or push; those remain human review actions.
 
 Stage 7 begins only after Stage 6 has a clean merge and evidence pack.
