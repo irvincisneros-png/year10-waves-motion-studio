@@ -59,14 +59,16 @@ test.describe('shell routes', () => {
     ).toBeVisible();
   });
 
-  test('home learning map: available workspaces link, the rest are non-interactive "In development"', async ({
+  test('home learning map exposes every released workspace as a real link', async ({
     page,
   }) => {
     await page.goto('/#/');
     // Stage 6: all twelve shipped workspaces are real links. Deferred 7.2.5
     // has no placeholder card or dead control.
     await expect(page.getByText('In development')).toHaveCount(0);
-    await expect(page.getByText('Available')).toHaveCount(12);
+    await expect(page.locator('article.workspace-card .badge--available')).toHaveCount(
+      12,
+    );
     const cardControls = page.locator(
       'article.workspace-card a, article.workspace-card button',
     );

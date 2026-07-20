@@ -17,6 +17,9 @@ export default defineConfig({
   // never treat them as test sources.
   testIgnore: '**/._*',
   fullyParallel: true,
+  // WebKit can exceed Playwright's 30 s default when the complete production
+  // matrix runs concurrently from the external workspace volume.
+  timeout: 60_000,
   forbidOnly: !!process.env.CI,
   retries: 0,
   reporter: [['list']],
