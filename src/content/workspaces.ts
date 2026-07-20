@@ -134,7 +134,8 @@ export const learningMap: StrandGroup[] = [
         summary:
           'Distance, time, speed, displacement and velocity; motion diagrams and distance–time graphs.',
         outcomeCodes: ['7.4.1', '7.4.2', '7.4.3'],
-        status: 'in-development',
+        status: 'available',
+        route: '/motion',
       },
       {
         id: 'forces',
@@ -142,7 +143,8 @@ export const learningMap: StrandGroup[] = [
         summary:
           'Force, mass and acceleration; Newton’s laws; one-dimensional net force; and the F = ma, vₐᵥ = Δs/Δt and a = Δv/Δt calculations.',
         outcomeCodes: ['7.4.4', '7.4.5', '7.4.6', '7.4.7'],
-        status: 'in-development',
+        status: 'available',
+        route: '/forces',
       },
     ],
   },

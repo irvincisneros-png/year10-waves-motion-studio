@@ -13,6 +13,8 @@ const NAV_ITEMS = [
   { to: '/sound', label: 'Sound', end: false },
   { to: '/light', label: 'Light', end: false },
   { to: '/vision', label: 'Vision', end: false },
+  { to: '/motion', label: 'Motion', end: false },
+  { to: '/forces', label: 'Forces', end: false },
   { to: '/glossary', label: 'Glossary', end: false },
   { to: '/progress', label: 'Progress', end: false },
   { to: '/teacher', label: 'Teacher', end: false },
