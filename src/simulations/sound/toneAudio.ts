@@ -56,12 +56,14 @@ export class ToneAudioController {
    * Build the audio graph from an explicit user gesture. Returns false (and
    * leaves nothing constructed) if the API is missing or construction throws.
    */
-  enable(): boolean {
+  async enable(): Promise<boolean> {
     if (this.ctx) return true;
     const Ctor = getAudioContextCtor();
     if (!Ctor) return false;
+    let localContext: AudioContext | null = null;
     try {
       const ctx = new Ctor();
+      localContext = ctx;
       const gainNode = ctx.createGain();
       gainNode.gain.value = 0; // muted start (safety contract)
       const osc = ctx.createOscillator();
@@ -74,11 +76,19 @@ export class ToneAudioController {
       this.gainNode = gainNode;
       this.osc = osc;
       // Some browsers start the context suspended until a gesture resumes it.
-      void ctx.resume?.();
+      if (ctx.state === 'suspended') await ctx.resume();
       this.applyGain();
       return true;
     } catch {
-      this.teardown();
+      if (this.ctx) {
+        this.teardown();
+      } else if (localContext) {
+        try {
+          await localContext.close();
+        } catch {
+          // The local context never became usable; there is nothing else to clean up.
+        }
+      }
       return false;
     }
   }

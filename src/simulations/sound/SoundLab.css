@@ -75,3 +75,26 @@
 .meter__fill--violet {
   background: var(--accent-violet-ink);
 }
+
+.investigation-plan {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.investigation-plan > div {
+  padding: var(--space-3);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}
+
+.investigation-plan dt {
+  color: var(--ink-strong);
+  font-weight: var(--weight-semibold);
+}
+
+.investigation-plan dd {
+  margin: var(--space-1) 0 0;
+}

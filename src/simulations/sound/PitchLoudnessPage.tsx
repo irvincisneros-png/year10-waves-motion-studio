@@ -19,6 +19,10 @@ import { SimControl } from '../../components/sim/SimControl';
 import { SpectrumView } from './SpectrumView';
 import { AudioEnablePanel } from './AudioEnablePanel';
 import { useToneAudio } from './useToneAudio';
+import {
+  hasAudioSafetyAcknowledgement,
+  rememberAudioSafetyAcknowledgement,
+} from './audioSafetySession';
 
 /**
  * Pitch and loudness investigation (outcome 7.2.2). Frequency and amplitude are
@@ -68,13 +72,22 @@ export default function PitchLoudnessPage() {
   const [timescaleMs, setTimescaleMs] = useState(10);
   const [view, setView] = useState<'oscilloscope' | 'spectrum'>('oscilloscope');
   const [visualOnly, setVisualOnly] = useState(false);
-  const [acknowledged, setAcknowledged] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(hasAudioSafetyAcknowledgement);
   const [trials, setTrials] = useState<ToneTrial[]>([]);
   const [interpretation, setInterpretation] = useState('');
-  const [promptStatus, setPromptStatus] = useState<'idle' | 'saved' | 'empty'>('idle');
+  const [limitation, setLimitation] = useState('');
+  const [promptStatus, setPromptStatus] = useState<
+    'idle' | 'saved' | 'missing-interpretation' | 'missing-limitation'
+  >('idle');
+  const [pulseSummary, setPulseSummary] = useState<string | null>(null);
 
   const { announce } = useAnnouncer();
   const audio = useToneAudio();
+  const {
+    setFrequency: setAudioFrequency,
+    setLevel: setAudioLevel,
+    setWaveform: setAudioWaveform,
+  } = audio;
   const addEvidence = useProgressStore((s) => s.addEvidence);
   const setOutcomeLevel = useProgressStore((s) => s.setOutcomeLevel);
   const outcomes = useProgressStore((s) => s.outcomes);
@@ -84,14 +97,14 @@ export default function PitchLoudnessPage() {
 
   // Reflect control changes into the (optional) audio graph.
   useEffect(() => {
-    audio.setFrequency(frequency);
-  }, [frequency, audio]);
+    setAudioFrequency(frequency);
+  }, [frequency, setAudioFrequency]);
   useEffect(() => {
-    audio.setLevel(levelPct / 100);
-  }, [levelPct, audio]);
+    setAudioLevel(levelPct / 100);
+  }, [levelPct, setAudioLevel]);
   useEffect(() => {
-    audio.setWaveform(waveform);
-  }, [waveform, audio]);
+    setAudioWaveform(waveform);
+  }, [waveform, setAudioWaveform]);
   useEffect(() => {
     return () => {
       if (pulseTimer.current !== null) window.clearTimeout(pulseTimer.current);
@@ -119,18 +132,42 @@ export default function PitchLoudnessPage() {
   }, []);
 
   const playPulse = () => {
-    if (audio.phase !== 'enabled') return;
     const duration = parseDuration(durationRaw);
     if (duration === null) return;
-    audio.setMuted(false);
+    const cycles = frequency * duration;
+    setPulseSummary(
+      `${formatValue(duration)} s pulse at ${formatSigFigs(frequency)} Hz = ${formatSigFigs(cycles)} cycles.`,
+    );
+    if (audio.phase === 'enabled' && !visualOnly) audio.setMuted(false);
     if (pulseTimer.current !== null) window.clearTimeout(pulseTimer.current);
     pulseTimer.current = window.setTimeout(() => {
       audio.setMuted(true);
     }, duration * 1000);
-    announce(`Playing a ${formatValue(duration)} second tone.`);
+    announce(
+      audio.phase === 'enabled' && !visualOnly
+        ? `Playing a ${formatValue(duration)} second tone.`
+        : `Showing a ${formatValue(duration)} second visual pulse.`,
+    );
   };
 
-  const oscTrace = oscilloscopeTrace(tone, timescaleMs / 1000, 240).map((s) => ({
+  const setEmission = (next: 'pulse' | 'continuous') => {
+    setEmissionMode(next);
+    if (audio.phase !== 'enabled' || visualOnly) return;
+    audio.setMuted(next !== 'continuous');
+    announce(
+      next === 'continuous'
+        ? 'Continuous tone started. Use Mute sound to stop it.'
+        : 'Pulse mode selected. Continuous tone stopped.',
+    );
+  };
+
+  // Keep enough samples per cycle that high tones do not alias into a false
+  // lower-frequency shape at long oscilloscope windows.
+  const traceSamples = Math.min(
+    6400,
+    Math.max(240, Math.ceil(frequency * (timescaleMs / 1000) * 8)),
+  );
+  const oscTrace = oscilloscopeTrace(tone, timescaleMs / 1000, traceSamples).map((s) => ({
     at: s.at * 1000, // ms
     value: s.value,
   }));
@@ -168,23 +205,59 @@ export default function PitchLoudnessPage() {
       2,
     );
 
+  const controlledEvidenceComplete = (() => {
+    const frequencySweep = trials.some((a, index) =>
+      trials.some(
+        (b, otherIndex) =>
+          otherIndex !== index &&
+          a.waveform === b.waveform &&
+          a.levelPct === b.levelPct &&
+          a.frequencyHz !== b.frequencyHz,
+      ),
+    );
+    const levelSweep = trials.some((a, index) =>
+      trials.some(
+        (b, otherIndex) =>
+          otherIndex !== index &&
+          a.waveform === b.waveform &&
+          a.frequencyHz === b.frequencyHz &&
+          a.levelPct !== b.levelPct,
+      ),
+    );
+    return frequencySweep && levelSweep;
+  })();
+
+  const periodGraph = [...trials]
+    .sort((a, b) => a.frequencyHz - b.frequencyHz)
+    .map((trial) => ({ at: trial.frequencyHz, value: 1000 / trial.frequencyHz }));
+
   const saveInterpretation = () => {
     if (interpretation.trim().length === 0) {
-      setPromptStatus('empty');
+      setPromptStatus('missing-interpretation');
+      return;
+    }
+    if (limitation.trim().length === 0) {
+      setPromptStatus('missing-limitation');
       return;
     }
     addEvidence({
       outcomeCode: '7.2.2',
       kind: 'investigation',
-      summary: `Pitch/loudness interpretation: ${interpretation.trim()}`,
+      summary: `Pitch/loudness interpretation: ${interpretation.trim()} | Limitation: ${limitation.trim()}`,
     });
     const current = outcomes['7.2.2'] ?? 'not-attempted';
-    setOutcomeLevel('7.2.2', trials.length >= 3 ? nextLevelAfterSuccess(current) : nextLevelAfterAttempt(current));
+    setOutcomeLevel(
+      '7.2.2',
+      controlledEvidenceComplete ? nextLevelAfterSuccess(current) : nextLevelAfterAttempt(current),
+    );
     setPromptStatus('saved');
     announce('Saved as investigation evidence.');
   };
 
   const reset = () => {
+    if (trials.length > 0 && !window.confirm('Clear all pitch and loudness trials and reset the lab?')) {
+      return;
+    }
     setFrequency(440);
     setLevelPct(20);
     setWaveform('sine');
@@ -195,7 +268,9 @@ export default function PitchLoudnessPage() {
     setView('oscilloscope');
     setTrials([]);
     setInterpretation('');
+    setLimitation('');
     setPromptStatus('idle');
+    setPulseSummary(null);
     audio.setMuted(true);
     announce('Reset to default. Visual-only and sound settings are unchanged.');
   };
@@ -223,7 +298,10 @@ export default function PitchLoudnessPage() {
         <AudioEnablePanel
           audio={audio}
           acknowledged={acknowledged}
-          onAcknowledge={() => setAcknowledged(true)}
+          onAcknowledge={() => {
+            rememberAudioSafetyAcknowledgement();
+            setAcknowledged(true);
+          }}
           visualOnly={visualOnly}
           onVisualOnly={setVisualOnly}
           level={levelPct / 100}
@@ -315,7 +393,7 @@ export default function PitchLoudnessPage() {
                     type="radio"
                     name="emission-mode"
                     checked={emissionMode === value}
-                    onChange={() => setEmissionMode(value)}
+                    onChange={() => setEmission(value)}
                     data-testid={`emission-${value}`}
                   />
                   {label}
@@ -338,12 +416,27 @@ export default function PitchLoudnessPage() {
           />
         </div>
 
-        {emissionMode === 'pulse' && audio.phase === 'enabled' ? (
+        {emissionMode === 'pulse' ? (
           <div className="seg-control__options">
             <button type="button" className="btn" onClick={playPulse} data-testid="play-pulse">
-              <span aria-hidden="true">▶</span> Play a pulse
+              <span aria-hidden="true">▶</span>{' '}
+              {audio.phase === 'enabled' && !visualOnly ? 'Play a pulse' : 'Show pulse timing'}
             </button>
           </div>
+        ) : null}
+        {pulseSummary ? (
+          <p className="seg-control__note" role="status" data-testid="pulse-summary">
+            {pulseSummary} The oscilloscope is the equivalent visual representation.
+          </p>
+        ) : null}
+        {emissionMode === 'continuous' ? (
+          <p className="seg-control__note" role="status" data-testid="continuous-status">
+            {audio.phase === 'enabled' && !visualOnly
+              ? audio.muted
+                ? 'Continuous mode ready — use Unmute sound to hear it.'
+                : 'Continuous tone is playing until you mute it or choose Pulse.'
+              : 'Continuous mode selected. The visual trace remains complete with sound off.'}
+          </p>
         ) : null}
 
         {/* Pitch and loudness meters — never colour-only; always paired with a number. */}
@@ -405,6 +498,24 @@ export default function PitchLoudnessPage() {
 
         <div className="card stack">
           <h2>Investigation: change one thing at a time</h2>
+          <dl className="investigation-plan">
+            <div>
+              <dt>Aim</dt>
+              <dd>Distinguish the effects of frequency and amplitude/output level.</dd>
+            </div>
+            <div>
+              <dt>Independent variable</dt>
+              <dd>Part A: frequency. Part B: output level.</dd>
+            </div>
+            <div>
+              <dt>Dependent evidence</dt>
+              <dd>Pitch/period in Part A; relative visual amplitude/loudness in Part B.</dd>
+            </div>
+            <div>
+              <dt>Controlled variables</dt>
+              <dd>Keep waveform and the other slider fixed while changing one variable.</dd>
+            </div>
+          </dl>
           <p>
             Run a fair test. <strong>Part A:</strong> keep the level fixed and change only the
             frequency — record how the oscilloscope trace and pitch change.{' '}
@@ -422,6 +533,21 @@ export default function PitchLoudnessPage() {
               Add this setting to the trial table
             </button>
           </div>
+
+          {trials.length >= 2 ? (
+            <LineGraph
+              title="Recorded period vs frequency"
+              xLabel="frequency (Hz)"
+              yLabel="period (ms)"
+              series={[{ label: 'Recorded trials', points: periodGraph, mode: 'scatter' }]}
+              height={240}
+              testId="trial-graph"
+            />
+          ) : (
+            <p className="seg-control__note" data-testid="trial-graph-empty">
+              Add at least two trials to graph period against frequency.
+            </p>
+          )}
 
           <div className="data-table-wrap">
             <table className="data-table" data-control-id="sound-lab.trial-table">
@@ -502,6 +628,22 @@ export default function PitchLoudnessPage() {
               data-testid="interpretation-input"
             />
           </label>
+          <label className="notice-capture__label" data-control-id="sound-lab.limitation-input">
+            Limitation and improvement
+            <span className="seg-control__note">
+              Name one limitation of this relative model and how a real investigation could improve the evidence.
+            </span>
+            <textarea
+              className="notice-capture__input"
+              rows={3}
+              value={limitation}
+              onChange={(e) => {
+                setLimitation(e.target.value);
+                if (promptStatus !== 'idle') setPromptStatus('idle');
+              }}
+              data-testid="limitation-input"
+            />
+          </label>
           <div className="seg-control__options">
             <button type="button" className="btn" onClick={saveInterpretation} data-testid="interpretation-save">
               Save interpretation as evidence
@@ -511,12 +653,22 @@ export default function PitchLoudnessPage() {
                 <span aria-hidden="true">✓</span> Saved (outcome 7.2.2).
               </p>
             ) : null}
-            {promptStatus === 'empty' ? (
+            {promptStatus === 'missing-interpretation' ? (
               <p className="notice-capture__status notice-capture__status--warn" role="status">
                 Write your interpretation before saving.
               </p>
             ) : null}
+            {promptStatus === 'missing-limitation' ? (
+              <p className="notice-capture__status notice-capture__status--warn" role="status">
+                Add a limitation and improvement before saving.
+              </p>
+            ) : null}
           </div>
+          <p className="seg-control__note" data-testid="fair-test-status">
+            {controlledEvidenceComplete
+              ? 'Fair-test evidence complete: one frequency sweep and one output-level sweep recorded.'
+              : 'To complete the fair test, record both a frequency sweep at fixed level and an output-level sweep at fixed frequency.'}
+          </p>
         </div>
 
         <p className="notice">

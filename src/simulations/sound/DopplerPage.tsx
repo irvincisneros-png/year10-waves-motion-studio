@@ -13,7 +13,6 @@ import {
   DOPPLER_PRESETS,
   dopplerPresetById,
   detectedFrequencySeries,
-  detectedFrequencyClosedForm,
   wavefrontEdges,
   sourcePosition,
   observerPosition,
@@ -22,6 +21,10 @@ import {
 import { SOUND_SPEED_AIR_20C } from '../../science/sound';
 import { AudioEnablePanel } from './AudioEnablePanel';
 import { useToneAudio } from './useToneAudio';
+import {
+  hasAudioSafetyAcknowledgement,
+  rememberAudioSafetyAcknowledgement,
+} from './audioSafetySession';
 
 /**
  * Doppler effect (outcome 7.2.3): a 1D arrival-timing simulation. Emitted
@@ -39,11 +42,13 @@ const PLAYBACK = 0.35; // slow-motion replay so wavefronts are watchable
 const VIEW_MIN = -20;
 const VIEW_MAX = 120;
 
-function detectedNearest(series: { at: number; value: number }[], t: number): number | null {
-  if (series.length === 0) return null;
-  let best = series[0];
-  for (const s of series) if (Math.abs(s.at - t) < Math.abs(best.at - t)) best = s;
-  return best.value;
+function detectedLatest(series: { at: number; value: number }[], t: number): number | null {
+  let latest: number | null = null;
+  for (const sample of series) {
+    if (sample.at > t) break;
+    latest = sample.value;
+  }
+  return latest;
 }
 
 export default function DopplerPage() {
@@ -53,7 +58,7 @@ export default function DopplerPage() {
   const [viewMode, setViewMode] = useState<'1d' | '2d'>('1d');
   const [pitchAudio, setPitchAudio] = useState(false);
   const [visualOnly, setVisualOnly] = useState(false);
-  const [acknowledged, setAcknowledged] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(hasAudioSafetyAcknowledgement);
   const [running, setRunning] = useState(true);
   const [speed, setSpeed] = useState(1);
 
@@ -61,6 +66,7 @@ export default function DopplerPage() {
   const lowGraphics = useSettingsStore((s) => s.lowGraphics);
   const { announce } = useAnnouncer();
   const audio = useToneAudio();
+  const { setFrequency: setAudioFrequency, setMuted: setAudioMuted } = audio;
 
   const clock = useSimClock({ running, speed, reducedMotion, active: true });
   const tSlow = Math.min(clock.t * PLAYBACK, WINDOW_S);
@@ -76,20 +82,20 @@ export default function DopplerPage() {
   );
 
   const series = useMemo(() => detectedFrequencySeries(cfg, WINDOW_S), [cfg]);
-  const detectedNow = detectedNearest(series, tSlow);
-  const closed = detectedFrequencyClosedForm(cfg);
-  const steadyDetected = closed.ok ? closed.value : null;
+  const detectedNow = detectedLatest(series, tSlow);
 
   // Optional pitch: track the detected frequency (gated behind enable-sound).
   useEffect(() => {
     if (pitchAudio && audio.phase === 'enabled' && detectedNow !== null) {
-      audio.setFrequency(detectedNow);
+      setAudioFrequency(detectedNow);
     }
-  }, [pitchAudio, audio, detectedNow]);
+  }, [pitchAudio, audio.phase, setAudioFrequency, detectedNow]);
   useEffect(() => {
     // Muting is the only thing that makes the optional pitch audible.
-    if (audio.phase === 'enabled') audio.setMuted(!pitchAudio);
-  }, [pitchAudio, audio]);
+    if (audio.phase === 'enabled') {
+      setAudioMuted(!pitchAudio || visualOnly || detectedNow === null);
+    }
+  }, [pitchAudio, visualOnly, detectedNow, audio.phase, setAudioMuted]);
 
   const applyPreset = (id: string) => {
     const preset = dopplerPresetById(id);
@@ -205,10 +211,14 @@ export default function DopplerPage() {
           onSpeed={setSpeed}
           onReset={reset}
           resetLabel="Doppler simulation"
-          presets={DOPPLER_PRESETS.map((p) => ({ id: p.id, label: p.label }))}
+          presets={[
+            { id: 'custom', label: 'Custom velocities' },
+            ...DOPPLER_PRESETS.map((p) => ({ id: p.id, label: p.label })),
+          ]}
           presetId={presetId}
           onPreset={applyPreset}
           presetLabel="Doppler scenario preset"
+          presetControlId="sound-lab.doppler-preset-select"
         />
 
         <p className="doppler-readouts">
@@ -224,9 +234,9 @@ export default function DopplerPage() {
             </strong>
           </span>
           <span>
-            Steady-state detected:{' '}
-            <strong data-testid="steady-detected">
-              {steadyDetected !== null ? `${formatSigFigs(steadyDetected)} Hz` : '—'}
+            Detected interval now:{' '}
+            <strong data-testid="detected-interval">
+              {detectedNow !== null ? `${formatSigFigs(1000 / detectedNow)} ms` : 'waiting for wavefronts'}
             </strong>
           </span>
         </p>
@@ -324,19 +334,26 @@ export default function DopplerPage() {
         <AudioEnablePanel
           audio={audio}
           acknowledged={acknowledged}
-          onAcknowledge={() => setAcknowledged(true)}
+          onAcknowledge={() => {
+            rememberAudioSafetyAcknowledgement();
+            setAcknowledged(true);
+          }}
           visualOnly={visualOnly}
-          onVisualOnly={setVisualOnly}
+          onVisualOnly={(next) => {
+            setVisualOnly(next);
+            if (next) setPitchAudio(false);
+          }}
           level={pitchAudio ? 0.2 : 0}
         />
         <label className="check-row" data-control-id="sound-lab.doppler-pitch-audio-toggle">
           <input
             type="checkbox"
             checked={pitchAudio}
-            disabled={audio.phase !== 'enabled'}
-            aria-disabled={audio.phase !== 'enabled'}
+            disabled={audio.phase !== 'enabled' || visualOnly}
+            aria-disabled={audio.phase !== 'enabled' || visualOnly}
             onChange={(e) => setPitchAudio(e.target.checked)}
             data-testid="pitch-audio-toggle"
+            aria-label="Play detected pitch"
           />
           Play the detected pitch (needs sound enabled) — the detected-frequency graph is always the visual equivalent
         </label>

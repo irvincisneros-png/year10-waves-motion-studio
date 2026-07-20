@@ -40,8 +40,8 @@ export function AudioEnablePanel({
   const forcedVisualOnly = audioUnavailable; // auto-enable + lock the toggle
   const effectiveVisualOnly = visualOnly || forcedVisualOnly;
 
-  const enable = () => {
-    const ok = audio.enable();
+  const enable = async () => {
+    const ok = await audio.enable();
     announce(
       ok
         ? 'Sound enabled and muted. Unmute and raise the level to hear the tone.'
@@ -86,6 +86,7 @@ export function AudioEnablePanel({
               }}
               data-testid="headphone-ack"
               data-control-id="sound-lab.headphone-warning-ack"
+              aria-label="Acknowledge headphone safety warning"
             >
               I understand — start at a low level
             </button>
@@ -105,12 +106,14 @@ export function AudioEnablePanel({
             <div className="audio-panel__enabled">
               <p className="sim-control__value" data-testid="sound-enabled-status" role="status">
                 <span aria-hidden="true">✓</span> Sound enabled ·{' '}
-                {audio.muted ? 'muted' : `volume ${gainPct}%`}
+                {effectiveVisualOnly ? 'visual-only (muted)' : audio.muted ? 'muted' : `volume ${gainPct}%`}
               </p>
               <button
                 type="button"
                 className="btn"
-                aria-pressed={audio.muted}
+                aria-pressed={!audio.muted}
+                disabled={effectiveVisualOnly}
+                aria-disabled={effectiveVisualOnly}
                 onClick={() => audio.setMuted(!audio.muted)}
                 data-testid="mute-sound"
                 data-control-id="global.mute-button"
@@ -130,7 +133,10 @@ export function AudioEnablePanel({
           disabled={forcedVisualOnly}
           aria-disabled={forcedVisualOnly}
           aria-describedby={forcedVisualOnly ? 'visual-only-forced-note' : undefined}
-          onChange={(e) => onVisualOnly(e.target.checked)}
+          onChange={(e) => {
+            if (e.target.checked) audio.setMuted(true);
+            onVisualOnly(e.target.checked);
+          }}
           data-testid="visual-only-toggle"
         />
         Visual-only mode (no sound)

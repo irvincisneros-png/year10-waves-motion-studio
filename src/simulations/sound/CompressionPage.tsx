@@ -35,7 +35,9 @@ import { formatSigFigs } from '../../science/units';
 // Slow-motion replay factor: audible periods are milliseconds, so we replay the
 // real physics slowly to make compressions visible. Labelled in the honesty box.
 const PLAYBACK = 0.004;
-const WAVELENGTHS_SHOWN = 4;
+// A fixed physical window: changing frequency or medium changes how many
+// wavelengths fit inside it instead of silently rescaling the chamber.
+const VIEW_SPAN_M = (4 * 343) / 440;
 
 const TAGGABLE = [0.15, 0.4, 0.65, 0.9] as const; // fractions of the view span
 
@@ -63,7 +65,8 @@ export default function CompressionPage() {
   );
   const lambda = wavelengthOf(wave);
   const T = periodOfWave(wave);
-  const viewSpan = WAVELENGTHS_SHOWN * lambda;
+  const viewSpan = VIEW_SPAN_M;
+  const wavelengthsInView = viewSpan / lambda;
   const micX = (micPct / 100) * viewSpan;
 
   const particleCount = lowGraphics ? 40 : 80;
@@ -112,7 +115,8 @@ export default function CompressionPage() {
 
       // Air particles (rep 2): longitudinal positions (bunching = compression).
       const equilibria = Array.from({ length: particleCount }, (_, i) => (viewSpan * i) / (particleCount - 1));
-      const parts = longitudinalParticles(wave, equilibria, tSlow, lambda * 0.09);
+      const displayScale = Math.min(lambda * 0.09, viewSpan * 0.02);
+      const parts = longitudinalParticles(wave, equilibria, tSlow, displayScale);
       ctx.fillStyle = '#2f3646';
       for (const p of parts) {
         ctx.beginPath();
@@ -125,7 +129,8 @@ export default function CompressionPage() {
         if (!tagged.has(frac)) return;
         const eq = frac * viewSpan;
         const d = displacement(wave, eq, tSlow);
-        const x = px(eq + d * lambda * 0.09);
+        const displayScale = Math.min(lambda * 0.09, viewSpan * 0.02);
+        const x = px(eq + d * displayScale);
         ctx.strokeStyle = '#5b34c9';
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -386,11 +391,14 @@ export default function CompressionPage() {
               draw={drawField}
               alternative={
                 <p data-testid="field-alt">
-                  {formatSigFigs(WAVELENGTHS_SHOWN)} wavelengths shown (λ ={' '}
-                  {formatSigFigs(lambda)} m). Particles bunch into compressions (C, high
+                  A fixed {formatSigFigs(viewSpan)} m window shows{' '}
+                  {formatSigFigs(wavelengthsInView)} wavelengths (λ = {formatSigFigs(lambda)} m).{' '}
+                  Particles bunch into compressions (C, high
                   pressure) and spread into rarefactions (R, low pressure). The microphone at
                   x = {formatSigFigs(micX)} m currently sits in a{' '}
-                  {micBand === 'neutral' ? 'transition (near rest pressure)' : micBand} region.
+                  {micBand === 'neutral' ? 'transition (near rest pressure)' : micBand} region.{' '}
+                  The energy marker is {energyMarker ? 'shown as a labelled diamond' : 'hidden'};
+                  it is never an air particle.
                 </p>
               }
               testId="field-canvas"
@@ -430,8 +438,8 @@ export default function CompressionPage() {
                 <tr>
                   <th scope="col">Particle</th>
                   <th scope="col">Home position (m)</th>
-                  <th scope="col">Displacement now (m)</th>
-                  <th scope="col">Net displacement after 5 cycles (m)</th>
+                  <th scope="col">Displacement now (relative units)</th>
+                  <th scope="col">Net displacement after 5 cycles (relative units)</th>
                 </tr>
               </thead>
               <tbody data-testid="tagged-table-body">
@@ -483,8 +491,9 @@ export default function CompressionPage() {
           <span>
             Model note: audible sound vibrates hundreds of times a second, so this view is a{' '}
             <strong>slow-motion replay</strong> (about {formatSigFigs(1 / PLAYBACK)}× slower than
-            real time) to make the compressions visible. Pressure and displacement are shown on a
-            relative scale, not calibrated pascals.
+            real time) to make the compressions visible. The chamber is a fixed{' '}
+            {formatSigFigs(VIEW_SPAN_M)} m wide; particle movement is display-exaggerated. Pressure
+            and displacement are relative model values, not calibrated pascals or measured metres.
           </span>
         </p>
       </div>

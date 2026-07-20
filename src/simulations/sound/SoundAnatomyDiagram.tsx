@@ -17,7 +17,7 @@ const CURVE = { y0: 220, amp: 55 };
 
 /** Fixed teaching wave: two wavelengths across the strip, snapshot at t = 0. */
 const PARAMS: WaveParams = { amplitude: 1, frequency: 2, speed: 6, phase: 0 };
-const SPAN = 4; // metres shown = 2 wavelengths (λ = v/f = 3 m ... span chosen for clarity)
+const SPAN = 6; // metres shown = 2 wavelengths (λ = v/f = 3 m)
 
 export function SoundAnatomyDiagram() {
   const sx = (x: number) => (x / SPAN) * (W - 60) + 30;
@@ -33,12 +33,11 @@ export function SoundAnatomyDiagram() {
     .join(' ');
 
   // A compression sits at a pressure maximum, a rarefaction at a minimum. For
-  // this cos-pressure snapshot p = A·cos(kx): max at x = 0, λ, 2λ; min at λ/2,
-  // 3λ/2. λ = v/f = 3 m, so within SPAN = 4 m: compression at 0 and 3 m,
-  // rarefaction at 1.5 m.
+  // For ξ = A·sin(kx), p ∝ −∂ξ/∂x = −A·cos(kx): density/pressure maxima
+  // are at λ/2 and 3λ/2; minima are at 0, λ and 2λ.
   const lambda = 3;
-  const compressionXs = [0, lambda].filter((x) => x <= SPAN);
-  const rarefactionXs = [lambda / 2, (3 * lambda) / 2].filter((x) => x <= SPAN);
+  const compressionXs = [lambda / 2, (3 * lambda) / 2].filter((x) => x <= SPAN);
+  const rarefactionXs = [0, lambda, 2 * lambda].filter((x) => x <= SPAN);
 
   return (
     <svg
@@ -92,10 +91,10 @@ export function SoundAnatomyDiagram() {
         rest pressure
       </text>
       <path d={path} fill="none" stroke="var(--accent-cyan-ink)" strokeWidth={2.5} />
-      <text x={sx(0) + 4} y={py(1) - 6} fontSize={11} fill="var(--ink-strong)">
+      <text x={sx(lambda / 2) + 4} y={py(1) - 6} fontSize={11} fill="var(--ink-strong)">
         high (compression)
       </text>
-      <text x={sx(lambda / 2) + 4} y={py(-1) + 16} fontSize={11} fill="var(--ink-strong)">
+      <text x={sx(0) + 4} y={py(-1) + 16} fontSize={11} fill="var(--ink-strong)">
         low (rarefaction)
       </text>
     </svg>

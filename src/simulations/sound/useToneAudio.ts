@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Waveform } from '../../science/sound';
 import { audioApiPresent, ToneAudioController } from './toneAudio';
 
@@ -18,7 +18,7 @@ export interface ToneAudio {
   supported: boolean;
   phase: AudioPhase;
   muted: boolean;
-  enable: () => boolean;
+  enable: () => Promise<boolean>;
   setMuted: (muted: boolean) => void;
   setLevel: (level: number) => void;
   setFrequency: (hz: number) => void;
@@ -31,14 +31,14 @@ export function useToneAudio(): ToneAudio {
   const [phase, setPhase] = useState<AudioPhase>(supported ? 'locked' : 'unsupported');
   const [muted, setMutedState] = useState(true);
 
-  const enable = useCallback((): boolean => {
+  const enable = useCallback(async (): Promise<boolean> => {
     if (!supported) {
       setPhase('unsupported');
       return false;
     }
     if (ref.current?.running) return true;
     const controller = new ToneAudioController();
-    const ok = controller.enable();
+    const ok = await controller.enable();
     if (!ok) {
       setPhase('failed');
       return false;
@@ -74,5 +74,8 @@ export function useToneAudio(): ToneAudio {
     };
   }, []);
 
-  return { supported, phase, muted, enable, setMuted, setLevel, setFrequency, setWaveform };
+  return useMemo(
+    () => ({ supported, phase, muted, enable, setMuted, setLevel, setFrequency, setWaveform }),
+    [supported, phase, muted, enable, setMuted, setLevel, setFrequency, setWaveform],
+  );
 }

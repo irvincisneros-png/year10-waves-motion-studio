@@ -119,7 +119,7 @@ export function soundMediumById(id: string): SoundMediumPreset | undefined {
 /**
  * Model acoustic pressure at position x and time t. Pressure is proportional to
  * the negative spatial gradient of the longitudinal displacement:
- * p ∝ −∂y/∂x = A·k·cos(kx − ωt + φ). We NORMALISE by k so the pressure amplitude
+ * p ∝ −∂y/∂x = −A·k·cos(kx − ωt + φ). We NORMALISE by k so the pressure amplitude
  * equals the displacement amplitude A (a labelled teaching normalisation, not a
  * calibrated pascal value — SCIENCE_REVIEW §1.1, §12.1). Consequences that are
  * both physically honest and pedagogically important:
@@ -131,7 +131,7 @@ export function soundMediumById(id: string): SoundMediumPreset | undefined {
 export function pressureAt(p: WaveParams, x: number, t: number): number {
   const k = waveNumber(wavelengthOf(p));
   const omega = angularFrequency(p.frequency);
-  return p.amplitude * Math.cos(k * x - omega * t + (p.phase ?? 0));
+  return -p.amplitude * Math.cos(k * x - omega * t + (p.phase ?? 0));
 }
 
 /** Pressure–time trace at a fixed microphone position x (period = 1/f). */

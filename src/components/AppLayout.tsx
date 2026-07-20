@@ -10,6 +10,7 @@ import './AppLayout.css';
 const NAV_ITEMS = [
   { to: '/', label: 'Home', end: true },
   { to: '/waves', label: 'Waves', end: false },
+  { to: '/sound', label: 'Sound', end: false },
   { to: '/glossary', label: 'Glossary', end: false },
   { to: '/progress', label: 'Progress', end: false },
   { to: '/teacher', label: 'Teacher', end: false },
