@@ -108,7 +108,9 @@ test.describe("Motion workspace", () => {
       .locator('[data-control-id="motion.piecewise-story-select"]')
       .selectOption("hill");
     await page.getByTestId("motion-story-check").click();
-    await expect(page.getByText(/not a literal hill or path/)).toBeVisible();
+    await expect(
+      page.locator(".field__error, .feedback").getByText(/not a literal hill or path/),
+    ).toBeVisible();
     const download = page.waitForEvent("download");
     await page.getByTestId("motion-export-csv").click();
     expect((await download).suggestedFilename()).toBe(
@@ -268,6 +270,6 @@ test.describe("Forces workspace", () => {
       .getByTestId("forces-cer-0")
       .fill("Acceleration depends on net force and mass.");
     await page.getByTestId("forces-cer-save").click();
-    await expect(page.getByText(/Evidence is missing/)).toBeVisible();
+    await expect(page.locator('.field__error', { hasText: 'Evidence is missing' })).toBeVisible();
   });
 });
