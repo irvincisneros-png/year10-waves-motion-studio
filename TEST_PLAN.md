@@ -54,7 +54,7 @@ stage evidence pack, per the shared spec's "Stage evidence pack" and "Trust but 
 | 11. Degraded-capability fallbacks | Per feature as it ships (e.g. Web Audio fallback lands with Stage 3 sound) | Yes, full fallback matrix |
 | 12. Safe/optional audio with visual equivalents | Stage 3 (sound), regressed later | Yes |
 | 13. Console errors / unhandled rejections per route | Every stage, every new route | Yes, every route |
-| 14. Every visible control exercised (CONTROL_INVENTORY-linked) | Every stage, for that stage's controls | Yes, full inventory sweep — this **is** the generated control-inventory test |
+| 14. Runtime control-inventory parity | Every stage, for its shipped routes; route-specific specs prove effects | Yes, all-route documentation/ID/name/deferral sweep |
 | 15. Deterministic sims + seeded-noise reproducibility | Stage 2 onward (deterministic engines), Stage 5 (seeded noise mode) | Yes |
 | 16. Performance / memory / animation lifecycle | Stage 1 (shell budget), then per stage for its new routes | Yes, full budget audit |
 
@@ -142,8 +142,9 @@ assertion** — the invalid input must never be marked correct, accepted, or sil
 
 ## 5. Accessibility tests
 
-Location: `tests/e2e/a11y/*.spec.ts`, using `@axe-core/playwright`'s `AxeBuilder` against
-each route with `wcag2a`, `wcag2aa`, `wcag21aa`, and `wcag22aa` tags.
+As-built locations: `tests/e2e/a11y.spec.ts`, `responsive.spec.ts` and
+`control-inventory.spec.ts`. The named rows below are acceptance requirements;
+only assertions present in those files count as automated evidence.
 
 | Test name | Asserts |
 |---|---|
@@ -160,9 +161,10 @@ each route with `wcag2a`, `wcag2aa`, `wcag21aa`, and `wcag22aa` tags.
 
 ## 6. Keyboard-only operation walkthroughs per workspace
 
-Location: `tests/e2e/keyboard/*.spec.ts`. Each walkthrough uses **only** `Tab`, `Shift+Tab`,
-arrow keys, `Enter`, `Space`, `Escape`, and `Home`/`End` — no `page.click()` calls — and drives
-the full Orient→Connect rhythm for that workspace's primary activity.
+As-built locations: `tests/e2e/keyboard.spec.ts` plus the keyboard paths in
+`waves.spec.ts`, `sound.spec.ts`, `optics.spec.ts`, `vision.spec.ts` and
+`motion-forces.spec.ts`. The rows below remain the acceptance catalogue and must
+not be read as separate files that exist.
 
 | Test name | Asserts |
 |---|---|
@@ -179,7 +181,8 @@ the full Orient→Connect rhythm for that workspace's primary activity.
 
 ## 7. Route, refresh, and deep-link behaviour
 
-Location: `tests/e2e/routing/*.spec.ts`.
+As-built locations: `tests/e2e/shell.spec.ts`, the cold-load loops in each
+workspace spec and the common route fixtures in `tests/e2e/helpers.ts`.
 
 | Test name | Asserts |
 |---|---|
@@ -233,14 +236,16 @@ Location: `tests/e2e/routing/*.spec.ts`.
 - `tests/e2e/stage-six.spec.ts` exercises every completion route cold/refresh,
   all Stage 6 learner control groups, validation/evidence/export paths, deferred
   route absence, teacher layers/presets/coverage/print/reset, visible update
-  prompt actions and whole-completion-route offline reloads. WebKit keeps the
+  prompt actions and whole-release-route offline reloads. WebKit keeps the
   service-worker offline case as an explicit expected skip.
 - Shared axe, console and 320/375/768/1024/1440 matrices include all six
   completion routes in Chromium and WebKit. Stage 6 uses no Canvas, audio,
   randomness, clinical/patient data or runtime network fetch.
 
-Location: `tests/e2e/responsive/*.spec.ts`, parametrised over the five widths (heights fixed at
-a representative 800px, then re-run once at each width's common device height).
+As-built location: `tests/e2e/responsive.spec.ts`, parametrised over the five
+required widths at 800 px height. Native text/select targets are swept on every
+route at 320 px; device-height and physical-tablet sampling remain human audit
+items rather than automated claims.
 
 | Test name | Asserts |
 |---|---|
@@ -256,9 +261,10 @@ runs at the Stage 7 release audit.
 
 ## 9. Current Chrome, Edge, Safari
 
-Location: `playwright.config.ts` projects `chromium`, `webkit` (Safari engine proxy — true
-Safari is a human pass, see below), and `msedge` (Chromium-based, via Playwright's `channel:
-'msedge'`).
+As-built configuration: `playwright.config.ts` runs bundled `chromium` and
+`webkit` by default. `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome` or `msedge` reruns the
+Chromium project against an installed branded browser. WebKit is a Safari-engine
+proxy; real Chrome, Edge and Safari remain explicit human sign-off items.
 
 | Test name | Asserts |
 |---|---|
@@ -269,19 +275,20 @@ Safari is a human pass, see below), and `msedge` (Chromium-based, via Playwright
 
 ## 10. Offline operation (service worker, first-load cache, update flow)
 
-Location: `tests/e2e/offline/*.spec.ts`.
+As-built locations: `tests/e2e/shell.spec.ts` and `stage-six.spec.ts`.
 
 | Test name | Asserts |
 |---|---|
 | `offline.spec.ts › service worker registers and caches the app shell on first load` | After first visit, `navigator.serviceWorker.getRegistration()` resolves and the Cache Storage API contains the shell's precache manifest entries |
-| `shell.spec.ts + stage-six.spec.ts › app routes load with network disabled after first visit` | With `context.setOffline(true)` after service-worker readiness/control, home, shell navigation and every Stage 6 completion route reload from the production precache |
+| `stage-six.spec.ts › every released route reloads offline after one production-app load` | With `context.setOffline(true)` after service-worker readiness/control, every shipped route is hard-reloaded from the production precache |
 | `stage-six.spec.ts › visible update prompt supports defer and refresh actions` | A deterministic update-available event surfaces the same production prompt; “Not now” dismisses it and “Refresh now” invokes the update callback |
 | `offline.spec.ts › offline shell has no unexpected network calls` | Network log during an offline session contains zero failed non-cache requests beyond the expected offline-check ping (if any) |
 
 ## 11. Degraded-capability fallbacks
 
-Location: `tests/e2e/fallbacks/*.spec.ts`, using Playwright's ability to strip/override browser
-APIs via `page.addInitScript` before each test.
+As-built locations: degraded-capability cases in `tests/e2e/waves.spec.ts`,
+`sound.spec.ts`, `settings.spec.ts` and `stage-six.spec.ts`, using
+`page.addInitScript` or deterministic test events where necessary.
 
 | Test name | Asserts |
 |---|---|
@@ -294,7 +301,9 @@ APIs via `page.addInitScript` before each test.
 
 ## 12. Safe and optional audio with equivalent visual information
 
-Location: `tests/e2e/audio-safety.spec.ts` (also cross-referenced from §11 and CONTROL_INVENTORY §1, §4).
+As-built locations: `tests/e2e/sound.spec.ts` and
+`tests/unit/audio/toneAudio.test.ts` (also cross-referenced from §11 and
+`CONTROL_INVENTORY.md` §§1 and 4).
 
 | Test name | Asserts |
 |---|---|
@@ -306,33 +315,39 @@ Location: `tests/e2e/audio-safety.spec.ts` (also cross-referenced from §11 and 
 
 ## 13. Console errors and unhandled rejections on every route
 
-Location: `tests/e2e/console-errors.spec.ts`, parametrised over all shipped routes.
+As-built location: `tests/e2e/console.spec.ts`, parametrised over all shipped
+routes. It verifies clean load/effects and external-request hygiene; interaction
+effects are owned by the route-specific specs and are not overclaimed here.
 
 | Test name | Asserts |
 |---|---|
-| `console-errors.spec.ts › [route] produces zero console errors on load and after exercising every visible control` (one parametrised test per shipped route) | Playwright's `page.on('console')` and `page.on('pageerror')` listeners capture zero `error`-level messages and zero uncaught exceptions across page load plus one full pass of every control on that route (driven from the `CONTROL_INVENTORY.md` list for that route) |
-| `console-errors.spec.ts › no unhandled promise rejections during async operations` | Progress import/export, service-worker update checks, and preset loading (all async) never leave an unhandled rejection, verified via `page.on('pageerror')` plus a `window.addEventListener('unhandledrejection', ...)` bridge injected before navigation |
+| `console.spec.ts › no console errors, warnings or unhandled rejections on [route]` | `page.on('console')` and `page.on('pageerror')` capture zero warning/error messages or uncaught exceptions during production-route load and settling |
+| `console.spec.ts › no unexpected network requests to external hosts` | All shipped routes load without automatic requests beyond localhost; user-initiated evidence-source links are outside this loop |
 
-## 14. Every visible control exercised (generated control-inventory test)
+## 14. Runtime control-inventory parity
 
-Location: `tests/e2e/control-inventory.spec.ts` — this is the shared spec's required
-"generated control-inventory test confirming that every exposed control is wired, uniquely
-labelled, keyboard reachable, and covered by at least one browser test."
+Location: `tests/e2e/control-inventory.spec.ts`. The executable test reads stable backtick-
+delimited control IDs directly from `CONTROL_INVENTORY.md` and visits every route exported by
+the shared route fixtures. There is no generated JSON fixture or generator script.
 
 | Test name | Asserts |
 |---|---|
-| `control-inventory.spec.ts › every ID in CONTROL_INVENTORY.md resolves to exactly one rendered element on its route` | A generator script parses `CONTROL_INVENTORY.md`'s tables into a manifest (`tests/fixtures/control-manifest.json`, regenerated by a `predev`/CI script), and this test asserts each non-deferred ID resolves via its accessible name to exactly one element on its documented route |
-| `control-inventory.spec.ts › every control has a real, observable effect on activation` | For each control, the test performs its documented interaction and asserts at least one observable DOM/state change occurred (value text changed, class/attribute changed, or a network-free state read changed) — this is the automated backstop for "no dead control" |
-| `control-inventory.spec.ts › every control ID appears in at least one other named test elsewhere in this suite` | Cross-references every ID in the manifest against the test titles in this document (via a lightweight text-search over `tests/e2e/**/*.spec.ts` and `tests/unit/**/*.test.ts`) and fails the build if any control is untested |
-| `control-inventory.spec.ts › no two controls on the same route share an accessible name` | Duplicate-name detector at the manifest level (regression pairing with §5's per-route runtime check) |
-| `control-inventory.spec.ts › deferred controls (cultural-sound.*) are absent from any rendered route` | Confirms the 6 deferred `cultural-sound.*` IDs resolve to zero elements anywhere in the shipped build, keeping the "never ship placeholder" rule enforced automatically |
+| `runtime control-inventory parity › [route] has documented, unique runtime IDs and named controls` | Every rendered `data-control-id` is well formed and documented here; non-repeatable IDs occur at most once on that route; every rendered interactive element has a non-empty computed accessible name; no deferred `cultural-sound.*` control renders |
+| `runtime control-inventory parity › the deferred cultural route remains absent` | The attempted cultural-sound URL resolves to the real not-found page and exposes zero deferred control IDs |
 
-This manifest-driven test is the mechanism that keeps `CONTROL_INVENTORY.md` honest — a control
-added to a component without a matching inventory row (or vice versa) fails CI.
+This is deliberately a **runtime documentation-parity** check, not an interaction generator.
+Some inventory IDs identify repeatable families (for example per-force inputs), and many controls
+need scientifically meaningful setup before an effect can be asserted. Their observable effects,
+keyboard paths, reset/validation behaviour and scientific outcomes stay covered by the existing
+route-specific specs (`waves.spec.ts`, `sound.spec.ts`, `optics.spec.ts`, `vision.spec.ts`,
+`motion-forces.spec.ts`, `stage-six.spec.ts`, `settings.spec.ts` and `shell.spec.ts`). The parity
+test must not be cited as proof that it activates every visible control.
 
 ## 15. Deterministic simulations and seeded-noise reproducibility
 
-Location: `tests/unit/determinism/*.test.ts` and `tests/e2e/determinism.spec.ts`.
+As-built locations: the pure invariant suites in `tests/unit/invariants/` and the
+seeded-noise cases in `waves.spec.ts` and `motion-forces.spec.ts`. There is no
+separate determinism directory or e2e file.
 
 | Test name | Asserts |
 |---|---|
@@ -342,7 +357,10 @@ Location: `tests/unit/determinism/*.test.ts` and `tests/e2e/determinism.spec.ts`
 
 ## 16. Performance and memory/animation-lifecycle checks
 
-Location: `tests/e2e/performance/*.spec.ts`.
+No dedicated performance suite is shipped at this gate. The rows below are a
+future performance acceptance catalogue, not automated pass claims. Stage 7
+records only production-bundle size, route-load smoke timing and human browser
+observations; memory/long-run frame budgets remain known limitations.
 
 | Test name | Asserts |
 |---|---|
@@ -374,7 +392,7 @@ Location: `tests/e2e/performance/*.spec.ts`.
 | 11. Degraded-capability fallbacks | 6 |
 | 12. Safe/optional audio | 5 |
 | 13. Console errors / unhandled rejections | 2 test patterns × every shipped route |
-| 14. Every visible control exercised | 5 (manifest-driven, covers all 180 inventory rows) |
+| 14. Runtime control-inventory parity | all shipped routes + one deferred-route assertion |
 | 15. Deterministic + seeded reproducibility | 3 |
 | 16. Performance / memory | 8 |
-| **Fixed-count total (excl. per-route/per-control parametrisation)** | **~116 named test cases**, expanding to several hundred concrete assertions once parametrised over every shipped route, breakpoint, and the full 180-row control manifest |
+| **Fixed-count total (excl. per-route parametrisation)** | Planning estimate only; concrete runner counts are recorded in stage evidence. The runtime parity case expands across every shipped route, while route-specific specs own interaction effects. |

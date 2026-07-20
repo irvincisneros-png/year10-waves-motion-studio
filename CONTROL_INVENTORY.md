@@ -1,12 +1,14 @@
 # Control Inventory — WaveMotion Studio
 
-Source of truth for every planned interactive control in the release-scope app. Generated
+Source of truth for every planned interactive control in the release-scope app. Derived
 from `YEAR_10_WAVES_MOTION_APP_PLAN.md` §4–§12, `SCIENCE_SIMULATOR_SUITE_SHARED_SPEC.md`
 ("Shared student experience", "Shared teacher experience", accessibility standard), and the
-stage roadmap in `docs/plans/2026-07-17-wavemotion-orchestration-plan.md` Part C. This document
-is the input to the generated control-inventory test required by the shared spec ("generated
-control-inventory test confirming that every exposed control is wired, uniquely labelled,
-keyboard reachable, and covered by at least one browser test").
+stage roadmap in `docs/plans/2026-07-17-wavemotion-orchestration-plan.md` Part C. The executable
+runtime parity check in `tests/e2e/control-inventory.spec.ts` parses the stable IDs documented
+here, visits every shipped route, and rejects undocumented rendered IDs, duplicate non-repeatable
+IDs, unnamed interactive elements, or rendered deferred cultural controls. Observable effects,
+keyboard flows and scientific behaviour remain the responsibility of the named route-specific
+browser specs; the parity check does not pretend to replace them.
 
 ## Conventions
 
@@ -55,6 +57,7 @@ redefining them.
 | `global.reset-button` | Push button | Restores the current workspace's science state, controls, and view to its documented default preset | "Reset [workspace name]" (workspace name interpolated, e.g. "Reset wave measurement lab") | Tab-reachable; `Enter`/`Space` activates; no shortcut (destructive-ish, avoid accidental global hotkey) | N/A | Announces "Reset to default" via a polite live region; all sliders/readouts visibly snap to defaults | N/A | Resets both the rendered view and the text/table fallback identically | `e2e/shell-global-controls.spec.ts › reset returns every control to documented default` |
 | `global.preset-select` | Listbox / native `<select>` | Loads a named scenario (values, medium, camera) defined in the workspace's `*Presets` data file | "Choose a preset scenario" | Tab-reachable; arrow keys change selection; `Enter` commits on native select behaviour | Selected preset name shown as the control's current value | Selecting "Custom" (always first option) clears to workspace defaults; `global.reset-button` also returns selection to "Custom" | Unknown/removed preset IDs (e.g. stale deep link) fall back to "Custom" with a one-line inline notice, never a blank/broken state | Preset list itself is static JSON; no rendering dependency | `e2e/shell-global-controls.spec.ts › preset select loads scenario values and unknown id falls back safely` |
 | `global.enable-sound-button` | Push button (one-shot gate) | Unlocks the Web Audio context on explicit user gesture; required before any audio-producing control becomes active, per shared-spec audio safety rule | "Enable sound for this activity" | Tab-reachable; `Enter`/`Space` activates; after activation the control becomes "Sound enabled" status text, not a button | Shows current gain as a %, once enabled (e.g. "Volume 20%") | `global.mute-button` (below) does not re-lock the context; only a full workspace reset re-requires the gesture | If Web Audio is denied/unsupported, button shows "Sound unavailable — visual mode only" and never claims success | Web Audio unsupported/denied → all audio-bearing controls run in visual-only mode automatically; no console error | `e2e/audio-safety.spec.ts › enable-sound gate blocks audio until explicit gesture; denial falls back to visual-only` |
+| `global.audio-permission-toggle` | Persisted checkbox | Master permission for optional audio controls; turning it off immediately mutes any enabled activity and locks activities to visual-only mode | "Enable sound" | Tab-reachable; `Space` toggles | Checked/unchecked plus explanatory hint that each activity still needs its own enable action | Persisted device preference; not changed by workspace reset | Off never disables visual equivalents or scientific controls | Web Audio unavailable still forces visual-only mode regardless of this preference | `sound.spec.ts › the header sound preference is a real master opt-out for activity audio`; persistence in `settings.spec.ts` |
 | `global.mute-button` | Toggle button | Silences audio output without tearing down the Web Audio context | "Mute sound" / "Unmute sound" | Tab-reachable; `Enter`/`Space` toggles; also `M` shortcut when an audio-enabled workspace has focus | Icon state (speaker/speaker-muted) is the only indicator; gain value in `enable-sound-button` readout still shown | Workspace reset does not unmute automatically (avoids surprising volume after reset); mutes on first load by default per "default muted" rule | N/A | Only visible on workspaces that called `enable-sound-button` successfully | `e2e/audio-safety.spec.ts › mute persists across reset and defaults to muted on load` |
 | `global.reduced-motion-toggle` | Toggle switch (also auto-set from OS `prefers-reduced-motion`) | Disables non-essential animation/transition and switches wave/motion simulations to discrete-step rendering | "Reduce motion" | Tab-reachable; `Enter`/`Space`/arrow keys (switch role) toggles | On/off state shown as switch position + text | Persisted in the settings store across sessions; not reset by workspace `global.reset-button` (a device preference, not simulation state) | N/A | No fallback needed — this control exists specifically to provide a lower-motion path | `e2e/accessibility-settings.spec.ts › reduced-motion toggle overrides and matches OS preference on first load` |
 | `global.low-graphics-toggle` | Toggle switch | Switches Canvas/WebGL scenes to reduced particle count / static-frame rendering; must not change any computed scientific value | "Low graphics mode" | Tab-reachable; `Enter`/`Space`/arrow keys toggles | On/off state shown as switch position + text | Persisted across sessions like `reduced-motion-toggle`; unaffected by workspace reset | N/A | This control is itself the fallback path for low-powered devices; if WebGL is entirely unavailable it is force-enabled and disabled from further toggling, with a note "Enabled automatically — 3D graphics unavailable" | `e2e/accessibility-settings.spec.ts › low-graphics mode never changes displayed numeric results` |
@@ -65,16 +68,23 @@ redefining them.
 | ID | Control | Effect | Accessible name | Keyboard behaviour | Units / current-value display | Reset behaviour | Error handling | Fallback | Browser test |
 |---|---|---|---|---|---|---|---|---|---|
 | `shell.skip-link` | Skip link | Moves focus directly to `<main>`, bypassing repeated navigation | "Skip to main content" | First focusable element on every page; `Enter` activates; visible on focus only | N/A | N/A | N/A | N/A — pure HTML anchor | `e2e/shell-navigation.spec.ts › skip link is the first tab stop and moves focus to main` |
-| `shell.nav-home` | Nav link | Routes to `/` topic map | "Home — topic map" | Tab-reachable in the primary nav landmark; `Enter` activates | Current-page state indicated with `aria-current="page"` | N/A | Unknown route falls back to the 404 route (see `shell.route-404`), never a blank page | N/A | `e2e/shell-navigation.spec.ts › all ten shell nav links route correctly and mark aria-current` |
-| `shell.nav-diagnostic` | Nav link | Routes to `/diagnostic` | "Diagnostic check" | as above | as above | N/A | as above | N/A | as above |
-| `shell.nav-guided-course` | Nav link | Routes to `/guided-course` | "Guided course" | as above | as above | N/A | as above | N/A | as above |
-| `shell.nav-explore` | Nav link | Routes to `/explore` | "Explore freely" | as above | as above | N/A | as above | N/A | as above |
-| `shell.nav-investigations` | Nav link | Routes to `/investigations` | "Investigations" | as above | as above | N/A | as above | N/A | as above |
-| `shell.nav-mastery` | Nav link | Routes to `/mastery` | "Mastery challenge" | as above | as above | N/A | as above | N/A | as above |
-| `shell.nav-glossary` | Nav link | Routes to `/glossary` | "Glossary" | as above | as above | N/A | as above | N/A | as above |
-| `shell.nav-progress` | Nav link | Routes to `/progress` | "Progress" | as above | as above | N/A | as above | N/A | as above |
-| `shell.nav-teacher-tools` | Nav link | Routes to `/teacher-tools` | "Teacher tools" | as above | as above | N/A | as above | N/A | as above |
-| `shell.nav-about` | Nav link | Routes to `/about` (sources, model limitations, accessibility, privacy) | "About, sources & accessibility" | as above | as above | N/A | as above | N/A | as above |
+| `shell.nav-home` | Nav link | Routes to `/` topic map | "Home" | Tab-reachable in the primary nav landmark; `Enter` activates | Current-page state indicated with `aria-current="page"` | N/A | Unknown route falls back to the 404 route, never a blank page | N/A | runtime parity/naming check in `tests/e2e/control-inventory.spec.ts`; navigation flow in `tests/e2e/shell.spec.ts` |
+| `shell.nav-waves` | Nav link | Routes to `/waves` | "Waves" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-sound` | Nav link | Routes to `/sound` | "Sound" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-light` | Nav link | Routes to `/light` | "Light" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-vision` | Nav link | Routes to `/vision` | "Vision" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-motion` | Nav link | Routes to `/motion` | "Motion" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-forces` | Nav link | Routes to `/forces` | "Forces" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-spectrum` | Nav link | Routes to `/spectrum` | "Spectrum" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-hearing` | Nav link | Routes to `/hearing` | "Hearing" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-ultrasound` | Nav link | Routes to `/ultrasound` | "Ultrasound" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-astronomy` | Nav link | Routes to `/astronomy` | "Astronomy" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-society` | Nav link | Routes to `/society` | "Society" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-mastery` | Nav link | Routes to `/mastery` | "Mastery" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-glossary` | Nav link | Routes to `/glossary` | "Glossary" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-progress` | Nav link | Routes to `/progress` | "Progress" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-teacher` | Nav link | Routes to `/teacher` | "Teacher" | as above | as above | N/A | as above | N/A | same |
+| `shell.nav-about` | Nav link | Routes to `/about` (sources, model limitations, accessibility, privacy) | "About" | as above | as above | N/A | as above | N/A | same |
 
 ---
 
@@ -408,6 +418,7 @@ are not controls they are explicitly exempt from keyboard focus and activation t
 | `optics.check-question` | MCQ/numeric question region | Presents the validated eight-question 7.3.1–7.3.3 bank | Prompt/answer labels vary by item | Native radio/text keyboard behaviour; empty/malformed never scores | check-question test + validation unit suite |
 | `optics.check-hint-button` | Progressive disclosure button | Reveals three increasingly strong hints | "Show a hint" / stronger / worked reasoning | Tab + Enter/Space | same |
 | `optics.check-submit-button` / `optics.check-next-button` / `optics.check-restart-button` | Buttons | Validates, advances after a scored answer, then permits a fresh bank attempt | Visible button text | Tab + Enter/Space; answer locked after scoring | same |
+| `optics.cer-editor` | Static CER region | Groups the refraction claim, evidence and reasoning fields under one stable runtime inventory ID | Region text begins with the refraction explanation prompt | Static grouping; child textareas and save button carry the keyboard interaction | CER test in `tests/e2e/optics.spec.ts`; runtime documentation parity in `tests/e2e/control-inventory.spec.ts` |
 | `optics.cer-claim-input` / `optics.cer-evidence-input` / `optics.cer-reasoning-input` | Textareas | Complete the 7.3.2 CER scaffold | Claim / Evidence / Reasoning | Each required in order; missing field named specifically | CER test in `tests/e2e/optics.spec.ts` |
 | `optics.cer-save-button` | Button | Saves complete CER evidence | "Save explanation as evidence" | Tab + Enter/Space | same |
 
@@ -512,7 +523,7 @@ for confirmation; simple empty-state reset is immediate.
 | `motion.investigation-aim-input`; `motion.investigation-hypothesis-input`; `motion.investigation-interpretation-input`; `motion.investigation-comparison-input`; `motion.investigation-conclusion-input`; `motion.investigation-limitation-input` | empty | each field required by name before 7.4.1/7.4.3 promotion |
 | `motion.export-csv-button`; `motion.export-json-button`; `motion.print-button`; `motion.save-investigation-button` | exports disabled until a trial; print available | CSV/JSON download test; complete investigation evidence |
 | `motion.check-question`; `motion.check-submit-button`; `motion.check-next-button`; `motion.check-hint-button`; `motion.check-restart-button` | first of six questions; 0 hints | outcomes 7.4.1–7.4.3; three hints; invalid input unscored |
-| `motion.cer-editor`; `motion.cer-0-input`…`motion.cer-3-input`; `motion.cer-save-button` | all empty | identifies the specific missing CER/limitation field |
+| `motion.cer-editor`; `motion.cer-0-input`; `motion.cer-1-input`; `motion.cer-2-input`; `motion.cer-3-input`; `motion.cer-save-button` | all empty | identifies the specific missing CER/limitation field |
 
 Static readouts `motion.distance-displacement-display`,
 `motion.speed-velocity-display` and `motion.trial-data-table` are semantic output, not
@@ -560,6 +571,7 @@ Covers app-plan §11.1–11.3.
 | As-built IDs | Default / constraint | Evidence and browser coverage |
 |---|---|---|
 | `forces.context-select`; `forces.delete-force-button` | horizontal context; no forces | weight/normal options are context-gated; maximum six forces |
+| `forces.vector-explanation-input`; `forces.save-vector-evidence-button` | empty explanation; save requires ≥1 valid force plus explanation | captures and saves 7.4.6 signed-vector evidence; missing requirements are named |
 | `forces.cart-sweep-select`; `forces.noise-seed-input`; `forces.cart-delete-trial-button` | force sweep; seed `4471`; empty table | two independent controlled series; fixed-seed reload reproduction |
 | `forces.cart-hypothesis-input`; `forces.cart-interpretation-input`; `forces.cart-verification-input`; `forces.cart-uncertainty-input`; `forces.cart-conclusion-input`; `forces.cart-limitation-input` | empty | each required by name; noisy mode additionally requires an identical repeat |
 | `forces.export-csv-button`; `forces.export-json-button`; `forces.print-button`; `forces.save-investigation-button` | exports disabled until a trial | schema-wrapped JSON and units-bearing CSV; 7.4.4/7.4.7 evidence |
@@ -567,7 +579,7 @@ Covers app-plan §11.1–11.3.
 | `forces.application-explanation-input`; `forces.save-application-evidence-button` | empty | requires interaction + explanation for 7.4.5 |
 | `forces.calculation-mode-select`; `forces.calculation-input-1`; `forces.calculation-input-2`; `forces.calculate-button`; `forces.calculation-interpretation-input`; `forces.save-calculation-evidence-button` | solve `a=F/m`; blank inputs | all nine rearrangements; zero/nonphysical denominators rejected; unit-labelled 7.4.7 evidence |
 | `forces.check-question`; `forces.check-submit-button`; `forces.check-next-button`; `forces.check-hint-button`; `forces.check-restart-button` | first of eight questions; 0 hints | outcomes 7.4.4–7.4.7; three hints; wrong-unit false positives |
-| `forces.cer-editor`; `forces.cer-0-input`…`forces.cer-3-input`; `forces.cer-save-button` | all empty | names the missing CER/limitation field before save |
+| `forces.cer-editor`; `forces.cer-0-input`; `forces.cer-1-input`; `forces.cer-2-input`; `forces.cer-3-input`; `forces.cer-save-button` | all empty | names the missing CER/limitation field before save |
 
 `forces.net-force-display` and `forces.newton-third-law-pair-display` are static
 text readouts and share the explicit static-readout keyboard exemption above. SVG
@@ -644,12 +656,12 @@ they can overflow locally.
 | Route | As-built IDs / controls | Default, validation and observable effect |
 |---|---|---|
 | `/spectrum` | `em-spectrum.zoom-pan-slider`; `region-select`; `wavelength-frequency-input-toggle`; `log-axis-toggle`; `atmospheric-overlay-toggle`; `source-detector-toggle`; `interaction-toggle`; `application-risk-toggle`; `evidence-card-toggle`; `scale-comparison-strip`; `dataset-property-select`; `dataset-citation-input` | X-ray/visible deep-link preset supported; exact f↔λ state; linear-axis warning; four disclosures and overlay are independent; empty citation never saves |
-| `/hearing` | `hearing.anatomy-part-outer-ear`, `-canal`, `-eardrum`, `-ossicles`, `-oval-window`, `-cochlear-fluid`, `-hair-cells`, `-auditory-nerve`; `frequency-location-slider`; `representation-ladder-toggle`; `protection-info-toggle` | Eight named stages are separate buttons; 20–20,000 Hz simplified place map; explanation under 30 characters is rejected |
+| `/hearing` | `hearing.anatomy-part-outer-ear`; `hearing.anatomy-part-canal`; `hearing.anatomy-part-eardrum`; `hearing.anatomy-part-ossicles`; `hearing.anatomy-part-oval-window`; `hearing.anatomy-part-cochlear-fluid`; `hearing.anatomy-part-hair-cells`; `hearing.anatomy-part-auditory-nerve`; `hearing.frequency-location-slider`; `hearing.representation-ladder-toggle`; `hearing.protection-info-toggle` | Eight named stages are separate buttons; 20–20,000 Hz simplified place map; explanation under 30 characters is rejected |
 | `/ultrasound` | `ultrasound.probe-angle-slider`; `probe-frequency-slider`; `tissue-phantom-select`; `pulse-trigger-button`; `bmode-image-toggle` | Angle −45…+45°, frequency 2…12 MHz, three synthetic phantoms; evidence requires a sent pulse and ≥30-character interpretation; table remains when B-mode is hidden |
 | `/astronomy` | planned five IDs in §7.2 | Band/star/velocity/window/line controls operate over curated data only; unmatched wavelengths say no line; velocity sign is paired with approaching/receding text |
 | `/society` | planned nine IDs in §10 plus `society.export-argument-button` | Repeatable criteria/evidence/bibliography controls; every named argument component is required before save/export; export is local JSON |
 | `/mastery` | planned five IDs in §11 plus `mastery.question-submit-button` | 20-item session drawn from a 101-question bank; empty responses never score; next is gated by an attempt; retry clears only the current question |
-| `/teacher` | `teacher.show-hide-labels-toggle`; `show-hide-values-toggle`; `show-hide-equations-toggle`; `show-hide-particles-toggle`; `show-hide-vectors-toggle`; `show-hide-trails-toggle`; `show-hide-answers-toggle`; `deep-link-generator`; `outcome-coverage-view`; `misconception-prompts-panel`; `printable-sheet-generator`; `progress-export-button`; `progress-import-button`; `reset-module-button`; `reset-all-button` | Seven persisted display layers affect tagged overlays; only whitelisted, student-data-free presets are generated; coverage is release-registry-backed; three print sheets; import capped at 1 MB; native confirmations cancel without mutation |
+| `/teacher` | `teacher.show-hide-labels-toggle`; `teacher.show-hide-values-toggle`; `teacher.show-hide-equations-toggle`; `teacher.show-hide-particles-toggle`; `teacher.show-hide-vectors-toggle`; `teacher.show-hide-trails-toggle`; `teacher.show-hide-answers-toggle`; `teacher.deep-link-generator`; `teacher.outcome-coverage-view`; `teacher.misconception-prompts-panel`; `teacher.printable-sheet-generator`; `teacher.progress-export-button`; `teacher.progress-import-button`; `teacher.reset-module-button`; `teacher.reset-all-button` | Seven persisted display layers affect tagged overlays; only whitelisted, student-data-free presets are generated; coverage is release-registry-backed; three print sheets; import capped at 1 MB; native confirmations cancel without mutation |
 
 Planned teacher annotation/model-limitation toggles were reconciled to the shipped
 equations/trails layers because those correspond to actual tagged representations.
@@ -665,7 +677,7 @@ zero rendered elements. No substitute controls or placeholder route ship.
 
 | Section | Controls listed |
 |---|---|
-| §1 Global/shared (incl. shell nav) | 20 |
+| §1 Global/shared (incl. 17 shipped shell-nav links) | 28 |
 | §2 Wave foundations (`wave-lab`) | 25 |
 | §3 EM spectrum (`em-spectrum`) | 13 |
 | §4 Sound laboratory (`sound-lab`) | 22 |
@@ -677,4 +689,4 @@ zero rendered elements. No substitute controls or placeholder route ship.
 | §10 Waves and motion in society (`society`) | 9 |
 | §11 Mastery challenge (`mastery`) | 5 |
 | §12 Teacher tools (`teacher`) | 15 |
-| **Total** | **181 planned rows** (175 in active release scope + 6 deferred cultural-sound controls), plus reconciled Stage 5/6 as-built evidence, assessment and teacher controls documented above |
+| **Total** | **189 planned/as-built rows** (183 in active release scope + 6 deferred cultural-sound controls), plus reconciled Stage 5/6 as-built evidence, assessment and teacher controls documented above |
