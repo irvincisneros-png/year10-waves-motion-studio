@@ -14,6 +14,12 @@ export default function NotFoundPage() {
           <Link to="/">Home — the learning map</Link>
         </li>
         <li>
+          <Link to="/waves">Wave foundations</Link>
+        </li>
+        <li>
+          <Link to="/sound">Sound laboratory</Link>
+        </li>
+        <li>
           <Link to="/glossary">Glossary</Link>
         </li>
         <li>

@@ -3,7 +3,7 @@
  *
  * The 11 planned workspaces of WaveMotion Studio, grouped by strand and
  * labelled with the syllabus outcomes each will cover. A workspace is marked
- * `available` (with a real `route`) only once it has passed its stage gate;
+ * `available` (with a real `route`) only once it has passed its builder gate;
  * everything else is `in-development` and rendered as a NON-interactive panel
  * (never a dead link/button). Stage 2 unlocked the wave-foundations workspace.
  *
@@ -70,7 +70,8 @@ export const learningMap: StrandGroup[] = [
         summary:
           'Compressions and rarefactions, how amplitude and frequency change loudness and pitch, and the Doppler effect.',
         outcomeCodes: ['7.2.1', '7.2.2', '7.2.3'],
-        status: 'in-development',
+        status: 'available',
+        route: '/sound',
       },
       {
         id: 'hearing',

@@ -25,6 +25,8 @@ export interface SimToolbarProps {
   presetId?: string;
   onPreset?: (id: string) => void;
   presetLabel?: string;
+  /** Override for a workspace-specific inventoried preset control. */
+  presetControlId?: string;
 }
 
 const SPEEDS: { value: number; label: string; short: string }[] = [
@@ -45,6 +47,7 @@ export function SimToolbar({
   presetId,
   onPreset,
   presetLabel = 'Choose a preset scenario',
+  presetControlId = 'global.preset-select',
 }: SimToolbarProps) {
   const reducedMotion = useSettingsStore((s) => s.reducedMotion);
   const presentationMode = useSettingsStore((s) => s.presentationMode);
@@ -132,7 +135,7 @@ export function SimToolbar({
             value={presetId}
             aria-label={presetLabel}
             data-testid="sim-preset"
-            data-control-id="global.preset-select"
+            data-control-id={presetControlId}
             onChange={(e) => onPreset(e.target.value)}
           >
             {presets.map((p) => (

@@ -19,8 +19,8 @@ export default function HomePage() {
     >
       <p className="home__status-note">
         The laboratories below unlock as they are completed and verified. The
-        Wave foundations laboratory is open now, along with the Glossary,
-        Progress, Teacher and About pages.
+        Wave foundations and Sound laboratories are open now, along with the
+        Glossary, Progress, Teacher and About pages.
       </p>
 
       {learningMap.map((group) => (

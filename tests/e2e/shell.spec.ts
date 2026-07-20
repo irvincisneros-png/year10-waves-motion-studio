@@ -63,15 +63,15 @@ test.describe('shell routes', () => {
     page,
   }) => {
     await page.goto('/#/');
-    // Stage 2: the wave-foundations card is unlocked; the other 10 remain
+    // Stage 3: wave foundations + sound are unlocked; the other 9 remain
     // non-interactive "In development" panels (never dead links/buttons).
-    await expect(page.getByText('In development')).toHaveCount(10);
-    await expect(page.getByText('Available')).toHaveCount(1);
+    await expect(page.getByText('In development')).toHaveCount(9);
+    await expect(page.getByText('Available')).toHaveCount(2);
     const cardControls = page.locator(
       'article.workspace-card a, article.workspace-card button',
     );
-    await expect(cardControls).toHaveCount(1);
-    await expect(cardControls.first()).toHaveText('Wave foundations');
+    await expect(cardControls).toHaveCount(2);
+    await expect(cardControls).toHaveText(['Wave foundations', 'Sound laboratory']);
   });
 
   test('offline: shell and visited routes still work after first load', async ({

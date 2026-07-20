@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { SHELL_ROUTES, WAVES_ROUTES } from './helpers';
+import { SHELL_ROUTES, SOUND_ROUTES, WAVES_ROUTES } from './helpers';
 
 /**
  * Stage 1+2 gate: zero console errors/warnings and zero unhandled rejections
@@ -8,6 +8,7 @@ import { SHELL_ROUTES, WAVES_ROUTES } from './helpers';
 const ROUTES = [
   ...SHELL_ROUTES.map((r) => r.url),
   ...WAVES_ROUTES.map((r) => r.url),
+  ...SOUND_ROUTES.map((r) => r.url),
   '/#/not-a-real-route',
 ];
 

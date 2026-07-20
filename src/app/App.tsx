@@ -16,11 +16,19 @@ import MeasurementLabPage from '../simulations/wave-foundations/MeasurementLabPa
 import WaveCheckPage from '../simulations/wave-foundations/WaveCheckPage';
 import WaveExplainPage from '../simulations/wave-foundations/WaveExplainPage';
 import WaveConnectPage from '../simulations/wave-foundations/WaveConnectPage';
+import { SoundLayout } from '../simulations/sound/SoundLayout';
+import SoundHubPage from '../simulations/sound/SoundHubPage';
+import CompressionPage from '../simulations/sound/CompressionPage';
+import PitchLoudnessPage from '../simulations/sound/PitchLoudnessPage';
+import DopplerPage from '../simulations/sound/DopplerPage';
+import SoundCheckPage from '../simulations/sound/SoundCheckPage';
+import SoundExplainPage from '../simulations/sound/SoundExplainPage';
+import SoundConnectPage from '../simulations/sound/SoundConnectPage';
 import { SettingsEffects } from './SettingsEffects';
 
 /**
  * Route table — shell routes (Stage 1) + the wave-foundations workspace
- * (Stage 2). Later workspace routes (/sound, /light, …) are added stage by
+ * (Stages 2–3). Later workspace routes (/light, …) are added stage by
  * stage; until then unknown URLs land on the not-found page, which lists what
  * IS available.
  *
@@ -44,6 +52,15 @@ export default function App() {
             <Route path="check" element={<WaveCheckPage />} />
             <Route path="explain" element={<WaveExplainPage />} />
             <Route path="connect" element={<WaveConnectPage />} />
+          </Route>
+          <Route path="sound" element={<SoundLayout />}>
+            <Route index element={<SoundHubPage />} />
+            <Route path="compression" element={<CompressionPage />} />
+            <Route path="pitch-loudness" element={<PitchLoudnessPage />} />
+            <Route path="doppler" element={<DopplerPage />} />
+            <Route path="check" element={<SoundCheckPage />} />
+            <Route path="explain" element={<SoundExplainPage />} />
+            <Route path="connect" element={<SoundConnectPage />} />
           </Route>
           <Route path="glossary" element={<GlossaryPage />} />
           <Route path="progress" element={<ProgressPage />} />

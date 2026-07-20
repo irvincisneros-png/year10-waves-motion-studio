@@ -5,7 +5,7 @@
 > An outcome is recorded as anything beyond `not built` only when it passes the stage
 > gates in `docs/plans/stage-gates.md` with evidence.
 
-Status values: `not built` · `prototype — not verified` · `in build` · `verified` · `deferred`
+Status values: `not built` · `prototype — not verified` · `in build` · `verified (builder)` · `verified` · `deferred`
 
 > Stage 1 note (2026-07-17): the shared shell (routes `/`, `/glossary`,
 > `/progress`, `/teacher`, `/about` + 404), design tokens, accessibility
@@ -21,9 +21,16 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 > `rng.ts`) replacing the prototype `waveEngine.ts`. Builder-run
 > `npm run verify` is green: oxlint 0 errors, tsc clean, 108 unit tests,
 > 217 e2e passed / 1 skipped (chromium-only offline sim on WebKit) across
-> Chromium + WebKit. "verified" below means exactly that — the
-> orchestrator's independent gate re-run is still to come before the rows
-> flip to plain `verified`.
+> Chromium + WebKit. It passed independent review and is tagged `stage-2`.
+
+> Stage 3 note (2026-07-20): the sound workspace (`/sound` + compression,
+> pitch/loudness, Doppler, Check, Explain and Connect) is built from tested
+> sound/Doppler engines with accessible non-audio equivalents. Web Audio is
+> strictly opt-in, muted by default and capped. Builder-run `npm run verify`
+> is green: oxlint 0 errors, tsc clean, 138 unit tests, 295 e2e passed / 1
+> skipped across Chromium + WebKit. Exact gate evidence is in
+> `docs/evidence/stage-3-evidence.md`. `verified (builder)` awaits independent
+> review before it may become plain `verified`.
 
 ## Outcomes
 
@@ -36,9 +43,9 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 7.1.5 | verified | `/waves/measure` ruler/timer/probe tools, presets (rope/water/sound/EM), seeded-noise mode, limitation prompt. Audited speed-cap bug is structurally gone (presets fix speed; λ derived) |
 | 7.1.6 | verified | v=fλ calculator (all rearrangements, unit-aware, division-guarded, inconsistent-triple rejection), λ vs 1/f trials table + graph + CSV/JSON export, interpretation prompt |
 | 7.1.7 | not built | |
-| 7.2.1 | prototype — not verified | SoundWaveSimulator.tsx exists; unaudited |
-| 7.2.2 | prototype — not verified | SoundPropertiesSimulator.tsx exists; unaudited |
-| 7.2.3 | not built | Doppler |
+| 7.2.1 | verified (builder) | `/sound/compression` links source motion, particle displacement, compression/rarefaction density, pressure and microphone trace; fixed physical viewport; tagged-particle table and evidence capture |
+| 7.2.2 | verified (builder) | `/sound/pitch-loudness` independently controls frequency/amplitude; safe opt-in audio plus visual pulse equivalent; controlled trials, graph, CSV/JSON export, interpretation and limitations |
+| 7.2.3 | verified (builder) | `/sound/doppler` uses emitted wavefront arrival timing for moving source/observer presets; source frequency remains fixed; graph/readouts and optional safely gated pitch |
 | 7.2.4 | not built | Ear explorer |
 | 7.2.5 | deferred | Cultural sound investigation — blocked on Irvin-approved sources |
 | 7.2.6 | not built | Ultrasound lab |
@@ -60,9 +67,9 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | Stage | Status |
 |---|---|
 | 0 — Scope and evidence contract | complete (tagged `stage-0`) |
-| 1 — Shared shell and foundations | built — `npm run verify` green (oxlint, tsc, 37 unit, 83 e2e across Chromium+WebKit); awaiting orchestrator gate review |
-| 2 — Wave laboratory vertical slice | built — `npm run verify` green (oxlint 0 errors, tsc, 108 unit, 217 e2e passed / 1 skipped across Chromium+WebKit); awaiting orchestrator gate review |
-| 3 — Sound module group | not started |
+| 1 — Shared shell and foundations | verified — tagged `stage-1` |
+| 2 — Wave laboratory vertical slice | verified — tagged `stage-2` (108 unit, 217 e2e passed / 1 skipped across Chromium+WebKit at its gate) |
+| 3 — Sound module group | built — builder verification green (138 unit, 295 e2e passed / 1 skipped across Chromium+WebKit); evidence in `docs/evidence/stage-3-evidence.md`; awaiting independent review |
 | 4 — Light and vision module group | not started |
 | 5 — Motion and force module group | not started |
 | 6 — Astronomy/mastery/teacher/progress/offline | not started |

@@ -6,7 +6,7 @@ the NSW Junior Science Syllabus, focus area 7 "Waves and motion", 2026-07-17 —
 teaching content, interaction, representation, student task, assessable evidence,
 misconception addressed, model limitation, and build stage.
 
-**Status legend:** `not built` · `in build` · `verified` (builder ran the stage-gate checks green; orchestrator re-run pending) · `verified` (passed its stage gate with evidence) · `deferred`.
+**Status legend:** `not built` · `in build` · `verified (builder)` (builder gate-checks green; orchestrator re-run pending) · `verified` (passed its stage gate with evidence) · `deferred`.
 Prototype code from the pre-audit build does **not** count as coverage — every row starts
 `not built` until it passes `docs/plans/stage-gates.md`.
 
@@ -26,9 +26,9 @@ Prototype code from the pre-audit build does **not** count as coverage — every
 
 | Code | Route | Teaching content | Interaction / simulation | Representation | Student task | Assessable evidence | Misconception addressed | Model limitation | Stage | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 7.2.1 | `/sound/compression` | Sound as compressions/rarefactions | Vibrating source → particle displacement → pressure bands → mic trace (4 linked reps) | Canvas + pressure–time SVG graph | Tag particles; relate density bands to pressure trace | Explanation of oscillation vs energy direction | "Sound particles fly from source to ear" | 343 m/s dry air 20 °C reference | 3 | not built |
-| 7.2.2 | `/sound/pitch-loudness` | Amplitude→loudness, frequency→pitch | Opt-in Web Audio + oscilloscope/spectrum, visual-only mode | Waveform SVG + optional audio | Vary amplitude & frequency independently | Experiment distinguishing pitch vs loudness | "Amplitude changes pitch"; "volume = loudness" | Not calibrated SPL; hearing non-linear | 3 | not built |
-| 7.2.3 | `/sound/doppler` | Doppler effect | 1D moving source/observer, wavefronts, detected-frequency graph | Canvas wavefronts + SVG graph + optional audio | Set motion presets, read detected frequency | Explanation of arrival-timing cause | "The source changes its frequency" | 1D; wave speed fixed vs medium; no sonic boom | 3 | not built |
+| 7.2.1 | `/sound/compression` | Sound as compressions/rarefactions | Vibrating source → particle displacement → pressure bands → mic trace (4 linked reps) | Canvas + pressure–time SVG graph + tabular particle alternative | Tag particles; relate density bands to pressure trace | Explanation of oscillation vs energy direction | "Sound particles fly from source to ear" | 343 m/s dry air 20 °C reference; fixed 3.12 m viewport; particle positions use relative units | 3 | verified (builder) |
+| 7.2.2 | `/sound/pitch-loudness` | Amplitude→loudness, frequency→pitch | Opt-in capped Web Audio + oscilloscope/spectrum, pulse equivalent, visual-only mode | Waveform SVG + tabular/visual equivalents + optional audio | Vary amplitude & frequency independently in controlled trials | Trial table/graph/export, interpretation and limitation evidence | "Amplitude changes pitch"; "volume = loudness" | Not calibrated SPL; hearing non-linear | 3 | verified (builder) |
+| 7.2.3 | `/sound/doppler` | Doppler effect | 1D moving source/observer, emitted wavefronts, arrival-timed detected-frequency graph | Canvas wavefronts + SVG graph + accessible readouts + optional audio | Set motion presets, compare source and detected frequency | Explanation of arrival-timing cause | "The source changes its frequency" | 1D subsonic model; wave speed fixed vs medium; no sonic boom | 3 | verified (builder) |
 | 7.2.4 | `/hearing` | Ear responds to sound | Trace outer→middle→inner ear pathway | Precise SVG cutaway | Order the transduction pathway | Mechanical→fluid→electrical explanation | "The eardrum sends signals to the brain directly" | Simplified cochlear frequency mapping | 6 | not built |
 | 7.2.5 | `/sound/materials` | Material choice & sound transfer in Aboriginal and/or Torres Strait Islander instruments | Material-property investigation (community-specific, sourced) | SVG + data table | Compare sound transfer by material | Investigation with attributed sources | Pan-Indigenous generalisation | Synthesised acoustics are a model, not a recording | 6 | **deferred** (needs Irvin-approved community sources) |
 | 7.2.6 | `/ultrasound` | Sound in medical diagnosis | Pulse-echo on synthetic tissue phantom | Canvas B-mode + depth calc | Send pulses, interpret echo timing/depth | Depth-from-echo reasoning | "Ultrasound photographs the body" | Synthetic phantom; not clinical | 6 | not built |
@@ -67,8 +67,10 @@ Prototype code from the pre-audit build does **not** count as coverage — every
   Until then it is absent from release navigation (not an "under construction" tease).
   This is the honest fallback; cultural content is never generated.
 
-## Initial classroom release (Stages 0–2 + sound intro)
+## Builder-verified classroom release (Stages 0–3)
 
 Included and navigable: shell + learning map, wave-foundations workspace (7.1.1–7.1.6),
-v=fλ calculator + conversions, linked graphs, sound-compression introduction (7.2.1),
-basic progress/evidence capture. Everything marked Stage 4+ is deferred and hidden until built.
+v=fλ calculator + conversions, linked graphs, and the complete sound workspace for
+compression, pitch/loudness and Doppler effect (7.2.1–7.2.3), with Check, Explain,
+Connect and progress/evidence capture. Stage 3 is awaiting independent gate review;
+everything marked Stage 4+ is deferred and hidden until built.

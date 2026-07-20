@@ -6,6 +6,7 @@ import {
   checkAnswer,
 } from '../../../src/assessment/validate';
 import { waveQuestions } from '../../../src/assessment/waveQuestions';
+import { soundQuestions } from '../../../src/assessment/soundQuestions';
 import type {
   McqQuestion,
   NumericQuestion,
@@ -124,6 +125,53 @@ describe('question-bank schema integrity', () => {
       if (q.kind !== 'mcq') continue;
       expect(q.options.filter((o) => o.correct)).toHaveLength(1);
       for (const o of q.options) expect(o.feedback.length).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe('sound question-bank integrity and false-positive regressions', () => {
+  it('has unique ids, three progressive hints, and covers outcomes 7.2.1–7.2.3', () => {
+    const ids = new Set<string>();
+    const allowed = new Set(['7.2.1', '7.2.2', '7.2.3']);
+    for (const q of soundQuestions) {
+      expect(ids.has(q.id), `duplicate id ${q.id}`).toBe(false);
+      ids.add(q.id);
+      expect(q.hints.map((hint) => hint.level)).toEqual([1, 2, 3]);
+      expect(allowed.has(q.outcomeCode), `${q.id} outcome ${q.outcomeCode}`).toBe(true);
+    }
+    expect(new Set(soundQuestions.map((q) => q.outcomeCode))).toEqual(allowed);
+  });
+
+  it('never scores empty, malformed, unknown, or misconception answers as correct', () => {
+    for (const q of soundQuestions) {
+      expect(
+        checkAnswer(q, { raw: '', optionId: null, unit: null }).correct,
+        `${q.id} empty answer`,
+      ).toBe(false);
+      if (q.kind === 'mcq') {
+        expect(q.options.filter((option) => option.correct)).toHaveLength(1);
+        for (const option of q.options) {
+          expect(option.feedback.length).toBeGreaterThan(0);
+          if (!option.correct) {
+            const result = checkAnswer(q, { raw: '', optionId: option.id, unit: null });
+            expect(result.status, `${q.id}/${option.id}`).toBe('incorrect');
+            expect(result.correct, `${q.id}/${option.id}`).toBe(false);
+            expect(result.feedback).toBe(option.feedback);
+          }
+        }
+        expect(checkAnswer(q, { raw: '', optionId: 'unknown', unit: null }).correct).toBe(false);
+      } else if (q.kind === 'numeric') {
+        expect(checkAnswer(q, { raw: 'abc', optionId: null, unit: null }).correct).toBe(false);
+        expect(checkAnswer(q, { raw: String(q.exactValue * 2), optionId: null, unit: null }).correct).toBe(false);
+        expect(
+          checkAnswer(q, {
+            raw: q.exactValue.toPrecision(3),
+            optionId: null,
+            unit: null,
+          }).correct,
+          `${q.id} accepts a 3-s.f. answer`,
+        ).toBe(true);
+      }
     }
   });
 });
