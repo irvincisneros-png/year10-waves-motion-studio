@@ -639,11 +639,12 @@ Cross-cutting per the shared spec's "Shared teacher experience". References `glo
 
 ## Stage 6 as-built reconciliation (2026-07-20)
 
-The Stage 6 routes use semantic HTML/CSS and native controls. Every control below
-is exercised in `tests/e2e/stage-six.spec.ts` in Chromium and WebKit; shared axe,
-console and five-width responsive matrices import `COMPLETION_ROUTES`. Static
-tables/readouts are not activation targets but remain keyboard-scrollable where
-they can overflow locally.
+The Stage 6 routes use semantic HTML/CSS and native controls. Their main learning,
+validation, evidence and export flows are exercised in `tests/e2e/stage-six.spec.ts`
+in Chromium and WebKit; runtime IDs/names are swept by `control-inventory.spec.ts`,
+while shared axe, console and five-width responsive matrices import
+`COMPLETION_ROUTES`. Static tables/readouts are not activation targets but remain
+keyboard-scrollable where they can overflow locally.
 
 | Route | As-built IDs / controls | Default, validation and observable effect |
 |---|---|---|
@@ -679,6 +680,6 @@ zero rendered elements. No substitute controls or placeholder route ship.
 | §8 Describing motion (`motion`) | 15 planned rows + as-built ID splits/evidence controls in §8.4 |
 | §9 Forces and Newton's laws (`forces`) | 15 planned rows + as-built ID splits/evidence controls in §9.4 |
 | §10 Waves and motion in society (`society`) | 9 |
-| §11 Mastery challenge (`mastery`) | 5 |
+| §11 Mastery challenge (`mastery`) | 6 |
 | §12 Teacher tools (`teacher`) | 15 |
-| **Total** | **189 planned/as-built rows** (183 in active release scope + 6 deferred cultural-sound controls), plus reconciled Stage 5/6 as-built evidence, assessment and teacher controls documented above |
+| **Total** | **190 planned/as-built rows** (184 in active release scope + 6 deferred cultural-sound controls), plus reconciled Stage 5/6 as-built evidence, assessment and teacher controls documented above |
