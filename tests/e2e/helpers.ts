@@ -167,6 +167,17 @@ export const SOUND_ROUTES: ShellRoute[] = [
   },
 ];
 
+/** Stage 4 light-and-vision group routes. */
+export const LIGHT_ROUTES: ShellRoute[] = [
+  { path: '/light', url: '/#/light', heading: 'Light & vision laboratory', title: 'Light & vision laboratory — WaveMotion Studio', navLabel: 'Light' },
+  { path: '/vision', url: '/#/vision', heading: 'How the eye responds to light', title: 'How the eye responds to light — WaveMotion Studio', navLabel: 'Vision' },
+  { path: '/light/properties', url: '/#/light/properties', heading: 'Investigate light properties', title: 'Investigate light properties — WaveMotion Studio', navLabel: 'Light' },
+  { path: '/light/applications', url: '/#/light/applications', heading: 'Everyday applications of light', title: 'Everyday applications of light — WaveMotion Studio', navLabel: 'Light' },
+  { path: '/light/check', url: '/#/light/check', heading: 'Check light & vision', title: 'Check light & vision — WaveMotion Studio', navLabel: 'Light' },
+  { path: '/light/explain', url: '/#/light/explain', heading: 'Explain refraction with evidence', title: 'Explain refraction with evidence — WaveMotion Studio', navLabel: 'Light' },
+  { path: '/light/connect', url: '/#/light/connect', heading: 'Light in the real world', title: 'Light in the real world — WaveMotion Studio', navLabel: 'Light' },
+];
+
 /**
  * Key that moves focus to the next focusable element INCLUDING links.
  * WebKit (Safari) skips links on plain Tab; Option+Tab visits everything.

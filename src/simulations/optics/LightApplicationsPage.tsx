@@ -49,7 +49,7 @@ export default function LightApplicationsPage() {
 
   return (
     <Page title="Everyday applications of light" lead="Use reflection, refraction and absorption evidence to justify a design — and state the assumptions that limit your claim.">
-      <div className="seg-control__options"><button type="button" className="btn" onClick={reset} data-control-id="global.reset-button" data-testid="applications-reset">↺ Reset applications</button></div>
+      <div className="seg-control__options"><button type="button" className="btn" onClick={reset} data-control-id="global.reset-button" data-testid="applications-reset"><span aria-hidden="true">↺</span> Reset applications</button></div>
 
       <section className="card stack" aria-labelledby="mirror-application-heading">
         <h2 id="mirror-application-heading">Mirrors — periscopes and reflectors</h2>
@@ -61,7 +61,7 @@ export default function LightApplicationsPage() {
         <h2 id="lens-application-heading">Lenses — qualitative image models</h2>
         <div className="light-controls">
           <div className="field"><label className="field__label" htmlFor="lens-type">Lens type</label><select id="lens-type" className="field__unit" value={lensType} onChange={(event) => setLensType(event.target.value as LensType)} data-control-id="optics.lens-type-select" data-testid="lens-type"><option value="converging">Converging</option><option value="diverging">Diverging</option></select></div>
-          <fieldset className="seg-control"><legend>Object position</legend><div className="seg-control__options"><label><input type="radio" name="object-position" value="near" checked={objectPosition === 'near'} onChange={() => setObjectPosition('near')} /> Near</label><label><input type="radio" name="object-position" value="far" checked={objectPosition === 'far'} onChange={() => setObjectPosition('far')} /> Far</label></div></fieldset>
+          <fieldset className="seg-control" data-control-id="optics.lens-object-position"><legend>Object position</legend><div className="seg-control__options"><label><input type="radio" name="object-position" value="near" checked={objectPosition === 'near'} onChange={() => setObjectPosition('near')} /> Near</label><label><input type="radio" name="object-position" value="far" checked={objectPosition === 'far'} onChange={() => setObjectPosition('far')} /> Far</label></div></fieldset>
         </div>
         <p role="status" data-testid="lens-outcome"><strong>Model result:</strong> {qualitativeLensImage(lensType, objectPosition)}</p>
         <p className="seg-control__note">This is a scaffolded ray-path comparison. No focal length or lens equation is fabricated or required.</p>

@@ -38,7 +38,7 @@ export function checkMcq(q: McqQuestion, selectedOptionId: string | null): Attem
 /** Numeric entry: empty/non-numeric/negative rejected; then §3.5 tolerance. */
 export function checkNumeric(q: NumericQuestion, raw: string): AttemptResult {
   const parsed = parseNumericField(raw, {
-    label: 'value',
+    label: 'numeric',
     allowNegative: q.exactValue < 0,
     allowZero: q.exactValue === 0,
   });

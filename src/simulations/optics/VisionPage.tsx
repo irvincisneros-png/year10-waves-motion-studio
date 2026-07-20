@@ -65,7 +65,7 @@ export default function VisionPage() {
   return (
     <Page title="How the eye responds to light" lead="Adjust a relative eye model, then separate optical image formation from neural interpretation.">
       <div className="seg-control__options">
-        <button type="button" className="btn" onClick={reset} data-testid="vision-reset" data-control-id="global.reset-button">↺ Reset vision model</button>
+        <button type="button" className="btn" onClick={reset} data-testid="vision-reset" data-control-id="global.reset-button"><span aria-hidden="true">↺</span> Reset vision model</button>
       </div>
 
       <section className="card stack" aria-labelledby="vision-model-heading">
@@ -87,7 +87,7 @@ export default function VisionPage() {
           <EyeDiagram pupilOpeningPercent={pupil} imageScale={imageScale} focus={focus} />
           <div className="stack">
             <dl className="light-readouts">
-              <div data-control-id="vision.pupil-response-display" role="status" aria-label="Relative pupil opening"><dt>Relative pupil opening</dt><dd data-testid="vision-pupil">{pupil.toFixed(0)}% — teaching model, not millimetres</dd></div>
+              <div data-control-id="vision.pupil-response-display"><dt>Relative pupil opening</dt><dd data-testid="vision-pupil">{pupil.toFixed(0)}% — teaching model, not millimetres</dd></div>
               <div><dt>Retinal image size</dt><dd data-testid="vision-image-size">{imageScale.toFixed(2)} relative units</dd></div>
               <div><dt>Focus state</dt><dd data-testid="vision-focus">{focus.status}; ideal relative accommodation {focus.idealAccommodationPercent.toFixed(0)}%</dd></div>
             </dl>
@@ -107,7 +107,7 @@ export default function VisionPage() {
       <section className="card stack" aria-labelledby="blind-heading">
         <h2 id="blind-heading">Explore — text-guided blind-spot demonstration</h2>
         <p role="status" data-testid="blind-step">Step {blindStep + 1} of {BLIND_SPOT_STEPS.length}: {BLIND_SPOT_STEPS[blindStep]}</p>
-        <p aria-hidden="true" style={{ fontSize: '2rem', letterSpacing: '8rem', textAlign: 'center' }}>＋ •</p>
+        <p aria-hidden="true" className="blind-spot-target"><span>＋</span><span>•</span></p>
         <button type="button" className="btn" data-control-id="vision.blind-spot-demo-button" data-testid="vision-blind-spot" onClick={() => { const next = (blindStep + 1) % BLIND_SPOT_STEPS.length; setBlindStep(next); announce(`Blind-spot demonstration step ${next + 1}.`); }}>Run blind spot demonstration — next step</button>
       </section>
 

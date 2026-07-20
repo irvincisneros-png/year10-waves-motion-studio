@@ -67,7 +67,9 @@ export default function LightPropertiesPage() {
   const [illuminantId, setIlluminantId] = useState<IlluminantId>('daylight');
   const [particleSize, setParticleSize] = useState(20);
   const [trials, setTrials] = useState<Trial[]>([]);
+  const [hypothesis, setHypothesis] = useState('');
   const [interpretation, setInterpretation] = useState('');
+  const [conclusion, setConclusion] = useState('');
   const [limitation, setLimitation] = useState('');
   const [evidenceStatus, setEvidenceStatus] = useState<'idle' | 'error' | 'saved'>('idle');
   const { announce } = useAnnouncer();
@@ -100,7 +102,7 @@ export default function LightPropertiesPage() {
     if (trials.length > 0 && !window.confirm('Clear all light-property trials and reset the laboratory?')) return;
     setSourceX(20); setMirrorX(50); setMirrorRotation(60); setShowNormal(true); setProtractor(false); setMirrorType('plane'); setChallenge('none');
     setFirstMediumId('air'); setSecondMediumId('water'); setIncidentAngle(30); setShowSnell(false); setTirDemo(false); setShowFibre(false);
-    setSurfaceId('smoked-glass'); setIlluminantId('daylight'); setParticleSize(20); setTrials([]); setInterpretation(''); setLimitation(''); setEvidenceStatus('idle');
+    setSurfaceId('smoked-glass'); setIlluminantId('daylight'); setParticleSize(20); setTrials([]); setHypothesis(''); setInterpretation(''); setConclusion(''); setLimitation(''); setEvidenceStatus('idle');
     announce('Light properties laboratory reset.');
   };
 
@@ -115,13 +117,13 @@ export default function LightPropertiesPage() {
   };
 
   const saveEvidence = () => {
-    if (trials.length < 3 || !trials.some((t) => t.kind === 'reflection') || !trials.some((t) => t.kind === 'refraction') || !trials.some((t) => t.kind === 'energy') || interpretation.trim() === '' || limitation.trim() === '') {
+    if (reflectionPoints.length < 2 || !trials.some((t) => t.kind === 'refraction') || !trials.some((t) => t.kind === 'energy') || hypothesis.trim() === '' || interpretation.trim() === '' || conclusion.trim() === '' || limitation.trim() === '') {
       setEvidenceStatus('error');
       setOutcomeLevel('7.3.2', nextLevelAfterAttempt(outcomes['7.3.2'] ?? 'not-attempted'));
-      announce('Complete all three trial types, interpretation and limitation before saving.');
+      announce('Complete the hypothesis, two reflection trials, refraction and energy trials, interpretation, conclusion and limitation before saving.');
       return;
     }
-    addEvidence({ outcomeCode: '7.3.2', kind: 'investigation', summary: `Light properties investigation (${trials.length} trials). Interpretation: ${interpretation.trim()} | Limitation/improvement: ${limitation.trim()}` });
+    addEvidence({ outcomeCode: '7.3.2', kind: 'investigation', summary: `Light properties investigation (${trials.length} trials). Hypothesis: ${hypothesis.trim()} | Interpretation: ${interpretation.trim()} | Conclusion: ${conclusion.trim()} | Limitation/improvement: ${limitation.trim()}` });
     setOutcomeLevel('7.3.2', nextLevelAfterSuccess(outcomes['7.3.2'] ?? 'not-attempted'));
     setEvidenceStatus('saved');
     announce('Light investigation saved as evidence.');
@@ -132,7 +134,7 @@ export default function LightPropertiesPage() {
 
   return (
     <Page title="Investigate light properties" lead="Measure reflection and refraction, then compare a normalised absorption/scattering model. Record all three kinds of evidence.">
-      <div className="seg-control__options"><button type="button" className="btn" onClick={reset} data-testid="optics-reset" data-control-id="global.reset-button">↺ Reset light laboratory</button></div>
+      <div className="seg-control__options"><button type="button" className="btn" onClick={reset} data-testid="optics-reset" data-control-id="global.reset-button"><span aria-hidden="true">↺</span> Reset light laboratory</button></div>
 
       <section className="card stack" aria-labelledby="reflection-heading">
         <h2 id="reflection-heading">1. Reflection — measure from the normal</h2>
@@ -163,7 +165,7 @@ export default function LightPropertiesPage() {
         </div>
         <RayDiagram mode="refraction" incidentAngleDeg={incidentAngle} result={refraction} firstMedium={firstMedium.label} secondMedium={secondMedium.label} />
         <dl className="light-readouts">
-          <div data-control-id="optics.frequency-constant-indicator" role="status" aria-label="Frequency at the boundary"><dt>Frequency at boundary</dt><dd data-testid="frequency-constant">{DEFAULT_LIGHT_FREQUENCY_HZ.toExponential(2)} Hz — unchanged across boundary</dd></div>
+          <div data-control-id="optics.frequency-constant-indicator"><dt>Frequency at boundary</dt><dd data-testid="frequency-constant">{DEFAULT_LIGHT_FREQUENCY_HZ.toExponential(2)} Hz — unchanged across boundary</dd></div>
           <div><dt>Speed</dt><dd>{formatSigFigs(refraction.speedBeforeMps, 3)} → {formatSigFigs(refraction.speedAfterMps, 3)} m/s</dd></div>
           <div><dt>Wavelength</dt><dd>{formatSigFigs(refraction.wavelengthBeforeM * 1e9, 3)} → {formatSigFigs(refraction.wavelengthAfterM * 1e9, 3)} nm</dd></div>
           <div><dt>Ray result</dt><dd data-testid="refraction-readout">{refraction.totalInternalReflection ? 'Total internal reflection — no refracted ray.' : `Refracted angle ${refraction.refractedAngleDeg!.toFixed(1)}° from normal.`}</dd></div>
@@ -191,14 +193,16 @@ export default function LightPropertiesPage() {
 
       <section className="card stack" aria-labelledby="results-heading">
         <h2 id="results-heading">Results, graph and evidence</h2>
-        <dl><dt>Aim</dt><dd>Test how light direction and energy sharing respond to one changed boundary/material variable at a time.</dd><dt>Variables</dt><dd>Independent: selected angle, medium pair or surface/illuminant. Dependent: measured ray angle or energy fraction. Controls: keep all other settings fixed during a comparison.</dd><dt>Method and safety</dt><dd>Use this deterministic model, record at least one trial of each type, interpret the pattern and name a limitation. A virtual model does not replace supervised practical work or a school risk assessment; do not improvise laser activities.</dd></dl>
+        <dl><dt>Aim</dt><dd>Test how light direction and energy sharing respond to one changed boundary/material variable at a time.</dd><dt>Variables</dt><dd>Independent: selected angle, medium pair or surface/illuminant. Dependent: measured ray angle or energy fraction. Controls: keep all other settings fixed during a comparison.</dd><dt>Method and safety</dt><dd>Predict first. Record two different reflection angles for the graph, then at least one refraction and one energy trial. This deterministic model has no random measurement variation, so repeated identical trials add no evidence. A virtual model does not replace supervised practical work or a school risk assessment; do not improvise laser activities.</dd></dl>
+        <label className="notice-capture__label">Hypothesis<span className="seg-control__note">Predict the relationship you expect and give a scientific reason before interpreting the results.</span><textarea className="notice-capture__input" rows={3} value={hypothesis} onChange={(event) => { setHypothesis(event.target.value); setEvidenceStatus('idle'); }} data-testid="optics-hypothesis" /></label>
         <div className="optics-trials-wrap"><table className="optics-trials" data-testid="optics-trials"><caption>Light-property investigation trials</caption><thead><tr><th scope="col">Trial</th><th scope="col">Type</th><th scope="col">Inputs</th><th scope="col">Result</th><th scope="col">Remove</th></tr></thead><tbody>{trials.length === 0 ? <tr><td colSpan={5}>No trials yet — record reflection, refraction and energy evidence above.</td></tr> : trials.map((trial, index) => <tr key={trial.id}><td>{index + 1}</td><td>{trial.kind}</td><td>{trial.input}</td><td>{trial.result}</td><td><button type="button" className="btn" aria-label={`Delete trial ${index + 1}`} onClick={() => setTrials((current) => current.filter((item) => item.id !== trial.id))}>Delete</button></td></tr>)}</tbody></table></div>
         {reflectionPoints.length >= 2 ? <LineGraph title="Recorded law-of-reflection trials" xLabel="incident angle (° from normal)" yLabel="reflected angle (° from normal)" series={[{ label: 'Measured reflection', points: reflectionPoints, mode: 'scatter' }, { label: 'θᵣ = θᵢ reference', points: [{ at: 0, value: 0 }, { at: 89, value: 89 }] }]} xDomain={[0, 89]} yDomain={[0, 89]} testId="reflection-graph" /> : <p>Add at least two reflection trials to graph reflected angle against incident angle.</p>}
-        <div className="seg-control__options"><button type="button" className="btn" disabled={trials.length === 0} onClick={() => downloadText('wavemotion-light-trials.csv', trialsCsv(), 'text/csv')} data-testid="optics-export-csv">Export trials (CSV)</button><button type="button" className="btn" disabled={trials.length === 0} onClick={() => downloadText('wavemotion-light-trials.json', trialsJson(), 'application/json')} data-testid="optics-export-json">Export trials (JSON)</button></div>
+        <div className="seg-control__options"><button type="button" className="btn" disabled={trials.length === 0} onClick={() => downloadText('wavemotion-light-trials.csv', trialsCsv(), 'text/csv')} data-testid="optics-export-csv">Export trials (CSV)</button><button type="button" className="btn" disabled={trials.length === 0} onClick={() => downloadText('wavemotion-light-trials.json', trialsJson(), 'application/json')} data-testid="optics-export-json">Export trials (JSON)</button><button type="button" className="btn" onClick={() => window.print()} data-testid="optics-print">Print investigation</button></div>
         <label className="notice-capture__label">What pattern did your measurements show?<textarea className="notice-capture__input" rows={3} value={interpretation} onChange={(event) => { setInterpretation(event.target.value); setEvidenceStatus('idle'); }} data-testid="optics-interpretation" /></label>
+        <label className="notice-capture__label">Conclusion<span className="seg-control__note">Answer the aim using your recorded measurements and state whether they support the hypothesis.</span><textarea className="notice-capture__input" rows={3} value={conclusion} onChange={(event) => { setConclusion(event.target.value); setEvidenceStatus('idle'); }} data-testid="optics-conclusion" /></label>
         <label className="notice-capture__label">Limitation and improvement<span className="seg-control__note">Name a ray/ledger model limitation and how real measured evidence could improve the comparison.</span><textarea className="notice-capture__input" rows={3} value={limitation} onChange={(event) => { setLimitation(event.target.value); setEvidenceStatus('idle'); }} data-testid="optics-limitation" /></label>
         <button type="button" className="btn btn--primary" onClick={saveEvidence} data-testid="optics-save-evidence">Save investigation as evidence</button>
-        {evidenceStatus === 'error' ? <p className="field__error" role="status">Record reflection, refraction and energy trials, then complete both written fields.</p> : null}
+        {evidenceStatus === 'error' ? <p className="field__error" role="status">Complete the hypothesis; record two reflection angles plus refraction and energy trials; then complete the interpretation, conclusion and limitation.</p> : null}
         {evidenceStatus === 'saved' ? <p className="notice-capture__status" role="status">✓ Saved for outcome 7.3.2. Export the complete progress record on the <Link to="/progress">Progress page</Link>.</p> : null}
       </section>
     </Page>

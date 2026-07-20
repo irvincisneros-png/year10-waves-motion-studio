@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { SHELL_ROUTES, SOUND_ROUTES, WAVES_ROUTES } from './helpers';
+import { LIGHT_ROUTES, SHELL_ROUTES, SOUND_ROUTES, WAVES_ROUTES } from './helpers';
 
 const WIDTHS = [320, 375, 768, 1024, 1440];
 
@@ -10,7 +10,7 @@ test.describe('responsive layout', () => {
     }) => {
       await page.setViewportSize({ width, height: 800 });
 
-      for (const route of [...SHELL_ROUTES, ...WAVES_ROUTES, ...SOUND_ROUTES]) {
+      for (const route of [...SHELL_ROUTES, ...WAVES_ROUTES, ...SOUND_ROUTES, ...LIGHT_ROUTES]) {
         await page.goto(route.url);
         await expect(
           page.getByRole('heading', { level: 1, name: route.heading }),
@@ -86,5 +86,17 @@ test.describe('responsive layout', () => {
       expect(box, `${name} has a bounding box`).not.toBeNull();
       expect(box!.height, `${name} height`).toBeGreaterThanOrEqual(44);
     }
+  });
+
+  test('light-lab interactive targets meet the 44px minimum at 320px', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto('/#/light/properties');
+    for (const name of ['Light source position', 'Incident angle', 'Atmospheric particle size']) {
+      const box = await page.getByRole('slider', { name }).boundingBox();
+      expect(box, `${name} has a bounding box`).not.toBeNull();
+      expect(box!.height, `${name} height`).toBeGreaterThanOrEqual(44);
+    }
+    const reset = await page.getByRole('button', { name: 'Reset light laboratory' }).boundingBox();
+    expect(reset!.height).toBeGreaterThanOrEqual(44);
   });
 });
