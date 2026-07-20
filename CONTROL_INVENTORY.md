@@ -227,7 +227,7 @@ Covers app-plan §6.1–6.3. Uses `global.enable-sound-button`, `global.mute-but
 | `sound-lab.oscilloscope-timescale-slider` | Range slider | Adjusts the time window shown on the oscilloscope trace | "Oscilloscope time scale" | Tab, `←`/`→` step, `Home`/`End` to bounds | Live "Window: 10 ms" | Returns to default 10 ms window | Clamped to a sensible display range [1 ms, 100 ms] | Trace still renders (as SVG) with audio unavailable, since it is driven by the same synthesiser state, not by audio output | `e2e/sound-lab.spec.ts › oscilloscope time scale clamps and renders trace even when audio is denied` |
 | `sound-lab.spectrum-view-toggle` | Toggle (Oscilloscope / Spectrum) | Switches the visualisation between time-domain trace and frequency-domain bar | "Visualisation view" | Tab, arrow keys, `Enter` | Selected view label | Returns to "Oscilloscope" default | N/A | Both views work without audio output (driven by the deterministic waveform model, not the audio graph) | `e2e/sound-lab.spec.ts › spectrum view toggle switches visualisation and works without audio` |
 | `sound-lab.visual-only-mode-toggle` | Checkbox | Explicit opt-in to run the entire pitch/loudness module with audio permanently muted | "Visual-only mode (no sound)" | Tab-reachable; `Space` toggles | Checked/unchecked | Persists across this workspace's session; unaffected by `global.reset-button` | N/A | This *is* the accessible fallback; auto-enabled with `aria-describedby` explanation if Web Audio is unsupported | `e2e/sound-lab.spec.ts › visual-only mode toggle is auto-enabled and locked when Web Audio unsupported` |
-| `sound-lab.headphone-warning-ack` | One-shot confirmation button ("I understand — start at a low level") | Gates first use of `frequency-slider`/`amplitude-output-slider` behind an explicit headphone-safety acknowledgement | "Acknowledge headphone safety warning" | Tab-reachable; `Enter`/`Space` activates | N/A | Re-shown once per browser session (not persisted forever), never re-shown mid-session after acknowledgement | N/A | N/A | `e2e/audio-safety.spec.ts › headphone warning blocks audio controls until acknowledged, once per session` |
+| `sound-lab.headphone-warning-ack` | One-shot confirmation button ("I understand — start at a low level") | Gates creation/enabling of the Web Audio path behind an explicit headphone-safety acknowledgement; visual sliders remain usable with sound off | "Acknowledge headphone safety warning" | Tab-reachable; `Enter`/`Space` activates | N/A | Re-shown once per browser session (not persisted forever), never re-shown mid-session after acknowledgement | N/A | N/A | `e2e/sound.spec.ts › explicit acknowledgement then enable starts muted, capped, and visual-only can never unmute` |
 
 ### 4.3 Doppler effect (§6.3)
 
@@ -238,6 +238,54 @@ Covers app-plan §6.1–6.3. Uses `global.enable-sound-button`, `global.mute-but
 | `sound-lab.doppler-preset-select` | Listbox (Stationary, Approach, Pass, Recession, Moving observer, Both moving) | Loads a named scenario into both velocity sliders | "Doppler scenario preset" | Tab, arrow keys, `Enter` | Selected preset name | Returns to "Stationary" default | N/A — fixed option set | N/A | `e2e/sound-lab.spec.ts › all six Doppler presets load correct velocity pairs` |
 | `sound-lab.doppler-view-mode-toggle` | Toggle (1D / 2D) | Switches between the required 1D wavefront view and the optional 2D extension view | "View dimension" | Tab, arrow keys, `Enter` | Selected mode label | Returns to "1D" default | 2D mode is clearly labelled "extension — same physics as the 1D model" so it is never mistaken for a different result | 1D text/table view is always available regardless of 2D availability | `e2e/sound-lab.spec.ts › 1D/2D toggle keeps physics identical between views` |
 | `sound-lab.doppler-pitch-audio-toggle` | Checkbox | Opt-in to hear the simulated detected-frequency pitch shift (gated behind `global.enable-sound-button`) | "Play detected pitch" | Tab-reachable; `Space` toggles | Checked/unchecked | Returns to unchecked (silent) default | N/A | Detected-frequency graph is always shown as the visual equivalent, independent of this toggle | `e2e/sound-lab.spec.ts › Doppler pitch audio toggle requires enable-sound gate and has a visual equivalent regardless` |
+
+### 4.4 Stage 3 as-built notes and additions (2026-07-20)
+
+Every exposed sound control is exercised in `tests/e2e/sound.spec.ts`, with the
+seven sound routes also included in the shared axe, console and responsive
+matrices. The following notes make the implemented surface explicit.
+
+**Clarifications and divergences from the planned rows**
+- The headphone acknowledgement gates only the **audio path**. Frequency,
+  output-level, waveform and visualisation controls remain usable before
+  acknowledgement so the visual-only activity is never locked behind an audio
+  safety decision. Acknowledgement is remembered only in `sessionStorage`.
+- `sound-lab.tag-particles-toggle` is an inventoried logical group implemented
+  as four independently named checkboxes (particles P–S), not one all-or-none
+  checkbox. Each checkbox changes both the Canvas overlay and tagged-particle
+  table.
+- `sound-lab.doppler-preset-select` includes a seventh **Custom velocities**
+  display state when either signed velocity slider is changed; reset returns to
+  Stationary. The six authored scenarios remain unchanged.
+- The compression view uses a fixed 3.12 m physical window. Frequency and medium
+  changes therefore alter the number of wavelengths visible rather than
+  silently rescaling the chamber. Particle movement and pressure are explicitly
+  relative/display-exaggerated values.
+- Pitch/loudness reset asks for confirmation only when it would clear recorded
+  trials. The visual-only pulse action reports duration, frequency and cycle
+  count, so duration and emission mode retain a real effect without Web Audio.
+
+**Controls added as part of the verified Stage 3 learning flow**
+- `sound-lab.microphone-probe` — "Microphone position" slider; moves the fixed
+  pressure probe and linked trace.
+- `sound-lab.tagged-particle-table` — tagged particle home/current/net-relative-
+  displacement table.
+- `sound-lab.compression-notice-input` and
+  `sound-lab.doppler-notice-input` — non-empty observation/explanation captures
+  saved to the progress store.
+- `sound-lab.add-trial-button`, `sound-lab.trial-table`, per-row "Delete trial
+  [n]", `sound-lab.export-csv-button`, `sound-lab.export-json-button` — the
+  pitch/loudness fair-test record and export flow.
+- `sound-lab.limitation-input` plus the interpretation capture/save action —
+  records a result, model limitation and improvement; duplicate settings alone
+  do not qualify as complete fair-test evidence.
+- `sound-lab.check-question`, `sound-lab.check-hint-button` — the nine-question
+  sound Check runner with invalid-input protection and three progressive hints.
+- `sound-lab.cer-editor` — Claim/Evidence/Reasoning fields and save action; each
+  missing field is named specifically.
+- The pitch page also exposes the real-effect `Play a pulse` / `Show pulse
+  timing` action. In visual-only mode it reports pulse timing/cycles and never
+  unmutes audio.
 
 ---
 
