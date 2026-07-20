@@ -32,6 +32,14 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 > `docs/evidence/stage-3-evidence.md`. `verified (builder)` awaits independent
 > review before it may become plain `verified`.
 
+> Stage 4 note (2026-07-20): the light/vision workspace (`/light`, `/vision`,
+> properties, applications, Check, Explain and Connect) is built from tested
+> optics and explicitly relative eye-response engines. Builder-run
+> `npm run verify` is green: oxlint 0 errors, tsc clean, 152 unit tests, 367
+> e2e passed / 1 expected skip across Chromium + WebKit. Exact gate evidence
+> is in `docs/evidence/stage-4-evidence.md`. `verified (builder)` awaits
+> independent review before it may become plain `verified`.
+
 ## Outcomes
 
 | Code | Status | Notes |
@@ -49,9 +57,9 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 7.2.4 | not built | Ear explorer |
 | 7.2.5 | deferred | Cultural sound investigation — blocked on Irvin-approved sources |
 | 7.2.6 | not built | Ultrasound lab |
-| 7.3.1 | not built | Plan matrix: eye pathway (previous COVERAGE.md misnumbered optics here) |
-| 7.3.2 | prototype — not verified | Reflection/refraction/absorption/scattering prototypes exist |
-| 7.3.3 | prototype — not verified | OpticsLab.tsx exists; unaudited |
+| 7.3.1 | verified (builder) | `/vision` relative brightness/pupil, distance/image-size and accommodation/focus model; labelled optical/neural pathway; non-diagnostic extension and saved explanation |
+| 7.3.2 | verified (builder) | `/light/properties` reflection equality, Snell refraction/TIR, fixed boundary frequency, normalised T/R/A ledger, qualitative scattering; full controlled investigation/graph/export/print/evidence |
+| 7.3.3 | verified (builder) | `/light/applications` mirror, qualitative lens, optical-fibre and conditional surface/application reasoning with required justification and limitation evidence |
 | 7.3.4 | not built | Multiwavelength astronomy |
 | 7.4.1 | prototype — not verified | KinematicsLab.tsx exists; unaudited |
 | 7.4.2 | not built | Motion diagrams |
@@ -70,7 +78,7 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 1 — Shared shell and foundations | verified — tagged `stage-1` |
 | 2 — Wave laboratory vertical slice | verified — tagged `stage-2` (108 unit, 217 e2e passed / 1 skipped across Chromium+WebKit at its gate) |
 | 3 — Sound module group | built — builder verification green (138 unit, 295 e2e passed / 1 skipped across Chromium+WebKit); evidence in `docs/evidence/stage-3-evidence.md`; awaiting independent review |
-| 4 — Light and vision module group | not started |
+| 4 — Light and vision module group | built — builder verification green (152 unit, 367 e2e passed / 1 skipped across Chromium+WebKit); evidence in `docs/evidence/stage-4-evidence.md`; awaiting independent review |
 | 5 — Motion and force module group | not started |
 | 6 — Astronomy/mastery/teacher/progress/offline | not started |
 | 7 — Independent release audit | not started |

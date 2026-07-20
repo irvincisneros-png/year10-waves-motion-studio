@@ -14,7 +14,9 @@ test.describe('keyboard-only operation', () => {
         .getByRole('link', { name: route.navLabel });
       // Tab until the target nav link has focus (bounded walk).
       let reached = false;
-      for (let i = 0; i < 15; i++) {
+      // Keep enough headroom for all shipped workspace links plus the shell
+      // links that precede the target; the bound still catches focus traps.
+      for (let i = 0; i < 30; i++) {
         await page.keyboard.press(key);
         if (await link.evaluate((el) => el === document.activeElement)) {
           reached = true;

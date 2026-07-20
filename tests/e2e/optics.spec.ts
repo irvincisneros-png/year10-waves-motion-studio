@@ -128,6 +128,9 @@ test.describe('light properties investigation (7.3.2)', () => {
     await page.getByTestId('record-refraction').click();
     await page.getByTestId('record-energy').click();
     await expect(page.getByTestId('optics-trials').locator('tbody tr')).toHaveCount(4);
+    await page.getByRole('button', { name: 'Delete trial 4' }).click();
+    await expect(page.getByTestId('optics-trials').locator('tbody tr')).toHaveCount(3);
+    await page.getByTestId('record-energy').click();
 
     const csv = await readDownload(page, () => page.getByTestId('optics-export-csv').click());
     expect(csv).toContain('Trial type,Inputs with units,Result with units');
@@ -197,6 +200,30 @@ test.describe('applications, checks and explanation', () => {
     await page.getByTestId('light-check-answer').fill('37');
     await page.getByTestId('light-check-submit').click();
     await expect(page.getByTestId('light-check-feedback')).toContainText('Correct');
+  });
+
+  test('the complete validated question bank can finish and restart', async ({ page }) => {
+    await page.goto('/#/light/check');
+    const answers = [
+      { option: /cornea and lens focus/i },
+      { option: /narrows, reducing/i },
+      { raw: '37' },
+      { option: /speed and wavelength decrease/i },
+      { option: /higher-index to a lower-index/i },
+      { raw: '82' },
+      { option: /under the stated illuminant/i },
+      { option: /higher-index core and lower-index cladding/i },
+    ];
+    for (const answer of answers) {
+      if ('raw' in answer) await page.getByTestId('light-check-answer').fill(answer.raw);
+      else await page.getByRole('radio', { name: answer.option }).check();
+      await page.getByTestId('light-check-submit').click();
+      await expect(page.getByTestId('light-check-feedback')).toContainText('Correct');
+      await page.getByTestId('light-check-next').click();
+    }
+    await expect(page.getByTestId('light-check-summary')).toHaveText('You answered 8 of 8 scored questions correctly.');
+    await page.getByRole('button', { name: 'Start again' }).click();
+    await expect(page.getByTestId('light-check-prompt')).toContainText('eye and brain');
   });
 
   test('CER evidence identifies each missing field before accepting a complete explanation', async ({ page }) => {

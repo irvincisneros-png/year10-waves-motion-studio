@@ -114,8 +114,8 @@ export default function VisionPage() {
       <section className="card stack" aria-labelledby="vision-evidence-heading">
         <h2 id="vision-evidence-heading">Explain and save evidence</h2>
         <label className="notice-capture__label" htmlFor="vision-explanation">Explain how an optical image becomes a perceived scene. Name at least one optical structure and one neural stage.</label>
-        <textarea id="vision-explanation" className="notice-capture__input" rows={4} value={explanation} onChange={(event) => { setExplanation(event.target.value); setStatus('idle'); }} data-testid="vision-explanation" />
-        <button type="button" className="btn btn--primary" onClick={save} data-testid="vision-save">Save vision explanation</button>
+        <textarea id="vision-explanation" className="notice-capture__input" rows={4} value={explanation} onChange={(event) => { setExplanation(event.target.value); setStatus('idle'); }} data-testid="vision-explanation" data-control-id="vision.explanation-input" />
+        <button type="button" className="btn btn--primary" onClick={save} data-testid="vision-save" data-control-id="vision.save-explanation-button">Save vision explanation</button>
         {status === 'error' ? <p role="status" className="field__error">Enter an explanation before saving; empty evidence is not accepted.</p> : null}
         {status === 'saved' ? <p role="status" className="notice-capture__status">✓ Saved for outcome 7.3.1. Review it on the <Link to="/progress">Progress page</Link>.</p> : null}
       </section>

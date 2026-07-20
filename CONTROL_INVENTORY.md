@@ -340,10 +340,11 @@ Covers app-plan §8.1–8.3.
 
 | ID | Control | Effect | Accessible name | Keyboard behaviour | Units / current-value display | Reset behaviour | Error handling | Fallback | Browser test |
 |---|---|---|---|---|---|---|---|---|---|
-| `optics.reflection-source-drag` | Draggable/keyboard-operable ray source | Repositions the light source along the bench | "Light source position" | Tab-reachable; `←`/`→` move 1 cm along the bench axis, `Home`/`End` to bench ends | Live position "Source at x = 20 cm" | Returns to default 20 cm | Clamped to bench bounds | Numeric input fallback | `e2e/optics.spec.ts › reflection source is keyboard-movable and clamped to bench bounds` |
-| `optics.reflection-mirror-drag` | Draggable/keyboard-operable mirror | Repositions/rotates the mirror | "Mirror position and angle" | Tab-reachable; `←`/`→` move position, `Shift+←`/`Shift+→` rotate 1°, `Home`/`End` reset to bench centre/0° | Live "Position: 50 cm, Angle: 30°" | Returns to defaults | Clamped to bench bounds and [0°, 180°] | Numeric input fallback | `e2e/optics.spec.ts › mirror drag/rotate is keyboard-operable and clamped` |
+| `optics.reflection-source-drag` | Native range slider (pointer/keyboard-operable ray-source position) | Repositions the light source along the bench | "Light source position" | Tab-reachable; `←`/`→` move 1 cm along the bench axis, `Home`/`End` to bench ends | Live position "Source at x = 20 cm" | Returns to default 20 cm | Clamped to [0,100] cm | The native range is the pointer and keyboard implementation; the numeric readout is always present | `e2e/optics.spec.ts › reflection controls, challenge feedback and keyboard bounds are observable` |
+| `optics.reflection-mirror-position` | Native range slider | Repositions the mirror along the bench | "Mirror position" | Tab; arrows step 1 cm; `Home`/`End` reach bounds | Live "Position: 50 cm" | Returns to 50 cm | Clamped to [0,100] cm | Native range + numeric readout | same test as above |
+| `optics.reflection-mirror-angle` | Native range slider | Rotates the mirror and updates incident/reflected angles | "Mirror position and angle" | Tab; arrows step 1°; `Home`/`End` reach bounds | Mirror angle and incident angle, both in degrees | Returns to 60° mirror angle (30° incidence) | Clamped [1°,180°]; derived ray incidence is clamped below grazing | Native range + numeric law readout | same test as above |
 | `optics.reflection-normal-toggle` | Checkbox | Shows/hides the normal line at the point of incidence | "Show normal line" | Tab-reachable; `Space` toggles | Checked/unchecked | Returns to checked (on) default | N/A | N/A | `e2e/optics.spec.ts › normal-line toggle shows/hides construction line` |
-| `optics.reflection-protractor-tool` | Draggable/keyboard-operable protractor overlay | Measures incident/reflected angle from the normal | "Protractor" | Tab-reachable; `←`/`→` rotate 1° increments when attached to a ray | Live "Measured angle: 30.0°" | Returns to detached/hidden state on reset | N/A — read-only measurement, no invalid state | Numeric angle readout always shown independent of protractor graphic | `e2e/optics.spec.ts › protractor measures incident and reflected angle equal to within tolerance (invariant)` |
+| `optics.reflection-protractor-tool` | Checkbox attaching a measurement readout | Shows the incident/reflected numeric measurements from the normal | "Protractor" | Tab-reachable; `Space` toggles | "Measured incident 30.0°; reflected 30.0°" | Returns to detached/hidden state on reset | N/A — read-only measurement, no invalid state | Law readout remains present when detached | `e2e/optics.spec.ts › reflection controls, challenge feedback and keyboard bounds are observable` |
 | `optics.mirror-type-select` | Listbox (Plane, Concave, Convex) | Switches mirror curvature model; concave/convex are scaffolded extensions | "Mirror type" | Tab, arrow keys, `Enter` | Selected type label | Returns to "Plane" default | N/A — fixed option set | N/A | `e2e/optics.spec.ts › mirror type select switches ray-construction model` |
 | `optics.reflection-challenge-select` | Listbox (Periscope design, Reflector design) | Loads a design-challenge scenario with a target outcome to achieve by positioning mirrors | "Design challenge" | Tab, arrow keys, `Enter` | Selected challenge name and its goal text | Returns to "None" (free play) default | Challenge completion check runs on every mirror move; a near-miss shows specific feedback (e.g. "close — the reflected ray misses the target by 8°"), never a bare pass/fail | N/A | `e2e/optics.spec.ts › periscope and reflector challenges give specific distance-to-goal feedback, not just pass/fail` |
 
@@ -354,7 +355,7 @@ Covers app-plan §8.1–8.3.
 | `optics.refraction-first-medium-select` | Listbox (curated refractive indices) | Sets the medium the incident ray is leaving; required for less-dense/TIR cases | "First medium" | Tab, arrow keys, `Enter` | Selected medium and refractive index | Returns to Air | Fixed curated set | N/A | `e2e/optics.spec.ts › first and second medium controls support both ordinary refraction and TIR` |
 | `optics.refraction-media-select` | Listbox (Air, Water, Glass, Diamond, ... curated refractive indices) | Sets the second medium's refractive index | "Second medium" | Tab, arrow keys, `Enter` | Selected medium name with its refractive index, e.g. "Water (n = 1.33)" | Returns to "Air → Water" default pair | N/A — fixed curated option set with sourced values | N/A | `e2e/optics.spec.ts › medium select shows sourced refractive index and updates ray bending` |
 | `optics.refraction-incident-angle-slider` | Range slider | Sets the incident ray angle from the normal | "Incident angle" | Tab, `←`/`→` step 1°, `Home`/`End` to bounds | Live "Incident: 40°" | Returns to 30° default | Clamped [0°, 89°] (90° excluded — grazing incidence undefined in the simple model, with inline note) | Numeric input fallback | `e2e/optics.spec.ts › incident angle slider clamps below 90° with an explanatory note at the boundary` |
-| `optics.frequency-constant-indicator` | Static status readout (labelling audit item) | Confirms that frequency is displayed as unchanged across the boundary while speed/wavelength change | "Frequency at the boundary" | N/A (not interactive) | "Frequency: 5.0×10¹⁴ Hz (unchanged across boundary)" | N/A | N/A | N/A | `e2e/optics.spec.ts › frequency readout stays constant across every medium change (invariant)` |
+| `optics.frequency-constant-indicator` | Static readout (labelling audit item) | Confirms that frequency is displayed as unchanged across the boundary while speed/wavelength change | Heading "Frequency at boundary" | N/A — static readouts are exempt from activation/focus requirements | "5.00e+14 Hz — unchanged across boundary" | N/A | N/A | Plain text | `e2e/optics.spec.ts › refraction preserves frequency, changes speed/wavelength and represents TIR without a false ray` |
 | `optics.snells-law-calculation-toggle` | Disclosure button (extension) | Expands/collapses a worked Snell's-law calculation for the current angle/media pair | "Show Snell's law calculation" | Tab-reachable; `Enter`/`Space` toggles, `aria-expanded` reflects state | Shown calculation includes live values, e.g. "n₁ sin θ₁ = n₂ sin θ₂ → 1.00 × sin 40° = 1.33 × sin θ₂ → θ₂ = 28.9°" | Collapses on reset | N/A | N/A | `e2e/optics.spec.ts › Snell's law disclosure computation matches the rendered refracted ray angle` |
 | `optics.tir-demo-toggle` | Checkbox | Enables a guided sweep past the critical angle to demonstrate total internal reflection | "Demonstrate total internal reflection" | Tab-reachable; `Space` toggles | Live critical-angle readout appears when enabled, e.g. "Critical angle: 48.8°" | Returns to unchecked default | N/A | Text explanation of TIR conditions always available | `e2e/optics.spec.ts › TIR demo shows correct critical angle and switches ray behaviour past it` |
 | `optics.fibre-application-toggle` | Disclosure button | Expands/collapses the optical-fibre application explanation linked to TIR | "Show optical fibre application" | as above pattern | N/A | as above | N/A | N/A | `e2e/optics.spec.ts › optical fibre application disclosure expands/collapses` |
@@ -364,11 +365,55 @@ Covers app-plan §8.1–8.3.
 | ID | Control | Effect | Accessible name | Keyboard behaviour | Units / current-value display | Reset behaviour | Error handling | Fallback | Browser test |
 |---|---|---|---|---|---|---|---|---|---|
 | `optics.material-surface-select` | Listbox | Selects a material/surface with a defined spectral response | "Material or surface" | Tab, arrow keys, `Enter` | Selected material name | Returns to default material | N/A — fixed curated option set | N/A | `e2e/optics.spec.ts › material select updates the energy ledger to a new curated response` |
-| `optics.illuminant-select` | Listbox | Changes the light source's spectral profile, affecting perceived colour | "Illuminant (light source type)" | Tab, arrow keys, `Enter` | Selected illuminant name, e.g. "Daylight (D65)" | Returns to "Daylight" default | N/A — fixed option set | N/A | `e2e/optics.spec.ts › illuminant select changes perceived colour output` |
-| `optics.energy-ledger-display` | Static stacked-bar readout (labelling audit item) | Shows transmitted/reflected/absorbed energy fractions for the current material/illuminant | "Energy ledger: transmitted, reflected, absorbed" | N/A (not interactive) | "Transmitted 10%, Reflected 25%, Absorbed 65%" | N/A | N/A | Text/table listing always present, not colour-only | `e2e/optics.spec.ts › energy ledger fractions sum to 100% within tolerance for every material (invariant)` |
-| `optics.atmospheric-particle-size-slider` | Range slider | Adjusts conceptual atmospheric particle size to demonstrate scattering-type dependence | "Atmospheric particle size" | Tab, `←`/`→` step, `Home`/`End` to bounds | Live "Particle size: small (Rayleigh-type scattering)" | Returns to default | Clamped to the two/three qualitative regimes modelled; no numerically precise claim made beyond the qualitative regime | N/A | `e2e/optics.spec.ts › particle-size slider changes the qualitative scattering regime label` |
+| `optics.illuminant-select` | Listbox | Changes the named teaching illuminant and therefore the normalised energy-ledger fixture | "Illuminant (light source type)" | Tab, arrow keys, `Enter` | Daylight (model), Warm LED (model), or UV-rich source (model); no D65 measurement claim | Returns to "Daylight (model)" | N/A — fixed option set | N/A | `e2e/optics.spec.ts › energy ledger conserves 100 percent and all scattering regimes are reachable` |
+| `optics.energy-ledger-display` | Static stacked-bar + table readout (labelling audit item) | Shows transmitted/reflected/absorbed model fractions for the current material/illuminant | Region label "Energy ledger: transmitted, reflected, absorbed" | N/A — static readouts are exempt from activation/focus requirements | Default smoked glass/daylight: T 10%, R 8%, A 82%, total 100% | N/A | Engine rejects any non-conserving fixture in unit tests | Scrollable text table is always present, not colour-only | same test as above |
+| `optics.atmospheric-particle-size-slider` | Range slider | Adjusts a conceptual setting selecting a qualitative scattering regime | "Atmospheric particle size" | Tab, `←`/`→` step 1%, `Home`/`End` to bounds | Live conceptual setting plus Small (0–33), Comparable-size (34–66), or Large (67–100) regime | Returns to 20% (Small) | Clamped [0,100]; no physical particle-size unit is claimed | Text regime/explanation always present | same test as above |
 | `optics.application-select` | Listbox (Sunscreen/UV, Thermal absorption, White/black surfaces, Visibility, Remote sensing) | Loads a worked everyday-application scenario using the current material/illuminant settings | "Everyday application" | Tab, arrow keys, `Enter` | Selected application name and its explanatory text, including the "avoid overclaiming black-heats-fastest" guardrail note where relevant | Returns to "None" default | N/A — fixed option set | N/A | `e2e/optics.spec.ts › application select text includes the stated assumptions/guardrail for each scenario` |
 | `optics.lens-type-select` | Listbox (Converging, Diverging) | Loads a qualitative lens application ray model for a magnifier/camera comparison | "Lens type" | Tab, arrow keys, `Enter` | Selected lens and qualitative image description | Returns to Converging | Fixed set; no lens equation or fabricated focal length | Text ray-path description always present | `e2e/optics.spec.ts › lens application control switches converging/diverging qualitative outcomes` |
+
+### 6.4 Stage 4 as-built investigation, assessment and evidence controls (2026-07-20)
+
+The surface/illuminant values are normalised deterministic teaching fixtures documented
+in `SCIENCE_REVIEW.md` §9.6, not measured material constants. Reflection defaults are
+source 20 cm, mirror 50 cm and mirror angle 60° (30° incidence). Refraction defaults are
+air → water, 30°, and source frequency `5.00e+14 Hz`. The UI excludes grazing incidence
+with a maximum of 89°; the pure engine throws a `RangeError` for 90° rather than returning
+`NaN` or drawing a fictitious ray. Mirror and lens extension outputs are deliberately
+qualitative; no focal length, mirror equation, temperature, perceived-colour or D65
+measurement is fabricated.
+
+Static manifest IDs (`optics.frequency-constant-indicator`,
+`optics.energy-ledger-display`, `vision.pupil-response-display`) identify audited
+readouts. They must update from state and have a text/table equivalent, but because they
+are not controls they are explicitly exempt from keyboard focus and activation tests.
+
+| ID | Control | Effect / acceptance | Accessible name | Keyboard / reset / validation | Browser evidence |
+|---|---|---|---|---|---|
+| `optics.record-reflection-button` | Button | Adds the current angle pair to the trial table/graph | "Record reflection trial" | Tab + Enter/Space; trials clear only after confirmed reset | complete controlled-investigation test in `tests/e2e/optics.spec.ts` |
+| `optics.record-refraction-button` | Button | Adds current medium/angle result, including explicit TIR result | "Record refraction trial" | as above | same |
+| `optics.record-energy-button` | Button | Adds current T/R/A ledger and scattering regime | "Record energy/scattering trial" | as above | same |
+| `optics.trial-delete-button` | Per-row button | Deletes one named trial | "Delete trial N" | Tab + Enter/Space | same |
+| `optics.hypothesis-input` | Textarea | Captures a pre-interpretation prediction with reason | "Hypothesis" | Tab; cleared by confirmed reset; non-empty required | same |
+| `optics.interpretation-input` | Textarea | Captures the measured pattern | "What pattern did your measurements show?" | as above | same |
+| `optics.conclusion-input` | Textarea | Answers the aim and compares evidence with hypothesis | "Conclusion" | as above | same |
+| `optics.limitation-input` | Textarea | Captures model limitation and real-evidence improvement | "Limitation and improvement" | as above | same |
+| `optics.export-csv-button` | Button | Downloads unit-labelled trial CSV | "Export trials (CSV)" | Disabled until ≥1 trial; Tab + Enter/Space | same |
+| `optics.export-json-button` | Button | Downloads versioned investigation JSON | "Export trials (JSON)" | as above | same |
+| `optics.print-button` | Button | Opens the browser print flow | "Print investigation" | Tab + Enter/Space | same |
+| `optics.save-investigation-button` | Button | Saves 7.3.2 evidence only after hypothesis, ≥2 reflection points, refraction, energy, interpretation, conclusion and limitation | "Save investigation as evidence" | Empty/incomplete evidence gets a specific error and is never accepted | same |
+| `optics.lens-object-position` | Radio group | Switches Near/Far qualitative converging-lens result | "Object position" | Tab/arrows/Space; resets to Near | applications test in `tests/e2e/optics.spec.ts` |
+| `optics.application-justification-input` | Textarea | Claim + cited model property + reasoning | "Design justification" | Required, cleared on reset | same |
+| `optics.application-assumption-input` | Textarea | States a conditional assumption/limitation | "Assumption or limitation" | Required, cleared on reset | same |
+| `optics.application-save-button` | Button | Saves 7.3.3 evidence | "Save design justification" | Scenario + both text fields required | same |
+| `optics.check-question` | MCQ/numeric question region | Presents the validated eight-question 7.3.1–7.3.3 bank | Prompt/answer labels vary by item | Native radio/text keyboard behaviour; empty/malformed never scores | check-question test + validation unit suite |
+| `optics.check-hint-button` | Progressive disclosure button | Reveals three increasingly strong hints | "Show a hint" / stronger / worked reasoning | Tab + Enter/Space | same |
+| `optics.check-submit-button` / `optics.check-next-button` / `optics.check-restart-button` | Buttons | Validates, advances after a scored answer, then permits a fresh bank attempt | Visible button text | Tab + Enter/Space; answer locked after scoring | same |
+| `optics.cer-claim-input` / `optics.cer-evidence-input` / `optics.cer-reasoning-input` | Textareas | Complete the 7.3.2 CER scaffold | Claim / Evidence / Reasoning | Each required in order; missing field named specifically | CER test in `tests/e2e/optics.spec.ts` |
+| `optics.cer-save-button` | Button | Saves complete CER evidence | "Save explanation as evidence" | Tab + Enter/Space | same |
+
+Every Stage 4 route also uses the already-inventoried route-scoped
+`global.reset-button`; reset returns the documented defaults and requests confirmation
+before discarding investigation trials.
 
 ---
 
@@ -386,6 +431,19 @@ Covers app-plan §9.1–9.2.
 | `vision.accommodation-slider` | Range slider | Manually adjusts lens accommodation/focus to explore image sharpness independent of the automatic model | "Lens accommodation" | Tab, `←`/`→` step 5%, `Home`/`End` to bounds | Live "Accommodation: 80%" | Returns to the value that produces a sharp image for the current object distance (auto-focus default) | Clamped [0,100]% | Text description of "in focus / out of focus" state always present, not conveyed by blur alone | `e2e/vision.spec.ts › accommodation slider changes sharpness and state is described in text, not blur alone` |
 | `vision.blind-spot-demo-button` | Push button | Runs a guided blind-spot demonstration sequence with instructions | "Run blind spot demonstration" | Tab-reachable; `Enter`/`Space` activates | Step-by-step instruction text updates as the demo proceeds | Returns to step 1 on reset | N/A | Entirely text-instruction-driven already; no separate fallback needed | `e2e/vision.spec.ts › blind spot demo instructions are fully readable via text, no image-only step` |
 | `vision.focusing-problem-toggle` | Listbox (extension: None, Short-sighted model, Long-sighted model) | Loads a common focusing-problem model, explicitly labelled as educational, not medical advice | "Focusing problem model" | Tab, arrow keys, `Enter` | Selected model name plus its "not medical advice" label, always visible when a problem model is active | Returns to "None" default | N/A — fixed option set | N/A | `e2e/vision.spec.ts › focusing-problem models always display the non-diagnostic disclaimer` |
+
+### 7.1.1 Stage 4 as-built vision evidence controls (2026-07-20)
+
+The eye model is relative and non-diagnostic: pupil opening is 100% at the darkest
+supported setting and 25% at the brightest, accommodation is a normalised inverse-
+distance demand over 10 cm–10 m, and retinal image size is a relative unit. It makes no
+millimetre, lux, prescription or medical claim. Focus is stated in text with a ±5
+percentage-point teaching threshold.
+
+| ID | Control | Effect | Accessible name | Keyboard / reset / validation | Browser evidence |
+|---|---|---|---|---|---|
+| `vision.explanation-input` | Textarea | Captures a linked optical-image and neural-processing explanation | Full visible prompt label | Tab; reset clears | evidence/reset test in `tests/e2e/vision.spec.ts` |
+| `vision.save-explanation-button` | Button | Saves 7.3.1 explanation evidence | "Save vision explanation" | Tab + Enter/Space; empty text rejected | same |
 
 ### 7.2 Reading starlight (`astronomy`) — Stage S6
 
