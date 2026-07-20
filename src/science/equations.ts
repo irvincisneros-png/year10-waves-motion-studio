@@ -62,6 +62,95 @@ export function frequencyOfPeriod(periodS: number): SolveResult {
   return { ok: true, value: 1 / periodS };
 }
 
+// ----------------------------------------- Stage 5 motion and force equations
+
+/** F = ma. Mass must be physical; signed acceleration produces signed force. */
+export function solveForForce(massKg: number, accelerationMps2: number): SolveResult {
+  if (!Number.isFinite(massKg) || !Number.isFinite(accelerationMps2)) {
+    return err('non-finite', 'Mass and acceleration must be numbers.');
+  }
+  if (massKg <= 0) return err('non-positive-mass', 'Mass must be greater than 0 kg.');
+  return { ok: true, value: massKg * accelerationMps2 };
+}
+
+/** m = F/a. A positive physical mass requires force and acceleration with matching signs. */
+export function solveForMass(forceN: number, accelerationMps2: number): SolveResult {
+  if (!Number.isFinite(forceN) || !Number.isFinite(accelerationMps2)) {
+    return err('non-finite', 'Force and acceleration must be numbers.');
+  }
+  if (accelerationMps2 === 0) return err('zero-acceleration', 'Acceleration cannot be 0 m/s² when solving for mass.');
+  const massKg = forceN / accelerationMps2;
+  if (massKg <= 0) return err('non-positive-mass', 'Force and acceleration must produce a mass greater than 0 kg.');
+  return { ok: true, value: massKg };
+}
+
+/** a = F/m, guarded against zero or negative mass. */
+export function solveForceAcceleration(forceN: number, massKg: number): SolveResult {
+  if (!Number.isFinite(forceN) || !Number.isFinite(massKg)) {
+    return err('non-finite', 'Force and mass must be numbers.');
+  }
+  if (massKg <= 0) return err('non-positive-mass', 'Mass must be greater than 0 kg.');
+  return { ok: true, value: forceN / massKg };
+}
+
+/** v_av = Δs/Δt. */
+export function solveAverageVelocity(displacementM: number, timeS: number): SolveResult {
+  if (!Number.isFinite(displacementM) || !Number.isFinite(timeS)) {
+    return err('non-finite', 'Displacement and time must be numbers.');
+  }
+  if (timeS <= 0) return err('non-positive-time', 'Time must be greater than 0 s.');
+  return { ok: true, value: displacementM / timeS };
+}
+
+/** Δs = v_av Δt. */
+export function solveDisplacement(averageVelocityMps: number, timeS: number): SolveResult {
+  if (!Number.isFinite(averageVelocityMps) || !Number.isFinite(timeS)) {
+    return err('non-finite', 'Average velocity and time must be numbers.');
+  }
+  if (timeS < 0) return err('negative-time', 'Time cannot be negative.');
+  return { ok: true, value: averageVelocityMps * timeS };
+}
+
+/** Δt = Δs/v_av. */
+export function solveVelocityTime(displacementM: number, averageVelocityMps: number): SolveResult {
+  if (!Number.isFinite(displacementM) || !Number.isFinite(averageVelocityMps)) {
+    return err('non-finite', 'Displacement and average velocity must be numbers.');
+  }
+  if (averageVelocityMps === 0) return err('zero-velocity', 'Average velocity cannot be 0 m/s when solving for time.');
+  const timeS = displacementM / averageVelocityMps;
+  if (timeS < 0) return err('negative-time', 'Displacement and average velocity must produce a non-negative time.');
+  return { ok: true, value: timeS };
+}
+
+/** a = Δv/Δt. */
+export function solveVelocityAcceleration(changeInVelocityMps: number, timeS: number): SolveResult {
+  if (!Number.isFinite(changeInVelocityMps) || !Number.isFinite(timeS)) {
+    return err('non-finite', 'Change in velocity and time must be numbers.');
+  }
+  if (timeS <= 0) return err('non-positive-time', 'Time must be greater than 0 s.');
+  return { ok: true, value: changeInVelocityMps / timeS };
+}
+
+/** Δv = aΔt. */
+export function solveVelocityChange(accelerationMps2: number, timeS: number): SolveResult {
+  if (!Number.isFinite(accelerationMps2) || !Number.isFinite(timeS)) {
+    return err('non-finite', 'Acceleration and time must be numbers.');
+  }
+  if (timeS < 0) return err('negative-time', 'Time cannot be negative.');
+  return { ok: true, value: accelerationMps2 * timeS };
+}
+
+/** Δt = Δv/a. */
+export function solveAccelerationTime(changeInVelocityMps: number, accelerationMps2: number): SolveResult {
+  if (!Number.isFinite(changeInVelocityMps) || !Number.isFinite(accelerationMps2)) {
+    return err('non-finite', 'Change in velocity and acceleration must be numbers.');
+  }
+  if (accelerationMps2 === 0) return err('zero-acceleration', 'Acceleration cannot be 0 m/s² when solving for time.');
+  const timeS = changeInVelocityMps / accelerationMps2;
+  if (timeS < 0) return err('negative-time', 'Change in velocity and acceleration must produce a non-negative time.');
+  return { ok: true, value: timeS };
+}
+
 // ------------------------------------------------- calculator field parsing
 
 export interface FieldParseOptions {

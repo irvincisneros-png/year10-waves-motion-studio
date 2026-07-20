@@ -8,7 +8,15 @@ export type FrequencyUnit = 'Hz' | 'kHz' | 'MHz' | 'GHz';
 export type TimeUnit = 's' | 'ms';
 
 /** Physical dimension of a unit family — used by the dimensional-validity test. */
-export type Dimension = 'length' | 'frequency' | 'time' | 'speed';
+export type Dimension =
+  | 'length'
+  | 'frequency'
+  | 'time'
+  | 'speed'
+  | 'velocity'
+  | 'acceleration'
+  | 'force'
+  | 'mass';
 
 // Base SI multipliers (everything is converted to standard SI units: metres, Hz, seconds)
 const DistanceMultipliers: Record<DistanceUnit, number> = {
@@ -157,4 +165,9 @@ export const CONVERSION_SPECS: readonly ConversionSpec[] = [
     toSI: (v) => toSeconds(v, u),
     fromSI: (v) => fromSeconds(v, u),
   })),
+  { dimension: 'speed', unit: 'm/s', toSI: (v) => v, fromSI: (v) => v },
+  { dimension: 'velocity', unit: 'm/s', toSI: (v) => v, fromSI: (v) => v },
+  { dimension: 'acceleration', unit: 'm/s²', toSI: (v) => v, fromSI: (v) => v },
+  { dimension: 'force', unit: 'N', toSI: (v) => v, fromSI: (v) => v },
+  { dimension: 'mass', unit: 'kg', toSI: (v) => v, fromSI: (v) => v },
 ];
