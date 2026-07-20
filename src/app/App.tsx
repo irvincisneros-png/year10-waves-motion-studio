@@ -32,6 +32,18 @@ import LightApplicationsPage from '../simulations/optics/LightApplicationsPage';
 import LightCheckPage from '../simulations/optics/LightCheckPage';
 import LightExplainPage from '../simulations/optics/LightExplainPage';
 import LightConnectPage from '../simulations/optics/LightConnectPage';
+import { MotionForcesLayout } from '../simulations/motion-forces/MotionForcesLayout';
+import { ForcesHubPage, MotionHubPage } from '../simulations/motion-forces/MotionForcesHubPages';
+import MotionTrackPage from '../simulations/motion-forces/MotionTrackPage';
+import MotionDiagramsPage from '../simulations/motion-forces/MotionDiagramsPage';
+import MotionGraphsPage from '../simulations/motion-forces/MotionGraphsPage';
+import ForceVectorsPage from '../simulations/motion-forces/ForceVectorsPage';
+import CartInvestigationPage from '../simulations/motion-forces/CartInvestigationPage';
+import NewtonApplicationsPage from '../simulations/motion-forces/NewtonApplicationsPage';
+import ForcesCalculationsPage from '../simulations/motion-forces/ForcesCalculationsPage';
+import { MotionForcesCheckPage } from '../simulations/motion-forces/MotionForcesCheckPage';
+import { MotionForcesExplainPage } from '../simulations/motion-forces/MotionForcesExplainPage';
+import { ForcesConnectPage, MotionConnectPage } from '../simulations/motion-forces/MotionForcesConnectPage';
 import { SettingsEffects } from './SettingsEffects';
 
 /**
@@ -78,6 +90,23 @@ export default function App() {
             <Route path="light/check" element={<LightCheckPage />} />
             <Route path="light/explain" element={<LightExplainPage />} />
             <Route path="light/connect" element={<LightConnectPage />} />
+          </Route>
+          <Route element={<MotionForcesLayout />}>
+            <Route path="motion" element={<MotionHubPage />} />
+            <Route path="motion/track" element={<MotionTrackPage />} />
+            <Route path="motion/diagrams" element={<MotionDiagramsPage />} />
+            <Route path="motion/graphs" element={<MotionGraphsPage />} />
+            <Route path="motion/check" element={<MotionForcesCheckPage group="motion" />} />
+            <Route path="motion/explain" element={<MotionForcesExplainPage group="motion" />} />
+            <Route path="motion/connect" element={<MotionConnectPage />} />
+            <Route path="forces" element={<ForcesHubPage />} />
+            <Route path="forces/vectors" element={<ForceVectorsPage />} />
+            <Route path="forces/cart" element={<CartInvestigationPage />} />
+            <Route path="forces/applications" element={<NewtonApplicationsPage />} />
+            <Route path="forces/calculations" element={<ForcesCalculationsPage />} />
+            <Route path="forces/check" element={<MotionForcesCheckPage group="forces" />} />
+            <Route path="forces/explain" element={<MotionForcesExplainPage group="forces" />} />
+            <Route path="forces/connect" element={<ForcesConnectPage />} />
           </Route>
           <Route path="glossary" element={<GlossaryPage />} />
           <Route path="progress" element={<ProgressPage />} />

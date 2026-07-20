@@ -19,7 +19,7 @@ export default function HomePage() {
     >
       <p className="home__status-note">
         The laboratories below unlock as they are completed and verified. The
-        Wave foundations, Sound, Light &amp; optics, and Vision laboratories are open now, along with the
+        Wave foundations, Sound, Light &amp; optics, Vision, Motion, and Forces laboratories are open now, along with the
         Glossary, Progress, Teacher and About pages.
       </p>
 

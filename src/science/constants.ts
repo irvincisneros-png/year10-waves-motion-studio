@@ -21,6 +21,11 @@ export const LIGHT_SPEED_MPS = 299_792_458;
 
 export const CONSTANTS_REVIEW_DATE = '2026-07-17';
 
+/** Nominal near-Earth teaching value used by the Stage 5 force model. */
+export const GRAVITATIONAL_FIELD_STRENGTH_N_PER_KG = 9.8;
+export const GRAVITY_SOURCE = 'Standard NSW Year 10 teaching value; near Earth surface, nominal';
+export const GRAVITY_REVIEW_DATE = CONSTANTS_REVIEW_DATE;
+
 export type MediumKind = 'mechanical' | 'electromagnetic' | 'vacuum';
 
 export interface MediumPreset {

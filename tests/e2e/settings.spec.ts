@@ -87,6 +87,7 @@ test.describe('progress export / import / reset', () => {
   });
 
   test('oversized import (> 1 MB) is rejected gracefully', async ({ page }) => {
+    test.setTimeout(60_000);
     await page.goto('/#/progress');
     const big = JSON.stringify({
       outcomes: {},

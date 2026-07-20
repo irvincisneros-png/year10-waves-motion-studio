@@ -63,15 +63,15 @@ test.describe('shell routes', () => {
     page,
   }) => {
     await page.goto('/#/');
-    // Stage 4: wave foundations, sound, light/optics and vision are unlocked; the other 8 remain
+    // Stage 5: waves, sound, light/optics, vision, motion and forces are unlocked; the other 6 remain
     // non-interactive "In development" panels (never dead links/buttons).
-    await expect(page.getByText('In development')).toHaveCount(8);
-    await expect(page.getByText('Available')).toHaveCount(4);
+    await expect(page.getByText('In development')).toHaveCount(6);
+    await expect(page.getByText('Available')).toHaveCount(6);
     const cardControls = page.locator(
       'article.workspace-card a, article.workspace-card button',
     );
-    await expect(cardControls).toHaveCount(4);
-    await expect(cardControls).toHaveText(['Wave foundations', 'Sound laboratory', 'Light & optics', 'Vision']);
+    await expect(cardControls).toHaveCount(6);
+    await expect(cardControls).toHaveText(['Wave foundations', 'Sound laboratory', 'Light & optics', 'Vision', 'Describing motion', 'Forces & Newton’s laws']);
   });
 
   test('offline: shell and visited routes still work after first load', async ({

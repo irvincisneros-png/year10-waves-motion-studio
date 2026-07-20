@@ -40,7 +40,7 @@ test.describe('keyboard-only operation', () => {
     const settingsButton = page.getByRole('button', { name: 'Settings', exact: true });
 
     // Reach the settings button by keyboard
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 20; i++) {
       await page.keyboard.press(key);
       if (await settingsButton.evaluate((el) => el === document.activeElement))
         break;

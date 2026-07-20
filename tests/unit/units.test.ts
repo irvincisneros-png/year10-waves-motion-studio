@@ -77,6 +77,9 @@ describe('every declared conversion is dimensionally valid and round-trips (SCIE
     expect(dims.has('length')).toBe(true);
     expect(dims.has('frequency')).toBe(true);
     expect(dims.has('time')).toBe(true);
+    expect(dims.has('force')).toBe(true);
+    expect(dims.has('velocity')).toBe(true);
+    expect(dims.has('acceleration')).toBe(true);
   });
 });
 
