@@ -18,9 +18,8 @@ export default function HomePage() {
       lead="Interactive laboratories for the NSW Year 10 Waves & Motion topic — model waves, sound, light and motion, collect evidence, and check your understanding."
     >
       <p className="home__status-note">
-        All builder-complete laboratories are open. The cultural sound-material
-        outcome remains absent until attributable, community-approved sources
-        are supplied. Glossary, Progress, Teacher and About are also available.
+        All release laboratories are open. Glossary, Progress, Teacher and
+        About are also available.
       </p>
 
       {learningMap.map((group) => (

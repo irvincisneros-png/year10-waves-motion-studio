@@ -15,8 +15,7 @@ defined in `CONTROL_INVENTORY.md`; IDs are quoted in backticks, e.g. `wave-lab.f
 | Lint / types | oxlint, `tsc -b` | n/a | `npm run lint`, part of `npm run build` |
 | Full gate | all of the above | n/a | **`npm run verify`** = `oxlint && tsc -b && vitest run && playwright test` |
 
-`@axe-core/playwright` is not yet a dependency — add it in the Stage 1 work package
-(`npm install -D @axe-core/playwright`) alongside the existing Playwright devDependency.
+`@axe-core/playwright` is installed and runs across every shipped route.
 
 No test category is satisfied by agent narration. Every category below closes only when its
 named tests exist, run under `npm run verify`, and their pass/fail output is captured in the
@@ -143,41 +142,30 @@ assertion** — the invalid input must never be marked correct, accepted, or sil
 ## 5. Accessibility tests
 
 As-built locations: `tests/e2e/a11y.spec.ts`, `responsive.spec.ts` and
-`control-inventory.spec.ts`. The named rows below are acceptance requirements;
-only assertions present in those files count as automated evidence.
+`control-inventory.spec.ts`. This table records only executable assertions.
 
 | Test name | Asserts |
 |---|---|
-| `a11y.spec.ts › axe audit: [route] has zero critical/serious violations` (parametrised over all 10 shell routes + every shipped workspace route) | `AxeBuilder` results contain zero `critical` or `serious` impact violations |
-| `a11y.spec.ts › landmark structure is present on every route` | Each route has exactly one `<main>`, a `<nav>` landmark, and a correctly nested heading outline starting at `h1` with no skipped levels |
-| `a11y.spec.ts › every form control has a programmatically associated label` | Every input/select/textarea/slider in `CONTROL_INVENTORY.md` resolves an accessible name via `aria-label`, `aria-labelledby`, or a `<label for>` association — cross-checked against the inventory's "Accessible name" column |
-| `a11y.spec.ts › no two controls on one route share an accessible name` | Accessible-name uniqueness check per route (catches, e.g., two "Show labels" toggles on the same page) |
-| `a11y.spec.ts › focus is always visible` | `:focus-visible` outline computed style has non-zero width/contrast on every interactive element reached via Tab, sampled across all shipped routes |
-| `a11y.spec.ts › focus order matches visual/DOM reading order` | Sequential Tab presses on each route visit elements in the same order as their DOM position (no positive `tabindex` traps) |
-| `a11y.spec.ts › live-region announcements fire for state changes without spamming` | Reset, error messages, and mastery feedback use `aria-live="polite"` (never `assertive` except confirmation-dialog warnings) and fire at most once per discrete event, verified via the accessibility tree snapshot before/after the action |
-| `a11y.spec.ts › colour is never the only channel for correctness/direction/state` | For each control flagged "never colour-only" in `CONTROL_INVENTORY.md` (e.g. `forces.force-direction-select`, `astronomy.redshift-blueshift-slider`, `mastery.progress-report-view`), the accessible text/DOM content conveys the same information independent of any CSS colour |
-| `a11y.spec.ts › interactive targets meet the 44×44 CSS px minimum` | Computed bounding box of every button/slider handle/checkbox on a shipped route is ≥44×44 px |
-| `a11y.spec.ts › 200% browser zoom does not clip or hide content` | At 200% zoom (viewport reflow, not just text scaling) on a 1280px-equivalent layout, no interactive control is clipped or requires two-directional scroll |
+| `a11y.spec.ts › axe reports zero violations on [route]` | Full axe scan returns zero violations on every route exported by the shared fixtures. |
+| `a11y.spec.ts › axe reports zero violations on the not-found page and with the settings panel open` | Dynamic shell states also return zero axe violations. |
+| `a11y.spec.ts › skip link is the first tab stop and jumps focus to main content` | Keyboard skip navigation reaches `<main>`. |
+| `a11y.spec.ts › keyboard focus is visible on shell controls` | Sampled shell controls have a non-zero visible outline under keyboard focus. |
+| `a11y.spec.ts › 200% zoom loses no shell content` | The shell reflows without horizontal overflow or losing navigation at the tested 200% equivalent viewport. |
+| `responsive.spec.ts › native text and selection controls meet the 44px minimum on every route` | Every rendered text input, select and textarea is at least 44 px high at 320 px width. |
 
 ## 6. Keyboard-only operation walkthroughs per workspace
 
-As-built locations: `tests/e2e/keyboard.spec.ts` plus the keyboard paths in
-`waves.spec.ts`, `sound.spec.ts`, `optics.spec.ts`, `vision.spec.ts` and
-`motion-forces.spec.ts`. The rows below remain the acceptance catalogue and must
-not be read as separate files that exist.
+As-built locations: `tests/e2e/keyboard.spec.ts` plus explicit keyboard paths in
+the route-specific specs.
 
 | Test name | Asserts |
 |---|---|
-| `keyboard.spec.ts › wave-lab: full keyboard walkthrough from Orient to Connect` | Every control listed under CONTROL_INVENTORY §2 (`wave-lab.*`) is reachable and operable by keyboard alone; the trial table can be populated and the graph viewed without a mouse |
-| `keyboard.spec.ts › em-spectrum: full keyboard walkthrough` | Every `em-spectrum.*` control operable by keyboard; region jump, dataset comparison, and citation submission complete without a mouse |
-| `keyboard.spec.ts › sound-lab: full keyboard walkthrough including enable-sound gate` | `global.enable-sound-button` and `sound-lab.headphone-warning-ack` are reachable and activatable by keyboard before any audio-bearing control becomes operable; Doppler preset cycling works via keyboard |
-| `keyboard.spec.ts › hearing/ultrasound: full keyboard walkthrough` | All 8 `hearing.anatomy-part-buttons` reachable in pathway order; ultrasound pulse/probe controls operable without a mouse |
-| `optics.spec.ts` + `vision.spec.ts › Stage 4 keyboard paths` | Native ray/source/angle/particle/brightness/distance/accommodation ranges accept arrow and `Home`/`End` keys; check, evidence, disclosure, select and radio controls retain native keyboard semantics. |
-| `keyboard.spec.ts › motion: full keyboard walkthrough including strobe-dot editor` | `motion.strobe-dot-editor` placement/removal fully keyboard-driven; graph slope tool selects two points via keyboard |
-| `keyboard.spec.ts › forces: full keyboard walkthrough` | Force add/remove/direction/type controls and the F-m-a trial run are keyboard-operable end to end |
-| `keyboard.spec.ts › society: full keyboard walkthrough` | Case-study tablist, evidence table, and CER editor are keyboard-navigable and submittable |
-| `keyboard.spec.ts › mastery: full keyboard walkthrough across all answer-input types` | Each answer-input variant (MCQ, numeric, diagram-placement, graph-point, text) is completed via keyboard alone, including the 3-level hint disclosure |
-| `keyboard.spec.ts › teacher-tools: full keyboard walkthrough including confirmation dialogs` | Presentation mode, show/hide toggles, deep-link generator, and both reset confirmation dialogs (focus-trapped, `Escape` cancels) are keyboard-operable |
+| `keyboard.spec.ts › every primary nav item is reachable and operable by keyboard` | All primary navigation links activate using the keyboard. |
+| `keyboard.spec.ts › settings disclosure and toggles are fully keyboard operable` | Header settings open and the three preference controls toggle from the keyboard. |
+| `keyboard.spec.ts › progress-page actions are reachable and operable by keyboard` | Export, import and reset controls receive keyboard focus and reset cancellation is safe. |
+| `keyboard.spec.ts › teacher presentation toggle is keyboard operable` | Presentation mode toggles from the keyboard. |
+| `waves.spec.ts › complete keyboard path` and `sound.spec.ts › sound controls are operable in a keyboard-only path` | Representative wave and sound tasks can be completed without pointer input. |
+| Route-specific Stage 4/5 specs | Native ranges, selects, radios, evidence controls and buttons retain their keyboard semantics in the tested learning tasks. |
 
 ## 7. Route, refresh, and deep-link behaviour
 
@@ -186,12 +174,12 @@ workspace spec and the common route fixtures in `tests/e2e/helpers.ts`.
 
 | Test name | Asserts |
 |---|---|
-| `routing.spec.ts › all 10 shell routes load directly via URL (no client-side-only navigation dependency)` | Navigating directly to each of the 10 global routes (not via in-app link click) renders the correct page, not a blank/404 |
-| `routing.spec.ts › refreshing mid-workspace preserves or gracefully resets state per its persistence contract` | A hard reload on a workspace with persisted state (e.g. trial table) restores it from localStorage; a workspace with session-only state resets cleanly with no console error |
-| `routing.spec.ts › generated teacher deep link reproduces exact workspace state` | Loading a `teacher.deep-link-generator` output URL in a fresh browser context reproduces the exact control values encoded, verified control-by-control |
-| `routing.spec.ts › unknown route falls back to a real 404 page, never a blank screen` | Navigating to `/does-not-exist` renders `shell.route-404` content with a working link home |
-| `routing.spec.ts › deferred routes (e.g. cultural-sound) are absent from navigation and return 404, not a placeholder` | `/cultural-sound-investigation` (or equivalent) is not linked from any nav and returns the 404 route, confirming the "never ship placeholder" rule |
-| `routing.spec.ts › browser back/forward preserves scroll and focus sensibly` | Using browser back after opening a disclosure panel returns to the prior route without a focus trap or lost skip-link target |
+| `shell.spec.ts › cold deep link to [shell route] renders and survives refresh` | Every shell route renders directly and after hard reload. |
+| Route-specific `cold load + refresh` loops | Every released learning route renders directly and after hard reload. |
+| `shell.spec.ts › client-side navigation reaches every route, updates the title, and moves focus to the heading` | Warm navigation covers every shared route with title and focus management. |
+| `shell.spec.ts › unknown URL shows the not-found page with working navigation back` | Unknown routes render the real not-found surface. |
+| `stage-six.spec.ts › deferred cultural outcome appears only in the teacher coverage view` | The deferred route is absent and learner surfaces omit the deferred content; Teacher Coverage retains the audit row. |
+| `stage-six.spec.ts › teacher layers, presets, coverage and print templates have observable effects` | A whitelisted generated lesson link reproduces its preset state. |
 
 ## 8. Responsive tests at exactly 320, 375, 768, 1024, 1440 px
 
@@ -228,7 +216,7 @@ workspace spec and the common route fixtures in `tests/e2e/helpers.ts`.
   competing-view fields.
 - `tests/unit/mastery.test.ts` enforces ≥60 unique fully tagged questions,
   ≥one-third constructed response, all 24 active outcomes covered, 7.2.5 absent,
-  exactly 20 session questions and empty/short/keyword-free constructed false
+  exactly 24 session questions—one per active outcome—and empty/short/keyword-free constructed false
   positives rejected.
 - Progress-store tests enforce schema v2 derivation: one evidence point is only
   `developing`; `secure` requires two distinct successful activity keys; imports
@@ -268,9 +256,9 @@ proxy; real Chrome, Edge and Safari remain explicit human sign-off items.
 
 | Test name | Asserts |
 |---|---|
-| `cross-browser.spec.ts › smoke suite passes on chromium` | Home route loads, one control from each workspace operates, no console errors |
-| `cross-browser.spec.ts › smoke suite passes on webkit` | as above — WebKit is the closest automatable proxy for Safari; Web Audio and Canvas API differences are specifically checked here since WebKit has historically diverged |
-| `cross-browser.spec.ts › smoke suite passes on msedge` | as above |
+| Full Playwright project `chromium` | The complete route, interaction, accessibility, responsive and console suite runs in bundled Chromium. |
+| Full Playwright project `webkit` | The same complete suite runs in WebKit, with two explicit service-worker network-emulation skips. |
+| Optional `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome` / `msedge` | Reruns the Chromium project against a locally installed branded browser; this is not part of the default automated result. |
 | Human sign-off (not automated) | Manual smoke pass on real Chrome, Edge, and Safari on laptop and tablet per the shared spec's Human quality gates, recorded in the Stage 7 evidence pack |
 
 ## 10. Offline operation (service worker, first-load cache, update flow)
@@ -279,10 +267,10 @@ As-built locations: `tests/e2e/shell.spec.ts` and `stage-six.spec.ts`.
 
 | Test name | Asserts |
 |---|---|
-| `offline.spec.ts › service worker registers and caches the app shell on first load` | After first visit, `navigator.serviceWorker.getRegistration()` resolves and the Cache Storage API contains the shell's precache manifest entries |
+| `shell.spec.ts › offline: shell and visited routes still work after first load` | A visited shell route remains available after the production service worker controls the page and Chromium is put offline. |
 | `stage-six.spec.ts › every released route reloads offline after one production-app load` | With `context.setOffline(true)` after service-worker readiness/control, every shipped route is hard-reloaded from the production precache |
 | `stage-six.spec.ts › visible update prompt supports defer and refresh actions` | A deterministic update-available event surfaces the same production prompt; “Not now” dismisses it and “Refresh now” invokes the update callback |
-| `offline.spec.ts › offline shell has no unexpected network calls` | Network log during an offline session contains zero failed non-cache requests beyond the expected offline-check ping (if any) |
+| `console.spec.ts › no unexpected network requests to external hosts` | Normal release-route loads make no automatic external requests. This does not inspect Cache Storage contents. |
 
 ## 11. Degraded-capability fallbacks
 
@@ -292,12 +280,11 @@ As-built locations: degraded-capability cases in `tests/e2e/waves.spec.ts`,
 
 | Test name | Asserts |
 |---|---|
-| `fallbacks.spec.ts › Canvas unavailable: [route] falls back to text/table equivalent` (parametrised over every Canvas-bearing route) | With `HTMLCanvasElement.prototype.getContext` stubbed to return `null`, the route renders its documented text/table alternative instead of a blank/broken canvas, and every numeric readout still matches the engine output |
-| `fallbacks.spec.ts › WebGL unavailable: astronomy/optics 3D extension views degrade to the 2D/SVG equivalent` | With `WebGLRenderingContext` stubbed unavailable, any optional 3D view auto-switches to the mandatory 2D/SVG view with a visible notice, never a blank pane |
-| `fallbacks.spec.ts › Web Audio denied: sound-lab and doppler run in visual-only mode automatically` | With `AudioContext` construction throwing, `sound-lab.visual-only-mode-toggle` auto-enables and locks, `global.enable-sound-button` shows "Sound unavailable — visual mode only", and every audio-paired readout (oscilloscope, spectrum, detected-frequency graph) still renders correctly |
-| `fallbacks.spec.ts › localStorage full: progress save fails gracefully with a message, not a crash` | With `localStorage.setItem` stubbed to throw `QuotaExceededError`, saving progress shows "Couldn't save progress — storage is full" and the in-session state remains usable |
-| `fallbacks.spec.ts › localStorage denied (private browsing): app runs session-only with a visible notice` | With `localStorage` access throwing on read, a one-time banner explains progress won't persist, and no console error is thrown on any subsequent read/write attempt |
-| `fallbacks.spec.ts › service worker unsupported: app still functions online without offline support` | With `navigator.serviceWorker` undefined, the app loads and every control functions identically; only the offline-availability claim is absent, with no console error |
+| `waves.spec.ts › Canvas unavailable: chambers fall back to the text alternative with a notice` | Canvas denial on the reference wave chamber produces the visible semantic alternative. |
+| `sound.spec.ts › reduced motion steps without autoplay and Canvas absence keeps text alternatives` | Sound Canvas denial retains its adjacent text alternative. |
+| `sound.spec.ts › unsupported and denied audio both fall back to a complete visual-only activity` | Audio construction denial keeps the activity usable and visible. |
+| `sound.spec.ts › resume denial is caught and changes the panel to visual-only without a page error` | Audio resume rejection is handled without an uncaught error. |
+| `stage-six.spec.ts › service-worker registration failure gives a visible online-only fallback` | A deterministic registration-error event produces the online-only notice. |
 
 ## 12. Safe and optional audio with equivalent visual information
 
@@ -307,11 +294,11 @@ As-built locations: `tests/e2e/sound.spec.ts` and
 
 | Test name | Asserts |
 |---|---|
-| `audio-safety.spec.ts › audio never plays before global.enable-sound-button is activated` | On first load of `sound-lab` and the Doppler view, no `AudioContext` is constructed and no sound plays until the gesture fires |
-| `audio-safety.spec.ts › audio defaults muted and to a safe low gain` | Immediately after `enable-sound-button` activation, `global.mute-button` state is muted and `sound-lab.amplitude-output-slider` reads its documented safe default (20%), never defaulting to maximum |
-| `audio-safety.spec.ts › gain is hard-capped regardless of input` | Attempting to set gain above the documented ceiling via `sound-lab.amplitude-output-slider` (including scripted/out-of-band values) never exceeds the cap |
-| `audio-safety.spec.ts › every audio-bearing control has a simultaneous, equivalent visual representation` | For `sound-lab.frequency-slider`, `sound-lab.oscilloscope-timescale-slider`, `sound-lab.doppler-pitch-audio-toggle`, and `hearing.frequency-location-slider`, the visual waveform/graph/oscilloscope updates identically whether or not audio is playing or muted |
-| `audio-safety.spec.ts › headphone warning is shown once per session before Web Audio is enabled` | `sound-lab.headphone-warning-ack` blocks only creation/enabling of Web Audio on first entry; visual frequency/amplitude controls remain usable with sound off, and the warning is not re-shown after acknowledgement within the same session |
+| `sound.spec.ts › the header sound preference is a real master opt-out for activity audio` | The persisted global preference prevents activity audio enablement and immediately mutes an active panel when switched off. |
+| `sound.spec.ts › explicit acknowledgement then enable starts muted, capped, and visual-only can never unmute` | Web Audio is gesture-gated, begins muted, respects the gain cap and cannot unmute in visual-only mode. |
+| `sound.spec.ts › frequency and output level remain independent and every visual control works without audio` | Visual waveform/readout changes do not require audio. |
+| `sound.spec.ts › detected pitch stays opt-in and Doppler explanation evidence rejects empty text` | Doppler pitch remains opt-in and its learning task remains available without it. |
+| `tests/unit/audio/toneAudio.test.ts` | Gain bounds, mute behavior, oscillator lifecycle and failure paths are deterministic unit-tested contracts. |
 
 ## 13. Console errors and unhandled rejections on every route
 

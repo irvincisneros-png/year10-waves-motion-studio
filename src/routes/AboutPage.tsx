@@ -17,9 +17,8 @@ export default function AboutPage() {
           WaveMotion Studio is an interactive learning environment for the NSW
           Year 10 (Stage 5) <em>Waves and motion</em> focus area. It is built
           for classroom demonstration, guided learning, open exploration,
-          virtual investigation and revision. All builder-complete active
-          laboratories are available; the one deferred cultural outcome is
-          documented for teachers and is not represented by placeholder content.
+          virtual investigation and revision. Every laboratory shown in the
+          learner navigation is complete and available.
         </p>
       </section>
 

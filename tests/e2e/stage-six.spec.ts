@@ -30,14 +30,17 @@ test.describe('Stage 6 routes and deferral', () => {
     });
   }
 
-  test('deferred cultural outcome has no route, nav item, card, or mastery content', async ({ page }) => {
+  test('deferred cultural outcome appears only in the teacher coverage view', async ({ page }) => {
     await page.goto('/#/sound/cultural-materials');
     await expect(page.getByRole('heading', { level: 1, name: 'Page not found' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'Primary' })).not.toContainText('Cultural');
-    await page.goto('/#/');
-    await expect(page.locator('main')).not.toContainText('7.2.5');
-    await page.goto('/#/mastery');
-    await expect(page.locator('main')).not.toContainText('7.2.5');
+    for (const route of ['/#/', '/#/progress', '/#/about', '/#/mastery']) {
+      await page.goto(route);
+      await expect(page.locator('main')).not.toContainText(/7\.2\.5|cultural sound|cultural outcome/i);
+    }
+    await page.goto('/#/teacher');
+    await page.getByLabel('Filter coverage').selectOption('deferred');
+    await expect(page.getByRole('table')).toContainText('7.2.5');
   });
 });
 
@@ -169,9 +172,46 @@ test.describe('Stage 6 teacher, update and offline hardening', () => {
     await page.getByTestId('teacher-layer-particles').uncheck();
     await page.goto('/#/waves/medium');
     await expect(page.getByTestId('chamber-mechanical')).toBeHidden();
+    await expect(page.getByTestId('chamber-em')).toBeVisible();
     await expect(page.getByTestId('chamber-mechanical-alt')).toBeVisible();
     await page.goto('/#/teacher');
     await page.getByTestId('teacher-layer-particles').check();
+    await page.getByTestId('teacher-layer-trails').uncheck();
+    await page.goto('/#/sound/doppler');
+    await expect(page.getByTestId('doppler-canvas')).toBeHidden();
+    await expect(page.getByTestId('doppler-canvas-alt')).toBeVisible();
+    await page.goto('/#/teacher');
+    await page.getByTestId('teacher-layer-trails').check();
+    await page.getByTestId('teacher-layer-vectors').uncheck();
+    await page.goto('/#/waves/medium');
+    await expect(page.getByTestId('chamber-em')).toBeHidden();
+    await expect(page.getByTestId('chamber-mechanical')).toBeVisible();
+    await page.goto('/#/teacher');
+    await page.getByTestId('teacher-layer-vectors').check();
+    await page.getByTestId('teacher-layer-labels').uncheck();
+    await page.goto('/#/waves/medium');
+    await expect(page.locator('[data-teacher-layer="labels"]').first()).toBeHidden();
+    await expect(page.locator('[data-teacher-layer="values"]').first()).toBeVisible();
+    await page.goto('/#/teacher');
+    await page.getByTestId('teacher-layer-labels').check();
+    await page.getByTestId('teacher-layer-values').uncheck();
+    await page.goto('/#/waves/medium');
+    await expect(page.locator('[data-teacher-layer="values"]').first()).toBeHidden();
+    await expect(page.locator('[data-teacher-layer="labels"]').first()).toBeVisible();
+    await page.goto('/#/teacher');
+    await page.getByTestId('teacher-layer-values').check();
+    await page.getByTestId('teacher-layer-equations').uncheck();
+    await page.goto('/#/waves/measure');
+    await expect(page.locator('[data-teacher-layer="equations"]').first()).toBeHidden();
+    await page.goto('/#/teacher');
+    await page.getByTestId('teacher-layer-equations').check();
+    await page.getByTestId('teacher-layer-answers').uncheck();
+    await page.goto('/#/mastery');
+    await page.getByRole('radio').first().check();
+    await page.getByRole('button', { name: 'Submit answer' }).click();
+    await expect(page.getByTestId('mastery-feedback')).toBeHidden();
+    await page.goto('/#/teacher');
+    await page.getByTestId('teacher-layer-answers').check();
     await page.getByTestId('teacher-preset-select').selectOption('/spectrum?region=xray');
     await expect(page.getByTestId('teacher-deep-link')).toHaveValue(/#\/spectrum\?region=xray$/);
     await page.getByLabel('Filter coverage').selectOption('deferred');

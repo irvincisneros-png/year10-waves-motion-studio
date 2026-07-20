@@ -154,7 +154,8 @@ export function AudioEnablePanel({
       </label>
       {forcedVisualOnly ? (
         <p id="visual-only-forced-note" className="seg-control__note">
-          Locked on because Web Audio is not available here.
+          Locked on because sound is disabled in Settings or Web Audio is not
+          available here.
         </p>
       ) : null}
     </div>

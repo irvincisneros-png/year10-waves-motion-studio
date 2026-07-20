@@ -322,6 +322,7 @@ export default function DopplerPage() {
             </p>
           }
           testId="doppler-canvas"
+          teacherLayer="trails"
         />
 
         <LineGraph

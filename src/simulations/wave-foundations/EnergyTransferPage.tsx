@@ -236,6 +236,7 @@ export default function EnergyTransferPage() {
             </p>
           }
           testId="energy-canvas"
+          teacherLayer="particles"
         />
 
         <div className="data-table-wrap">

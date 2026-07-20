@@ -315,6 +315,7 @@ export default function WaveTypesPage() {
             </p>
           }
           testId="types-canvas"
+          teacherLayer="particles"
         />
 
         <div className="card stack">

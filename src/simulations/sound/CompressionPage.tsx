@@ -402,6 +402,7 @@ export default function CompressionPage() {
                 </p>
               }
               testId="field-canvas"
+              teacherLayer="particles"
             />
           </div>
 
