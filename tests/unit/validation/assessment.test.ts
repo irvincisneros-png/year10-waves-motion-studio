@@ -7,6 +7,7 @@ import {
 } from '../../../src/assessment/validate';
 import { waveQuestions } from '../../../src/assessment/waveQuestions';
 import { soundQuestions } from '../../../src/assessment/soundQuestions';
+import { lightQuestions } from '../../../src/assessment/lightQuestions';
 import type {
   McqQuestion,
   NumericQuestion,
@@ -171,6 +172,40 @@ describe('sound question-bank integrity and false-positive regressions', () => {
           }).correct,
           `${q.id} accepts a 3-s.f. answer`,
         ).toBe(true);
+      }
+    }
+  });
+});
+
+describe('light question-bank integrity and false-positive regressions', () => {
+  it('has unique ids, three progressive hints, and covers outcomes 7.3.1–7.3.3', () => {
+    const ids = new Set<string>();
+    const allowed = new Set(['7.3.1', '7.3.2', '7.3.3']);
+    for (const q of lightQuestions) {
+      expect(ids.has(q.id), `duplicate id ${q.id}`).toBe(false);
+      ids.add(q.id);
+      expect(q.hints.map((hint) => hint.level)).toEqual([1, 2, 3]);
+      expect(allowed.has(q.outcomeCode), `${q.id} outcome ${q.outcomeCode}`).toBe(true);
+    }
+    expect(new Set(lightQuestions.map((q) => q.outcomeCode))).toEqual(allowed);
+  });
+
+  it('never scores empty, malformed, unknown, or misconception answers as correct', () => {
+    for (const q of lightQuestions) {
+      expect(checkAnswer(q, { raw: '', optionId: null, unit: null }).correct, `${q.id} empty`).toBe(false);
+      if (q.kind === 'mcq') {
+        expect(q.options.filter((option) => option.correct)).toHaveLength(1);
+        for (const option of q.options.filter((option) => !option.correct)) {
+          const result = checkAnswer(q, { raw: '', optionId: option.id, unit: null });
+          expect(result.status, `${q.id}/${option.id}`).toBe('incorrect');
+          expect(result.correct).toBe(false);
+          expect(result.feedback).toBe(option.feedback);
+        }
+        expect(checkAnswer(q, { raw: '', optionId: 'unknown', unit: null }).correct).toBe(false);
+      } else if (q.kind === 'numeric') {
+        expect(checkAnswer(q, { raw: 'not-a-number', optionId: null, unit: null }).correct).toBe(false);
+        expect(checkAnswer(q, { raw: String(q.exactValue + 20), optionId: null, unit: null }).correct).toBe(false);
+        expect(checkAnswer(q, { raw: q.exactValue.toPrecision(3), optionId: null, unit: null }).correct).toBe(true);
       }
     }
   });

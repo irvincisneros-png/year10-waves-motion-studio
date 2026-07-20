@@ -24,11 +24,19 @@ import DopplerPage from '../simulations/sound/DopplerPage';
 import SoundCheckPage from '../simulations/sound/SoundCheckPage';
 import SoundExplainPage from '../simulations/sound/SoundExplainPage';
 import SoundConnectPage from '../simulations/sound/SoundConnectPage';
+import { LightVisionLayout } from '../simulations/optics/LightVisionLayout';
+import LightHubPage from '../simulations/optics/LightHubPage';
+import VisionPage from '../simulations/optics/VisionPage';
+import LightPropertiesPage from '../simulations/optics/LightPropertiesPage';
+import LightApplicationsPage from '../simulations/optics/LightApplicationsPage';
+import LightCheckPage from '../simulations/optics/LightCheckPage';
+import LightExplainPage from '../simulations/optics/LightExplainPage';
+import LightConnectPage from '../simulations/optics/LightConnectPage';
 import { SettingsEffects } from './SettingsEffects';
 
 /**
  * Route table — shell routes (Stage 1) + the wave-foundations workspace
- * (Stages 2–3). Later workspace routes (/light, …) are added stage by
+ * (Stages 2–4). Later workspace routes (/motion, …) are added stage by
  * stage; until then unknown URLs land on the not-found page, which lists what
  * IS available.
  *
@@ -61,6 +69,15 @@ export default function App() {
             <Route path="check" element={<SoundCheckPage />} />
             <Route path="explain" element={<SoundExplainPage />} />
             <Route path="connect" element={<SoundConnectPage />} />
+          </Route>
+          <Route element={<LightVisionLayout />}>
+            <Route path="light" element={<LightHubPage />} />
+            <Route path="vision" element={<VisionPage />} />
+            <Route path="light/properties" element={<LightPropertiesPage />} />
+            <Route path="light/applications" element={<LightApplicationsPage />} />
+            <Route path="light/check" element={<LightCheckPage />} />
+            <Route path="light/explain" element={<LightExplainPage />} />
+            <Route path="light/connect" element={<LightConnectPage />} />
           </Route>
           <Route path="glossary" element={<GlossaryPage />} />
           <Route path="progress" element={<ProgressPage />} />

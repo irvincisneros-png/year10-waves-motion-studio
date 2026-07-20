@@ -1,0 +1,145 @@
+.light-lab .page {
+  max-width: 76rem;
+}
+
+.light-grid,
+.light-controls,
+.vision-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.light-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
+}
+
+.light-controls {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.vision-grid {
+  grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+  align-items: start;
+}
+
+.light-diagram {
+  width: 100%;
+  height: auto;
+  min-height: 17rem;
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+}
+
+.light-diagram text {
+  fill: var(--ink-body);
+  font: 13px system-ui, sans-serif;
+}
+
+.light-diagram__normal {
+  stroke: var(--ink-muted);
+  stroke-dasharray: 7 6;
+}
+
+.light-diagram__incident,
+.light-diagram__reflected,
+.light-diagram__refracted {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.light-diagram__incident { stroke: var(--accent-violet-ink); }
+.light-diagram__reflected { stroke: var(--accent-cyan-ink); }
+.light-diagram__refracted { stroke: var(--status-developing); }
+
+.light-diagram__boundary {
+  stroke: var(--ink-strong);
+  stroke-width: 2;
+}
+
+.light-diagram__medium-a { fill: #f6fbfc; }
+.light-diagram__medium-b { fill: #edf0fb; }
+
+.energy-ledger {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.energy-ledger__bar {
+  display: flex;
+  min-height: 3rem;
+  overflow: hidden;
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+}
+
+.energy-ledger__bar span {
+  display: grid;
+  min-width: 2.5rem;
+  place-items: center;
+  padding: var(--space-2);
+  color: var(--ink-strong);
+  font-weight: 700;
+}
+
+.energy-ledger__transmitted { background: #d7f3f5; }
+.energy-ledger__reflected { background: #e8e0fb; }
+.energy-ledger__absorbed { background: #f8e4c7; }
+
+.light-readouts,
+.eye-structure-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.light-readouts {
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.light-readouts > div,
+.eye-structure-list > div {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}
+
+.light-readouts dt,
+.eye-structure-list dt {
+  font-weight: 700;
+}
+
+.light-readouts dd,
+.eye-structure-list dd {
+  margin: var(--space-1) 0 0;
+}
+
+.optics-trials {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.optics-trials th,
+.optics-trials td {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--line-subtle);
+  text-align: left;
+  vertical-align: top;
+}
+
+.optics-trials-wrap {
+  overflow-x: auto;
+}
+
+.eye-diagram__cornea { fill: #d8f1f4; stroke: var(--accent-cyan-ink); }
+.eye-diagram__iris { fill: #b8e3e8; stroke: var(--accent-cyan-ink); }
+.eye-diagram__lens { fill: #efe9fb; stroke: var(--accent-violet-ink); }
+.eye-diagram__retina { fill: none; stroke: var(--status-developing); stroke-width: 8; }
+.eye-diagram__ray { fill: none; stroke: var(--accent-violet-ink); stroke-width: 2.5; }
+.eye-diagram__signal { fill: none; stroke: var(--accent-cyan-ink); stroke-width: 5; }
+
+@media (max-width: 760px) {
+  .vision-grid { grid-template-columns: 1fr; }
+  .light-diagram { min-height: 13rem; }
+}

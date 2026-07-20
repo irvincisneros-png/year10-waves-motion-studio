@@ -20,6 +20,12 @@ export default function NotFoundPage() {
           <Link to="/sound">Sound laboratory</Link>
         </li>
         <li>
+          <Link to="/light">Light &amp; optics laboratory</Link>
+        </li>
+        <li>
+          <Link to="/vision">Vision model</Link>
+        </li>
+        <li>
           <Link to="/glossary">Glossary</Link>
         </li>
         <li>
