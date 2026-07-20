@@ -71,6 +71,10 @@ export default function DopplerPage() {
   const clock = useSimClock({ running, speed, reducedMotion, active: true });
   const tSlow = Math.min(clock.t * PLAYBACK, WINDOW_S);
 
+  useEffect(() => {
+    if (running && clock.t * PLAYBACK >= WINDOW_S) setRunning(false);
+  }, [clock.t, running]);
+
   const cfg: DopplerConfig = useMemo(
     () => ({
       sourceFreqHz: SOURCE_FREQ,
@@ -103,6 +107,7 @@ export default function DopplerPage() {
     setPresetId(id);
     setSourceVel(preset.sourceVelMps);
     setObserverVel(preset.observerVelMps);
+    setRunning(true);
     clock.reset();
     announce(`${preset.label}. ${preset.summary}`);
   };
