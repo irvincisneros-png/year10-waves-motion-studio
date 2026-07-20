@@ -170,7 +170,7 @@ the full Orient→Connect rhythm for that workspace's primary activity.
 | `keyboard.spec.ts › em-spectrum: full keyboard walkthrough` | Every `em-spectrum.*` control operable by keyboard; region jump, dataset comparison, and citation submission complete without a mouse |
 | `keyboard.spec.ts › sound-lab: full keyboard walkthrough including enable-sound gate` | `global.enable-sound-button` and `sound-lab.headphone-warning-ack` are reachable and activatable by keyboard before any audio-bearing control becomes operable; Doppler preset cycling works via keyboard |
 | `keyboard.spec.ts › hearing/ultrasound: full keyboard walkthrough` | All 8 `hearing.anatomy-part-buttons` reachable in pathway order; ultrasound pulse/probe controls operable without a mouse |
-| `optics.spec.ts` + `vision.spec.ts › Stage 4 keyboard paths` | Native ray/source/angle/particle/brightness/distance/accommodation ranges accept arrow and `Home`/`End` keys; check, evidence, disclosure, select and radio controls retain native keyboard semantics. Astronomy remains Stage 6 and is absent/404. |
+| `optics.spec.ts` + `vision.spec.ts › Stage 4 keyboard paths` | Native ray/source/angle/particle/brightness/distance/accommodation ranges accept arrow and `Home`/`End` keys; check, evidence, disclosure, select and radio controls retain native keyboard semantics. |
 | `keyboard.spec.ts › motion: full keyboard walkthrough including strobe-dot editor` | `motion.strobe-dot-editor` placement/removal fully keyboard-driven; graph slope tool selects two points via keyboard |
 | `keyboard.spec.ts › forces: full keyboard walkthrough` | Force add/remove/direction/type controls and the F-m-a trial run are keyboard-operable end to end |
 | `keyboard.spec.ts › society: full keyboard walkthrough` | Case-study tablist, evidence table, and CER editor are keyboard-navigable and submittable |
@@ -201,7 +201,7 @@ Location: `tests/e2e/routing/*.spec.ts`.
   to 0–89°; direct engine calls at 90° throw an explicit `RangeError` and never produce
   `NaN`.
 - `tests/e2e/optics.spec.ts` covers seven Stage 4 cold/refresh routes, the seven-phase
-  path, hidden Stage 6 astronomy, every ray/refraction/energy/application control,
+  path, Stage 6 astronomy availability, every ray/refraction/energy/application control,
   graph-worthy controlled trials, CSV/JSON, print, reset confirmation, invalid checks,
   progressive hints, and CER validation.
 - `tests/e2e/vision.spec.ts` covers brightness extremes, distance/image-size response,
@@ -213,6 +213,31 @@ Location: `tests/e2e/routing/*.spec.ts`.
 - No Stage 4 activity uses Canvas, animation, audio, network access or random state.
   SVG diagrams always have adjacent state readouts/explanations, so reduced-motion,
   Canvas denial and audio denial do not reduce the learning task.
+
+## Stage 6 as-built gate additions (2026-07-20)
+
+- `tests/unit/invariants/stage-six-science.test.ts` sweeps EM f/λ transforms,
+  continuous log positions, spectrum boundaries, ultrasound round-trip depth,
+  frequency/angle bounds, cochlear-place bounds, catalogued-line matching and
+  signed wavelength shifts. All data are deterministic and React-free.
+- `tests/unit/stageSixContent.test.ts` verifies all six society evidence packs
+  contain complete source/review/benefit/limitation/group/history/quantitative/
+  competing-view fields.
+- `tests/unit/mastery.test.ts` enforces ≥60 unique fully tagged questions,
+  ≥one-third constructed response, all 24 active outcomes covered, 7.2.5 absent,
+  exactly 20 session questions and empty/short/keyword-free constructed false
+  positives rejected.
+- Progress-store tests enforce schema v2 derivation: one evidence point is only
+  `developing`; `secure` requires two distinct successful activity keys; imports
+  cannot manufacture levels; anonymous JSON/CSV omit writing, IDs and timestamps.
+- `tests/e2e/stage-six.spec.ts` exercises every completion route cold/refresh,
+  all Stage 6 learner control groups, validation/evidence/export paths, deferred
+  route absence, teacher layers/presets/coverage/print/reset, visible update
+  prompt actions and whole-completion-route offline reloads. WebKit keeps the
+  service-worker offline case as an explicit expected skip.
+- Shared axe, console and 320/375/768/1024/1440 matrices include all six
+  completion routes in Chromium and WebKit. Stage 6 uses no Canvas, audio,
+  randomness, clinical/patient data or runtime network fetch.
 
 Location: `tests/e2e/responsive/*.spec.ts`, parametrised over the five widths (heights fixed at
 a representative 800px, then re-run once at each width's common device height).
@@ -249,9 +274,8 @@ Location: `tests/e2e/offline/*.spec.ts`.
 | Test name | Asserts |
 |---|---|
 | `offline.spec.ts › service worker registers and caches the app shell on first load` | After first visit, `navigator.serviceWorker.getRegistration()` resolves and the Cache Storage API contains the shell's precache manifest entries |
-| `offline.spec.ts › app shell loads with network disabled after first visit` | With `context.setOffline(true)`, reloading the home route and the wave-lab route still renders (Playwright network interception simulates offline) |
-| `offline.spec.ts › offline attempt to reach a not-yet-cached workspace shows a clear offline message, not a broken fetch` | Navigating offline to a route never visited online shows an explicit "This page needs an internet connection the first time" message |
-| `offline.spec.ts › service worker update flow prompts before activating a new version` | Deploying a new build (simulated by bumping the SW version string) surfaces an update-available UI control rather than silently swapping content mid-session |
+| `shell.spec.ts + stage-six.spec.ts › app routes load with network disabled after first visit` | With `context.setOffline(true)` after service-worker readiness/control, home, shell navigation and every Stage 6 completion route reload from the production precache |
+| `stage-six.spec.ts › visible update prompt supports defer and refresh actions` | A deterministic update-available event surfaces the same production prompt; “Not now” dismisses it and “Refresh now” invokes the update callback |
 | `offline.spec.ts › offline shell has no unexpected network calls` | Network log during an offline session contains zero failed non-cache requests beyond the expected offline-check ping (if any) |
 
 ## 11. Degraded-capability fallbacks

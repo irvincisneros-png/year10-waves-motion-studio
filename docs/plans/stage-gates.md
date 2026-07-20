@@ -70,11 +70,11 @@ Quality: every visible control in CONTROL_INVENTORY.md (S2 rows) exercised by a 
 
 ## Stage 6 — cross-cutting completion gate
 
-- [ ] Mastery bank ≥ 60 validated questions, tagged (outcome/concept/difficulty/representation/misconception), ≥ 1/3 constructed-response; assesses only implemented content
-- [ ] Teacher tools complete (presentation, show/hide layers, deep-link presets, coverage view, print sheets)
-- [ ] Progress per outcome (`not attempted`/`developing`/`secure`) from multiple evidence points; anonymous export/print
-- [ ] Offline hardening: full app usable offline after first load; update flow tested
-- [ ] ASSET_MANIFEST.md complete; deferred items (7.2.5 cultural module) recorded, absent from nav
+- [x] Mastery bank ≥ 60 validated questions, tagged (outcome/concept/difficulty/representation/misconception), ≥ 1/3 constructed-response; assesses only implemented content
+- [x] Teacher tools complete (presentation, show/hide layers, deep-link presets, coverage view, print sheets)
+- [x] Progress per outcome (`not attempted`/`developing`/`secure`) from multiple evidence points; anonymous export/print
+- [x] Offline hardening: full app usable offline after first load; update flow tested
+- [x] ASSET_MANIFEST.md complete; deferred items (7.2.5 cultural module) recorded, absent from nav
 
 ## Stage 7 — release audit gate
 

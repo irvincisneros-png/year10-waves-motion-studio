@@ -113,6 +113,18 @@ a:hover {
   font-size: 1.15rem;
 }
 
+/* Teacher display layers. Semantic controls remain in the accessibility tree;
+   only explicitly tagged demonstration overlays are hidden. */
+:root[data-layer-labels="false"] [data-teacher-layer="labels"],
+:root[data-layer-values="false"] [data-teacher-layer="values"],
+:root[data-layer-equations="false"] [data-teacher-layer="equations"],
+:root[data-layer-particles="false"] [data-teacher-layer="particles"],
+:root[data-layer-vectors="false"] [data-teacher-layer="vectors"],
+:root[data-layer-trails="false"] [data-teacher-layer="trails"],
+:root[data-layer-answers="false"] [data-teacher-layer="answers"] {
+  display: none !important;
+}
+
 /* ---------- Motion policy ----------
  * Honour prefers-reduced-motion AND the manual toggle
  * (data-reduced-motion="true" set on <html> from settings). */

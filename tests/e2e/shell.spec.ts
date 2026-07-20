@@ -59,19 +59,21 @@ test.describe('shell routes', () => {
     ).toBeVisible();
   });
 
-  test('home learning map: available workspaces link, the rest are non-interactive "In development"', async ({
+  test('home learning map exposes every released workspace as a real link', async ({
     page,
   }) => {
     await page.goto('/#/');
-    // Stage 5: waves, sound, light/optics, vision, motion and forces are unlocked; the other 6 remain
-    // non-interactive "In development" panels (never dead links/buttons).
-    await expect(page.getByText('In development')).toHaveCount(6);
-    await expect(page.getByText('Available')).toHaveCount(6);
+    // Stage 6: all twelve shipped workspaces are real links. Deferred 7.2.5
+    // has no placeholder card or dead control.
+    await expect(page.getByText('In development')).toHaveCount(0);
+    await expect(page.locator('article.workspace-card .badge--available')).toHaveCount(
+      12,
+    );
     const cardControls = page.locator(
       'article.workspace-card a, article.workspace-card button',
     );
-    await expect(cardControls).toHaveCount(6);
-    await expect(cardControls).toHaveText(['Wave foundations', 'Sound laboratory', 'Light & optics', 'Vision', 'Describing motion', 'Forces & Newton’s laws']);
+    await expect(cardControls).toHaveCount(12);
+    await expect(cardControls).toHaveText(['Wave foundations', 'EM spectrum', 'Sound laboratory', 'Hearing', 'Ultrasound', 'Light & optics', 'Vision', 'Reading starlight', 'Describing motion', 'Forces & Newton’s laws', 'Argument studio', 'Mastery challenge']);
   });
 
   test('offline: shell and visited routes still work after first load', async ({

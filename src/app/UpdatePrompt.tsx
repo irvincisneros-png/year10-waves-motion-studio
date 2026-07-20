@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import './UpdatePrompt.css';
 
@@ -11,8 +12,18 @@ export function UpdatePrompt() {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({ immediate: true });
+  const [manualUpdate, setManualUpdate] = useState<(() => void) | null>(null);
 
-  if (!needRefresh) return null;
+  useEffect(() => {
+    const showTestablePrompt = (event: Event) => {
+      const detail = (event as CustomEvent<{ update?: () => void }>).detail;
+      setManualUpdate(() => detail?.update ?? (() => window.location.reload()));
+    };
+    window.addEventListener('wavemotion:update-available', showTestablePrompt);
+    return () => window.removeEventListener('wavemotion:update-available', showTestablePrompt);
+  }, []);
+
+  if (!needRefresh && !manualUpdate) return null;
 
   return (
     <div className="update-prompt" role="status">
@@ -24,7 +35,8 @@ export function UpdatePrompt() {
           type="button"
           className="btn btn--primary"
           onClick={() => {
-            void updateServiceWorker(true);
+            if (manualUpdate) manualUpdate();
+            else void updateServiceWorker(true);
           }}
         >
           Refresh now
@@ -32,7 +44,10 @@ export function UpdatePrompt() {
         <button
           type="button"
           className="btn"
-          onClick={() => setNeedRefresh(false)}
+          onClick={() => {
+            setNeedRefresh(false);
+            setManualUpdate(null);
+          }}
         >
           Not now
         </button>

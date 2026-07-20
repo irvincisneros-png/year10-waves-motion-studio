@@ -66,7 +66,15 @@ export interface UnitSelectQuestion extends QuestionBase {
   relTol?: number;
 }
 
-export type Question = McqQuestion | NumericQuestion | UnitSelectQuestion;
+export interface ConstructedQuestion extends QuestionBase {
+  kind: 'constructed';
+  minWords: number;
+  /** Each group lists accepted terms; at least one term per group is required. */
+  requiredConceptGroups: string[][];
+  rubric: string[];
+}
+
+export type Question = McqQuestion | NumericQuestion | UnitSelectQuestion | ConstructedQuestion;
 
 /** Outcome of a single attempt. `unattempted` is neither right nor wrong. */
 export type AttemptStatus = 'correct' | 'incorrect' | 'invalid' | 'unattempted';

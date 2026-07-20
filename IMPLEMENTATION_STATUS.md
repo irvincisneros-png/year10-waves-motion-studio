@@ -48,6 +48,18 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 > `docs/evidence/stage-5-evidence.md`. `verified (builder)` awaits independent
 > review before it may become plain `verified`.
 
+> Stage 6 note (2026-07-20): the completion routes (`/spectrum`, `/hearing`,
+> `/ultrasound`, `/astronomy`, `/society`, `/mastery`) and cross-cutting
+> teacher/progress/offline work are built. Progress schema v2 derives levels
+> from evidence and requires two distinct successful evidence points for
+> `secure`; anonymous outputs contain no free text, IDs or timestamps. The
+> mastery bank has 101 validated questions across all 24 active outcomes, 48
+> of them constructed-response. Outcome 7.2.5 is explicitly deferred and has
+> no route/nav/card/question. Exact final suite counts are recorded in
+> `docs/evidence/stage-6-evidence.md`. Builder-run `npm run verify` is green:
+> oxlint 0 errors, TypeScript clean, 202 unit tests, 536 browser tests passed
+> and 2 expected WebKit offline-emulation skips across Chromium + WebKit.
+
 ## Outcomes
 
 | Code | Status | Notes |
@@ -55,20 +67,20 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 7.1.1 | verified | `/waves/medium` three synchronised chambers; trigger/pause/step/reset; accessible alternatives; evidence capture. Stage 2 suite green |
 | 7.1.2 | verified | `/waves/energy` tagged particles + energy marker; net-displacement ≈ 0 table (invariant 20.2 unit-tested + visible) |
 | 7.1.3 | verified | `/waves/types` linked transverse+longitudinal views of one state; probe; mark-period; label toggles; representation trap w/ false-positive regression |
-| 7.1.4 | prototype — not verified | EMSpectrumExplorer.tsx exists; unaudited |
+| 7.1.4 | verified (builder) | `/spectrum` continuous log-position explorer, approximate/overlapping regions, linked f/λ values, ionising/risk guardrails and comparison evidence |
 | 7.1.5 | verified | `/waves/measure` ruler/timer/probe tools, presets (rope/water/sound/EM), seeded-noise mode, limitation prompt. Audited speed-cap bug is structurally gone (presets fix speed; λ derived) |
 | 7.1.6 | verified | v=fλ calculator (all rearrangements, unit-aware, division-guarded, inconsistent-triple rejection), λ vs 1/f trials table + graph + CSV/JSON export, interpretation prompt |
-| 7.1.7 | not built | |
+| 7.1.7 | verified (builder) | `/spectrum` review-dated secondary-source table, property comparison and required citation evidence |
 | 7.2.1 | verified (builder) | `/sound/compression` links source motion, particle displacement, compression/rarefaction density, pressure and microphone trace; fixed physical viewport; tagged-particle table and evidence capture |
 | 7.2.2 | verified (builder) | `/sound/pitch-loudness` independently controls frequency/amplitude; safe opt-in audio plus visual pulse equivalent; controlled trials, graph, CSV/JSON export, interpretation and limitations |
 | 7.2.3 | verified (builder) | `/sound/doppler` uses emitted wavefront arrival timing for moving source/observer presets; source frequency remains fixed; graph/readouts and optional safely gated pitch |
-| 7.2.4 | not built | Ear explorer |
+| 7.2.4 | verified (builder) | `/hearing` eight-structure mechanical→fluid→electrical pathway, simplified frequency-place map and non-diagnostic saved explanation |
 | 7.2.5 | deferred | Cultural sound investigation — blocked on Irvin-approved sources |
-| 7.2.6 | not built | Ultrasound lab |
+| 7.2.6 | verified (builder) | `/ultrasound` three synthetic phantoms, exact depth = speed × round-trip time ÷ 2, qualitative frequency trade-off and evidence limitation |
 | 7.3.1 | verified (builder) | `/vision` relative brightness/pupil, distance/image-size and accommodation/focus model; labelled optical/neural pathway; non-diagnostic extension and saved explanation |
 | 7.3.2 | verified (builder) | `/light/properties` reflection equality, Snell refraction/TIR, fixed boundary frequency, normalised T/R/A ledger, qualitative scattering; full controlled investigation/graph/export/print/evidence |
 | 7.3.3 | verified (builder) | `/light/applications` mirror, qualitative lens, optical-fibre and conditional surface/application reasoning with required justification and limitation evidence |
-| 7.3.4 | not built | Multiwavelength astronomy |
+| 7.3.4 | verified (builder) | `/astronomy` curated multiwavelength evidence, catalogued H/He/Na lines, honest no-match identification and signed red/blueshift inference |
 | 7.4.1 | verified (builder) | `/motion/track` signed 1D position, distance, displacement, speed and average velocity with changeable origin, exact step history and reversal handling |
 | 7.4.2 | verified (builder) | `/motion/diagrams` 2–8-dot motion diagrams with independently changeable interval, spacing-pattern validation and reversal-specific feedback |
 | 7.4.3 | verified (builder) | `/motion/graphs` position–time and velocity–time representations, exact slope/area readouts, controlled investigation, graph/table/export and graph-as-path misconception check |
@@ -76,7 +88,7 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 7.4.5 | verified (builder) | `/forces/applications` six contextual Newton-law cases; third-law pairs name distinct objects and only the reviewed walking fixture uses a numeric force |
 | 7.4.6 | verified (builder) | `/forces/vectors` up-to-six-force 1D vector builder with exact signed sum, coordinate-sign convention and accessible force table |
 | 7.4.7 | verified (builder) | `/forces/calculations` unit-aware F=ma rearrangements plus motion average/slope/area calculations with zero-division and invalid-mass guards |
-| 7.5.1 | not built | Society argument studio |
+| 7.5.1 | verified (builder) | `/society` six sourced evidence packs, contention/criteria/evidence/CER/counterclaim/proportional conclusion/bibliography validation and export |
 
 ## Stages
 
@@ -88,5 +100,5 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 3 — Sound module group | built — builder verification green (138 unit, 295 e2e passed / 1 skipped across Chromium+WebKit); evidence in `docs/evidence/stage-3-evidence.md`; awaiting independent review |
 | 4 — Light and vision module group | built — builder verification green (152 unit, 367 e2e passed / 1 skipped across Chromium+WebKit); evidence in `docs/evidence/stage-4-evidence.md`; awaiting independent review |
 | 5 — Motion and force module group | built — builder verification green (187 unit, 481 e2e passed / 1 expected skip across Chromium+WebKit); evidence in `docs/evidence/stage-5-evidence.md`; awaiting independent review |
-| 6 — Astronomy/mastery/teacher/progress/offline | not started |
+| 6 — Spectrum/hearing/ultrasound/astronomy/society/mastery/teacher/progress/offline | built — builder verification green (202 unit, 536 browser tests passed / 2 expected WebKit offline-emulation skips across Chromium+WebKit); evidence in `docs/evidence/stage-6-evidence.md`; awaiting independent release audit |
 | 7 — Independent release audit | not started |

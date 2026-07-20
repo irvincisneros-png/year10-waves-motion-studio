@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import {
   FORCE_ROUTES,
+  COMPLETION_ROUTES,
   LIGHT_ROUTES,
   MOTION_ROUTES,
   SHELL_ROUTES,
@@ -18,6 +19,7 @@ test.describe("accessibility audit", () => {
     ...LIGHT_ROUTES,
     ...MOTION_ROUTES,
     ...FORCE_ROUTES,
+    ...COMPLETION_ROUTES,
   ]) {
     test(`axe reports zero violations on ${route.path}`, async ({ page }) => {
       await page.goto(route.url);

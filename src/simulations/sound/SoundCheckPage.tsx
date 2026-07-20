@@ -147,7 +147,7 @@ export default function SoundCheckPage() {
                     ))}
                   </select>
                 ) : (
-                  <span>{q.unit}</span>
+              <span>{q.kind === 'numeric' ? q.unit : ''}</span>
                 )}
               </div>
             </div>

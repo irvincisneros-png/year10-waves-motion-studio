@@ -11,10 +11,13 @@ Part of the NSW Junior Science Simulator suite — see
 
 ## Status
 
-In staged rebuild — see `IMPLEMENTATION_STATUS.md` for honest per-outcome status and
-`docs/plans/2026-07-17-wavemotion-orchestration-plan.md` for the delivery plan.
-Pre-existing prototype code is being replaced stage by stage
-(`docs/AUDIT_2026-07-17.md`).
+Stages 0–6 are builder-complete. The release includes 24 active syllabus
+outcomes, six completion routes, a 101-question mastery bank, evidence-derived
+local progress, teacher tools and whole-app offline support. Outcome 7.2.5 is
+explicitly deferred until attributable, community-approved sources are supplied;
+it has no route, navigation item, card or mastery question. Stage 7 is the
+fresh-context release audit. See `IMPLEMENTATION_STATUS.md`, `COVERAGE.md` and
+the evidence packs under `docs/evidence/`.
 
 ## Stack
 

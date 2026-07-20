@@ -16,7 +16,7 @@ test.describe("Stage 5 routes and availability", () => {
     });
   }
 
-  test("home exposes real Motion and Forces links while Stage 6 remains unavailable", async ({
+  test("home exposes real Motion, Forces and Stage 6 links", async ({
     page,
   }) => {
     await page.goto("/#/");
@@ -26,12 +26,10 @@ test.describe("Stage 5 routes and availability", () => {
     await expect(
       page.getByRole("link", { name: "Forces & Newton’s laws" }),
     ).toHaveAttribute("href", "#/forces");
-    await expect(
-      page.getByRole("link", { name: "Reading starlight" }),
-    ).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Reading starlight" })).toHaveAttribute("href", "#/astronomy");
     await page.goto("/#/astronomy");
     await expect(
-      page.getByRole("heading", { name: "Page not found" }),
+      page.getByRole("heading", { name: "Reading starlight" }),
     ).toBeVisible();
   });
 });

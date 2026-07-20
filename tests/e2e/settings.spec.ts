@@ -53,16 +53,16 @@ test.describe('progress export / import / reset', () => {
   test('export downloads valid schema-wrapped JSON', async ({ page }) => {
     await page.goto('/#/progress');
     const downloadPromise = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Export progress (JSON)' }).click();
+    await page.getByRole('button', { name: 'Export local backup (includes written evidence)' }).click();
     const download = await downloadPromise;
-    expect(download.suggestedFilename()).toBe('wavemotion-progress.json');
+    expect(download.suggestedFilename()).toBe('wavemotion-local-backup.json');
 
     const stream = await download.createReadStream();
     const chunks: Buffer[] = [];
     for await (const chunk of stream) chunks.push(chunk as Buffer);
     const parsed = JSON.parse(Buffer.concat(chunks).toString('utf8'));
     expect(parsed.schema).toBe('wavemotion.progress');
-    expect(parsed.version).toBe(1);
+    expect(parsed.version).toBe(2);
     expect(parsed.data).toHaveProperty('outcomes');
     expect(parsed.data).toHaveProperty('evidence');
   });
@@ -76,14 +76,17 @@ test.describe('progress export / import / reset', () => {
       name: 'progress.json',
       mimeType: 'application/json',
       buffer: Buffer.from(
-        JSON.stringify({ outcomes: { '7.1.1': 'secure' }, evidence: [] }),
+        JSON.stringify({ evidence: [
+          { id: 'a', outcomeCode: '7.1.1', kind: 'check', activityId: 'q1', result: 'successful', summary: 'correct', createdAt: '2026-07-20' },
+          { id: 'b', outcomeCode: '7.1.1', kind: 'explanation', activityId: 'cer1', result: 'successful', summary: 'complete', createdAt: '2026-07-20' },
+        ] }),
       ),
     });
     await expect(page.getByTestId('progress-feedback')).toContainText(
       'imported successfully',
     );
     await expect(row.getByText('Secure')).toBeVisible();
-    await expect(page.getByText('1 of 25 outcomes attempted')).toBeVisible();
+    await expect(page.getByText('1 of 24 outcomes attempted')).toBeVisible();
   });
 
   test('oversized import (> 1 MB) is rejected gracefully', async ({ page }) => {
@@ -103,7 +106,7 @@ test.describe('progress export / import / reset', () => {
       /rejected/i,
     );
     // Table unchanged
-    await expect(page.getByText('0 of 25 outcomes attempted')).toBeVisible();
+    await expect(page.getByText('0 of 24 outcomes attempted')).toBeVisible();
   });
 
   test('malformed import is rejected gracefully', async ({ page }) => {
@@ -116,7 +119,7 @@ test.describe('progress export / import / reset', () => {
     await expect(page.getByTestId('progress-feedback')).toContainText(
       /rejected/i,
     );
-    await expect(page.getByText('0 of 25 outcomes attempted')).toBeVisible();
+    await expect(page.getByText('0 of 24 outcomes attempted')).toBeVisible();
   });
 
   test('reset-all asks for confirmation and clears progress', async ({
@@ -128,23 +131,23 @@ test.describe('progress export / import / reset', () => {
       name: 'progress.json',
       mimeType: 'application/json',
       buffer: Buffer.from(
-        JSON.stringify({ outcomes: { '7.2.1': 'developing' }, evidence: [] }),
+        JSON.stringify({ evidence: [{ id: 'a', outcomeCode: '7.2.1', kind: 'check', activityId: 'q1', result: 'attempted', summary: 'incorrect', createdAt: '2026-07-20' }] }),
       ),
     });
-    await expect(page.getByText('1 of 25 outcomes attempted')).toBeVisible();
+    await expect(page.getByText('1 of 24 outcomes attempted')).toBeVisible();
 
     // Dismissing the confirm leaves progress untouched
     page.once('dialog', (d) => void d.dismiss());
     await page.getByRole('button', { name: 'Reset all progress' }).click();
-    await expect(page.getByText('1 of 25 outcomes attempted')).toBeVisible();
+    await expect(page.getByText('1 of 24 outcomes attempted')).toBeVisible();
 
     // Accepting the confirm clears it
     page.once('dialog', (d) => void d.accept());
     await page.getByRole('button', { name: 'Reset all progress' }).click();
-    await expect(page.getByText('0 of 25 outcomes attempted')).toBeVisible();
+    await expect(page.getByText('0 of 24 outcomes attempted')).toBeVisible();
 
     // …and the reset persists across reload
     await page.reload();
-    await expect(page.getByText('0 of 25 outcomes attempted')).toBeVisible();
+    await expect(page.getByText('0 of 24 outcomes attempted')).toBeVisible();
   });
 });

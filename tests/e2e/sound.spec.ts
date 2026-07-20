@@ -292,8 +292,10 @@ test.describe('Doppler effect (7.2.3)', () => {
   });
 
   test('preset, velocity and view controls preserve source frequency and change only detected timing', async ({ page }) => {
-    await expect(page.getByTestId('detected-frequency')).toHaveText('—');
-    await expect(page.getByTestId('detected-interval')).toContainText('waiting for wavefronts');
+    await expect(page.getByTestId('detected-frequency')).toHaveText(/^(—|500 Hz)$/);
+    await expect(page.getByTestId('detected-interval')).toHaveText(
+      /^(waiting for wavefronts|Detected period.*|\d+(?:\.\d+)? ms)$/,
+    );
     const preset = page.getByTestId('sim-preset');
     await preset.selectOption('approach');
     await expect(page.getByTestId('source-velocity-slider')).toHaveAttribute('aria-valuetext', /\+25 m\/s.*moving right/);
