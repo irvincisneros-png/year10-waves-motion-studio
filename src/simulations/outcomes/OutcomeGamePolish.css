@@ -1,0 +1,201 @@
+.outcome-711 { --game-accent: #27d8e8; --game-accent-2: #7e68ff; --game-panel: #ebf9fb; }
+.outcome-712 { --game-accent: #ffd260; --game-accent-2: #ff7666; --game-panel: #fff7df; }
+.outcome-713 { --game-accent: #57ddd4; --game-accent-2: #9b7cff; --game-panel: #eafaf8; }
+.outcome-714 { --game-accent: #ffcb5f; --game-accent-2: #8d6dff; --game-panel: #f5efff; }
+
+.page:has(> :is(.outcome-711, .outcome-712, .outcome-713, .outcome-714)) {
+  position: relative;
+}
+
+.page:has(> :is(.outcome-711, .outcome-712, .outcome-713, .outcome-714))::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: min(40rem, 70vw);
+  height: 24rem;
+  top: 0;
+  right: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(86, 211, 232, 0.13), rgba(130, 94, 255, 0.055) 48%, transparent 72%);
+  pointer-events: none;
+}
+
+:is(.outcome-711__command-row, .outcome-712__command-row, .outcome-713__command-row, .outcome-714__command-row) {
+  min-height: 3rem;
+  padding-inline: 0.15rem;
+}
+
+:is(.outcome-711__command-row, .outcome-712__command-row, .outcome-713__command-row, .outcome-714__command-row) > p {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+:is(.outcome-711__command-row, .outcome-712__command-row, .outcome-713__command-row, .outcome-714__command-row) > p::before {
+  content: '';
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--game-accent);
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--game-accent) 16%, transparent), 0 0 14px var(--game-accent);
+}
+
+:is(.outcome-711__text-button, .outcome-712__text-button, .outcome-713__text-button, .outcome-714__text-button) {
+  border: 1px solid rgba(91, 52, 201, 0.2);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.62);
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(32, 25, 74, 0.06);
+}
+
+:is(.outcome-711__deck, .outcome-712__deck, .outcome-713__deck, .outcome-714__deck) {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--game-accent-2) 26%, rgba(20, 27, 46, 0.14));
+  box-shadow: 0 2px 3px rgba(20, 27, 46, 0.08), 0 24px 58px rgba(20, 27, 46, 0.17);
+}
+
+:is(.outcome-711__deck, .outcome-712__deck, .outcome-713__deck, .outcome-714__deck)::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, transparent 2%, var(--game-accent), var(--game-accent-2) 74%, transparent 98%);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--game-accent) 50%, transparent);
+}
+
+:is(.outcome-711__deck-heading, .outcome-712__deck-heading, .outcome-713__deck-heading, .outcome-714__deck-heading) {
+  position: relative;
+  z-index: 1;
+  padding-top: 0.25rem;
+}
+
+:is(.outcome-711__deck-heading, .outcome-712__deck-heading, .outcome-713__deck-heading, .outcome-714__deck-heading) h2 {
+  letter-spacing: -0.025em;
+}
+
+:is(.outcome-711__launch, .outcome-712__launch, .outcome-713__launch, .outcome-714__calibrate) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: transparent;
+  background: linear-gradient(135deg, #067282, #1552a0 58%, #6249c8);
+  box-shadow: 0 10px 24px rgba(18, 77, 139, 0.26), inset 0 1px rgba(255, 255, 255, 0.24);
+}
+
+:is(.outcome-711__launch, .outcome-712__launch, .outcome-713__launch, .outcome-714__calibrate)::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: 42%;
+  height: 180%;
+  top: -40%;
+  left: -55%;
+  transform: skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.26), transparent);
+  transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.outcome-711__launch, .outcome-712__launch, .outcome-713__launch, .outcome-714__calibrate):hover::after {
+    transform: translateX(410%) skewX(-18deg);
+  }
+}
+
+:is(.outcome-711__launch, .outcome-712__launch, .outcome-713__launch, .outcome-714__calibrate):active,
+:is(.outcome-711, .outcome-712, .outcome-713, .outcome-714) .btn:active {
+  transform: scale(0.97);
+}
+
+:is(.outcome-711__viewport, .outcome-712__viewport, .outcome-713__viewport, .outcome-714__viewport) {
+  position: relative;
+  border-color: color-mix(in srgb, var(--game-accent) 38%, #20344f);
+  box-shadow:
+    0 14px 34px rgba(6, 17, 38, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.055),
+    inset 0 0 52px color-mix(in srgb, var(--game-accent-2) 8%, transparent);
+}
+
+:is(.outcome-711__instrument-bar, .outcome-712__instrument-bar, .outcome-713__instrument-bar, .outcome-714__instrument-bar) {
+  border-radius: 0.85rem;
+  border-color: color-mix(in srgb, var(--game-accent-2) 22%, rgba(20, 27, 46, 0.12));
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 9px 25px rgba(30, 37, 66, 0.08), inset 0 1px rgba(255, 255, 255, 0.82);
+}
+
+:is(.outcome-711__challenge, .outcome-712__challenge, .outcome-713__challenge, .outcome-714__challenge) {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--game-accent-2) 35%, var(--line-subtle));
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--game-accent-2) 15%, transparent), transparent 34%),
+    linear-gradient(145deg, #ffffff 0%, var(--game-panel) 100%);
+  box-shadow: 0 18px 42px rgba(23, 28, 54, 0.11);
+}
+
+:is(.outcome-711__challenge, .outcome-712__challenge, .outcome-713__challenge, .outcome-714__challenge)::before {
+  content: 'FIELD CHALLENGE';
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.42rem 0.75rem;
+  color: #ffffff;
+  border-radius: 0 0 0 0.75rem;
+  background: linear-gradient(120deg, #283d78, #6047bb);
+  font-size: 0.65rem;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.12em;
+}
+
+:is(.outcome-711__reward, .outcome-712__reward, .outcome-713__reward, .outcome-714__reward).is-complete {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(38, 158, 93, 0.45);
+  background:
+    radial-gradient(circle at 92% 18%, rgba(255, 220, 103, 0.2), transparent 25%),
+    linear-gradient(135deg, #effbf3, #ffffff 55%, #fff9df);
+  box-shadow: 0 13px 32px rgba(31, 122, 77, 0.14);
+}
+
+:is(.outcome-711__reward, .outcome-712__reward, .outcome-713__reward, .outcome-714__reward).is-complete::after {
+  content: '★ PATCH EARNED';
+  position: absolute;
+  top: 0.55rem;
+  right: -2.3rem;
+  width: 9rem;
+  padding: 0.25rem 0;
+  transform: rotate(32deg);
+  color: #4c3900;
+  background: #ffdd72;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  :is(.outcome-711__challenge, .outcome-712__challenge, .outcome-713__challenge, .outcome-714__challenge) {
+    padding-top: 3.35rem;
+  }
+
+  :is(.outcome-711__challenge, .outcome-712__challenge, .outcome-713__challenge, .outcome-714__challenge)::before {
+    left: 0;
+    right: auto;
+    border-radius: 0 0 0.75rem 0;
+  }
+}
+
+:root[data-low-graphics='true'] :is(.outcome-711__deck, .outcome-712__deck, .outcome-713__deck, .outcome-714__deck),
+:root[data-low-graphics='true'] :is(.outcome-711__challenge, .outcome-712__challenge, .outcome-713__challenge, .outcome-714__challenge) {
+  background: var(--surface-card);
+  box-shadow: 0 0 0 1px var(--line-subtle);
+}
+
+:root[data-low-graphics='true'] :is(.outcome-711__deck, .outcome-712__deck, .outcome-713__deck, .outcome-714__deck)::before,
+:root[data-low-graphics='true'] :is(.outcome-711__challenge, .outcome-712__challenge, .outcome-713__challenge, .outcome-714__challenge)::before,
+:root[data-low-graphics='true'] :is(.outcome-711__reward, .outcome-712__reward, .outcome-713__reward, .outcome-714__reward)::after { display: none; }
+
+:root[data-reduced-motion='true'] :is(.outcome-711__launch, .outcome-712__launch, .outcome-713__launch, .outcome-714__calibrate):active,
+:root[data-reduced-motion='true'] :is(.outcome-711, .outcome-712, .outcome-713, .outcome-714) .btn:active { transform: none; }
+
+:root[data-reduced-motion='true'] :is(.outcome-711__launch, .outcome-712__launch, .outcome-713__launch, .outcome-714__calibrate)::after { transition: none; }

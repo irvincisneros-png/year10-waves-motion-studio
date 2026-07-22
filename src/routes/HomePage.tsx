@@ -1,4 +1,4 @@
-import { ArrowRight, Beaker, Sparkles } from 'lucide-react';
+import { ArrowRight, Beaker, Gamepad2, Sparkles, Waves } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Page } from '../components/Page';
 import {
@@ -89,6 +89,34 @@ export default function HomePage() {
           </section>
         );
       })}
+
+      <section className="bonus-rider" aria-labelledby="bonus-rider-title">
+        <div className="bonus-rider__art" aria-hidden="true">
+          <div className="bonus-rider__orbit" />
+          <img
+            src={`${import.meta.env.BASE_URL}assets/game/pulse-wave-runner.png`}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div className="bonus-rider__copy">
+          <p className="bonus-rider__eyebrow"><Gamepad2 size={16} aria-hidden="true" /> Bonus challenge</p>
+          <h2 id="bonus-rider-title">Surf the science in Wave Rider</h2>
+          <p>
+            Tune a live wave, clear three checkpoints, and help Pulse track the
+            energy front while the medium particles stay near home.
+          </p>
+          <div className="bonus-rider__tags" aria-label="Wave Rider topics">
+            <span><Waves size={14} aria-hidden="true" /> Energy transfer</span>
+            <span>v = fλ</span>
+            <span>Particle motion</span>
+          </div>
+          <Link to="/bonus/wave-rider" className="bonus-rider__launch">
+            Play Wave Rider <ArrowRight size={18} aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
 
     </Page>
   );

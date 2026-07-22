@@ -51,6 +51,7 @@ import Outcome711Page from '../simulations/outcomes/Outcome711Page';
 import Outcome712Page from '../simulations/outcomes/Outcome712Page';
 import Outcome713Page from '../simulations/outcomes/Outcome713Page';
 import Outcome714Page from '../simulations/outcomes/Outcome714Page';
+import WaveRiderPage from '../simulations/bonus/WaveRiderPage';
 
 /**
  * Route table — shell routes (Stage 1) + the wave-foundations workspace
@@ -73,6 +74,7 @@ export default function App() {
           <Route path="simulators/7.1.2" element={<Outcome712Page />} />
           <Route path="simulators/7.1.3" element={<Outcome713Page />} />
           <Route path="simulators/7.1.4" element={<Outcome714Page />} />
+          <Route path="bonus/wave-rider" element={<WaveRiderPage />} />
           <Route path="waves" element={<WavesLayout />}>
             <Route index element={<WavesHubPage />} />
             <Route path="medium" element={<MediumChambersPage />} />

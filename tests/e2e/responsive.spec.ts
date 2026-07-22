@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import {
+  BONUS_ROUTES,
   FORCE_ROUTES,
   COMPLETION_ROUTES,
   LIGHT_ROUTES,
@@ -28,6 +29,7 @@ test.describe("responsive layout", () => {
         ...MOTION_ROUTES,
         ...FORCE_ROUTES,
         ...COMPLETION_ROUTES,
+        ...BONUS_ROUTES,
       ]) {
         await page.goto(route.url);
         await expect(
@@ -191,6 +193,7 @@ test.describe("responsive layout", () => {
       ...MOTION_ROUTES,
       ...FORCE_ROUTES,
       ...COMPLETION_ROUTES,
+      ...BONUS_ROUTES,
     ]) {
       await page.goto(route.url);
       const controls = page.locator(

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import {
+  BONUS_ROUTES,
   FORCE_ROUTES,
   COMPLETION_ROUTES,
   LIGHT_ROUTES,
@@ -23,6 +24,7 @@ const ROUTES = [
   ...MOTION_ROUTES.map((r) => r.url),
   ...FORCE_ROUTES.map((r) => r.url),
   ...COMPLETION_ROUTES.map((r) => r.url),
+  ...BONUS_ROUTES.map((r) => r.url),
   "/#/not-a-real-route",
 ];
 

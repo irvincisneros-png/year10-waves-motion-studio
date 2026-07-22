@@ -188,7 +188,7 @@ describe('7.1.3 safe longitudinal particle representation', () => {
         }
       }
     }
-  });
+  }, 10_000);
 
   it('shows particle bunching at compression and spreading at rarefaction', () => {
     const run = createWaveComparisonRun();

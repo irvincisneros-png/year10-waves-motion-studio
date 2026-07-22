@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useAnnouncer } from '../../accessibility/LiveRegion';
 import { Page } from '../../components/Page';
 import { CanvasScene } from '../../components/sim/CanvasScene';
+import { WaveRunnerBrief, type WaveRunnerStep } from '../../components/sim/WaveRunnerBrief';
 import { outcomeMap } from '../../content/outcomes';
 import {
   EMPTY_SPECTRUM_PINS,
@@ -28,6 +29,7 @@ import {
 } from '../../science/emSpectrum';
 import { useSettingsStore } from '../../store/settingsStore';
 import './Outcome714Page.css';
+import './OutcomeGamePolish.css';
 
 const TOUR_STEPS = [
   {
@@ -270,6 +272,13 @@ export default function Outcome714Page() {
       : 'longer wavelength';
   const frameKey = `${currentState.logPosition}|${lowGraphics}`;
   const outcome = outcomeMap['7.1.4'];
+  const pinsReady = Boolean(pins.A && pins.B && compareSelection);
+  const missionComplete = summary?.score === summary?.maxScore;
+  const missionSteps: readonly WaveRunnerStep[] = [
+    { label: 'Tune target', state: tuneResult?.correct ? 'complete' : 'active' },
+    { label: 'Compare pins', state: pinsReady ? 'complete' : tuneResult?.correct ? 'active' : 'locked' },
+    { label: 'Map boundary', state: missionComplete ? 'complete' : pinsReady ? 'active' : 'locked' },
+  ];
 
   return (
     <Page
@@ -284,6 +293,17 @@ export default function Outcome714Page() {
             <button type="button" className="outcome-714__text-button" data-control-id="outcome-7-1-4.tour-open" onClick={() => { setTourStep(0); setTourOpen(true); }}>Show quick tour</button>
           )}
         </div>
+
+        <WaveRunnerBrief
+          sector="Spectrum Navigator"
+          title="Calibrate Pulse’s scanner across the EM spectrum"
+          objective="Tune the continuous scale, compare two pinned wave forms, then identify every valid region at an overlapping boundary."
+          status={missionComplete ? 'Spectrum scan calibrated across all three missions.' : pinsReady ? 'Pin comparison ready. Resolve the boundary mission.' : tuneResult?.correct ? 'Target locked. Build the A/B comparison.' : 'Tune to the target wavelength and calibrate the scanner.'}
+          points={300}
+          complete={missionComplete}
+          theme="spectrum"
+          steps={missionSteps}
+        />
 
         {tourOpen ? (
           <aside className="outcome-714__tour" aria-label="Three-step simulator tour">

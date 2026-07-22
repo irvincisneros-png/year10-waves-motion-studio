@@ -4,6 +4,7 @@ import { Page } from '../../components/Page';
 import { CanvasScene } from '../../components/sim/CanvasScene';
 import { SimControl } from '../../components/sim/SimControl';
 import { SimToolbar } from '../../components/sim/SimToolbar';
+import { WaveRunnerBrief, type WaveRunnerStep } from '../../components/sim/WaveRunnerBrief';
 import { useSimClock } from '../../components/sim/useSimClock';
 import { outcomeMap } from '../../content/outcomes';
 import {
@@ -24,6 +25,7 @@ import { pulseDisplacement } from '../../science/pulse';
 import { formatSigFigs } from '../../science/units';
 import { useSettingsStore } from '../../store/settingsStore';
 import './Outcome711Page.css';
+import './OutcomeGamePolish.css';
 
 const DEFAULTS = {
   amplitude: 40,
@@ -317,6 +319,13 @@ export default function Outcome711Page() {
 
   const frameKey = `${clock.t}|${amplitude}|${coupling}|${density}|${launchCount}|${lowGraphics}`;
   const outcome = outcomeMap['7.1.1'];
+  const allPredictionsReady = TRANSMISSION_BAYS.every((bay) => predictions[bay.id] !== undefined);
+  const missionComplete = challengeResult?.correctCount === 3;
+  const missionSteps: readonly WaveRunnerStep[] = [
+    { label: 'Predict paths', state: allPredictionsReady ? 'complete' : 'active' },
+    { label: 'Launch signals', state: launchCount > 0 ? 'complete' : allPredictionsReady ? 'active' : 'locked' },
+    { label: 'Decode evidence', state: missionComplete ? 'complete' : launchCount > 0 ? 'active' : 'locked' },
+  ];
 
   return (
     <Page
@@ -341,6 +350,17 @@ export default function Outcome711Page() {
             </button>
           )}
         </div>
+
+        <WaveRunnerBrief
+          sector="Signal Crossing"
+          title="Help Pulse map what can cross empty space"
+          objective="Predict all three detector outcomes, release one matched signal, then use the evidence to identify when matter is required."
+          status={missionComplete ? 'All three transmission paths decoded.' : launchCount > 0 ? 'Read each detector, then check your prediction.' : allPredictionsReady ? 'Predictions locked. The transmitter is ready.' : 'Choose a detector outcome for every bay.'}
+          points={300}
+          complete={missionComplete}
+          theme="transmission"
+          steps={missionSteps}
+        />
 
         {tourOpen ? (
           <aside className="outcome-711__tour" aria-label="Three-step simulator tour">

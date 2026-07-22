@@ -4,6 +4,7 @@ import { Page } from '../../components/Page';
 import { CanvasScene } from '../../components/sim/CanvasScene';
 import { SimControl } from '../../components/sim/SimControl';
 import { SimToolbar } from '../../components/sim/SimToolbar';
+import { WaveRunnerBrief, type WaveRunnerStep } from '../../components/sim/WaveRunnerBrief';
 import { useSimClock } from '../../components/sim/useSimClock';
 import { outcomeMap } from '../../content/outcomes';
 import {
@@ -23,6 +24,7 @@ import {
 import { formatSigFigs } from '../../science/units';
 import { useSettingsStore } from '../../store/settingsStore';
 import './Outcome713Page.css';
+import './OutcomeGamePolish.css';
 
 const TOUR_STEPS = [
   {
@@ -377,6 +379,13 @@ export default function Outcome713Page() {
   ));
   const frameKey = `${clock.t}|${activeRun.runKey}|${probeX}|${lowGraphics}|${run ? 'active' : 'ready'}`;
   const outcome = outcomeMap['7.1.3'];
+  const featurePairLocked = Boolean(transverseLock?.correct && longitudinalLock?.correct);
+  const missionComplete = result?.score === result?.maxScore;
+  const missionSteps: readonly WaveRunnerStep[] = [
+    { label: 'Launch both views', state: run ? 'complete' : 'active' },
+    { label: 'Lock features', state: featurePairLocked ? 'complete' : run ? 'active' : 'locked' },
+    { label: 'Translate motion', state: missionComplete ? 'complete' : featurePairLocked ? 'active' : 'locked' },
+  ];
 
   return (
     <Page
@@ -398,6 +407,17 @@ export default function Outcome713Page() {
             </button>
           )}
         </div>
+
+        <WaveRunnerBrief
+          sector="Wave Translator"
+          title="Decode one wave through two different models"
+          objective={`Launch the shared state, lock a ${targets.transverse} and a ${targets.longitudinal}, then compare how particles move.`}
+          status={missionComplete ? 'Both wave languages translated correctly.' : featurePairLocked ? 'Feature pair locked. Finish the direction comparison.' : run ? `Move the gold probe onto the assigned ${targets.transverse} and ${targets.longitudinal}.` : 'The linked generator is standing by.'}
+          points={100}
+          complete={missionComplete}
+          theme="observatory"
+          steps={missionSteps}
+        />
 
         {tourOpen ? (
           <aside className="outcome-713__tour" aria-label="Three-step simulator tour">

@@ -760,6 +760,26 @@ Escape cancellation.
 Outcome 7.2.5's six planned `cultural-sound.*` controls are deferred and resolve to
 zero rendered elements. No substitute controls or placeholder route ship.
 
+## Bonus game — Wave Rider
+
+The optional `/bonus/wave-rider` route reinforces outcomes 7.1.2 and 7.1.3.
+It does not award syllabus mastery or replace either canonical simulator. Game
+completion is derived from scientific state; elapsed time and avatar movement
+cannot score a checkpoint.
+
+| ID | Control | Effect | Accessible name | Keyboard behaviour | Reset / validation | Fallback | Browser evidence |
+|---|---|---|---|---|---|---|---|
+| `bonus-wave-rider.matter-choice` | Two-radio group | Chooses whether medium particles travel with the disturbance or oscillate near home | "What medium particles do" | Native radio arrows/Space | Only local oscillation passes; misconception receives specific feedback | Semantic HTML | `wave-rider.spec.ts` misconception and completion paths |
+| `bonus-wave-rider.amplitude` | Range slider | Tunes amplitude for the energy checkpoint | "Wave Rider amplitude" | Native range arrows/Home/End | 0.5–2.0 m; target 1.5 m; updates relative A² energy but not speed | Live output and telemetry | same |
+| `bonus-wave-rider.wavelength` | Range slider | Tunes wavelength for the equation checkpoint | "Wave Rider wavelength" | Native range arrows/Home/End | 2–8 m; with f = 1.2 Hz and medium speed 6 m/s, λ = 5 m passes | Live output and telemetry | same plus `waveRider.test.ts` |
+| `bonus-wave-rider.ride-checkpoint` | Button | Evaluates the active checkpoint from current science state | "Ride checkpoint" | Native button | Disabled until the first choice is made and while a result is resolving | Status text exposes identical result | same |
+| `bonus-wave-rider.reset` | Button | Replays the course deterministically | "Ride again" | Native button | Restores stage 1, no choice, A = 0.8 m and λ = 3.0 m | Status announcement | same |
+
+The illustrated surfer is explicitly labelled as an energy-front game marker,
+not a particle, photon or literal person carried by the wave. Home-position dots,
+telemetry, the science explanation and the model-limit note remain available
+without relying on the artwork.
+
 ## Release-audit control reconciliation (2026-07-20)
 
 The all-route runtime parity test now rejects every button, input, select,
@@ -791,6 +811,6 @@ presentation checkbox reuses `global.presentation-mode-toggle`.
 The earlier planning-row total was retired because reconciled rows can own multiple
 controls and therefore drift from the executable inventory. The source of truth is
 the set of stable, namespaced IDs in this document, read directly by
-`control-inventory.spec.ts`: **358 unique product control/family IDs**, comprising
-**352 active release IDs** and **6 deferred `cultural-sound.*` IDs**. Runtime parity
+`control-inventory.spec.ts`: **363 unique product control/family IDs**, comprising
+**357 active release IDs** and **6 deferred `cultural-sound.*` IDs**. Runtime parity
 also proves the six deferred IDs render zero elements.

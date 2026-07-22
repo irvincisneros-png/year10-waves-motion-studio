@@ -374,6 +374,17 @@ export const COMPLETION_ROUTES: ShellRoute[] = [
   { path: "/mastery", url: "/#/mastery", heading: "Mastery challenge", title: "Mastery challenge — WaveMotion Studio", navLabel: "Mastery" },
 ];
 
+/** Optional game routes that reinforce, but do not replace, syllabus simulators. */
+export const BONUS_ROUTES: ShellRoute[] = [
+  {
+    path: "/bonus/wave-rider",
+    url: "/#/bonus/wave-rider",
+    heading: "Wave Rider",
+    title: "Wave Rider bonus challenge — WaveMotion Studio",
+    navLabel: "All simulators",
+  },
+];
+
 /**
  * Key that moves focus to the next focusable element INCLUDING links.
  * WebKit (Safari) skips links on plain Tab; Option+Tab visits everything.

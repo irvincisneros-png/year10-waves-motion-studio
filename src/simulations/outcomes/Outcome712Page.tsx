@@ -4,6 +4,7 @@ import { Page } from '../../components/Page';
 import { CanvasScene } from '../../components/sim/CanvasScene';
 import { SimControl } from '../../components/sim/SimControl';
 import { SimToolbar } from '../../components/sim/SimToolbar';
+import { WaveRunnerBrief, type WaveRunnerStep } from '../../components/sim/WaveRunnerBrief';
 import { useSimClock } from '../../components/sim/useSimClock';
 import { outcomeMap } from '../../content/outcomes';
 import {
@@ -23,6 +24,7 @@ import {
 import { formatSigFigs } from '../../science/units';
 import { useSettingsStore } from '../../store/settingsStore';
 import './Outcome712Page.css';
+import './OutcomeGamePolish.css';
 
 const TOUR_STEPS = [
   {
@@ -345,6 +347,12 @@ export default function Outcome712Page() {
   const outcome = outcomeMap['7.1.2'];
   const finalOffset = targetParticle.finalNetDisplacement;
   const frameKey = `${clock.t}|${amplitude}|${pulseWidth}|${targetParticleId}|${run?.runKey ?? 'ready'}|${lowGraphics}`;
+  const missionComplete = challengeResult?.score === challengeResult?.maxScore;
+  const missionSteps: readonly WaveRunnerStep[] = [
+    { label: 'Release pulse', state: run ? 'complete' : 'active' },
+    { label: 'Capture peak', state: peakCapture ? 'complete' : run ? 'active' : 'locked' },
+    { label: 'Verify return', state: missionComplete ? 'complete' : peakCapture ? 'active' : 'locked' },
+  ];
 
   return (
     <Page
@@ -366,6 +374,17 @@ export default function Outcome712Page() {
             </button>
           )}
         </div>
+
+        <WaveRunnerBrief
+          sector="Energy Relay"
+          title={`Track particle ${targetParticleId} without losing the energy pulse`}
+          objective="Release the pulse, capture the assigned particle near maximum displacement, then prove it returned home after energy reached the receiver."
+          status={missionComplete ? 'Energy delivered; every material particle returned home.' : returnCapture ? 'Return captured. Run the evidence check.' : peakCapture ? 'Peak secured. Wait for the particle to return home.' : run ? `Track particle ${targetParticleId} as the pulse passes.` : 'The source plate is charged and ready.'}
+          points={100}
+          complete={missionComplete}
+          theme="relay"
+          steps={missionSteps}
+        />
 
         {tourOpen ? (
           <aside className="outcome-712__tour" aria-label="Three-step simulator tour">

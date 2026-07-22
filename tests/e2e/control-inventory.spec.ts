@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect, test } from '@playwright/test';
 import {
+  BONUS_ROUTES,
   COMPLETION_ROUTES,
   FORCE_ROUTES,
   LIGHT_ROUTES,
@@ -21,6 +22,7 @@ const SHIPPED_ROUTES = [
   ...MOTION_ROUTES,
   ...FORCE_ROUTES,
   ...COMPLETION_ROUTES,
+  ...BONUS_ROUTES,
 ];
 
 const inventorySource = readFileSync(
@@ -28,7 +30,7 @@ const inventorySource = readFileSync(
   'utf8',
 );
 
-const PRODUCT_CONTROL_NAMESPACE = /^(?:global|shell|outcome-7-1-[1-4]|wave-lab|em-spectrum|sound-lab|hearing|cultural-sound|ultrasound|optics|vision|astronomy|motion|forces|society|mastery|teacher|progress)\./;
+const PRODUCT_CONTROL_NAMESPACE = /^(?:global|shell|bonus-wave-rider|outcome-7-1-[1-4]|wave-lab|em-spectrum|sound-lab|hearing|cultural-sound|ultrasound|optics|vision|astronomy|motion|forces|society|mastery|teacher|progress)\./;
 
 /** Stable control IDs are documented as backtick-delimited workspace.control tokens. */
 const DOCUMENTED_CONTROL_IDS = new Set(
