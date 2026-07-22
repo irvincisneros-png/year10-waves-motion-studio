@@ -157,6 +157,30 @@ state through manual stepping.
 | `outcome-7-1-3.challenge-replay` | Button | Advances to the next fixed feature/phase scenario | "New feature challenge" | Native button | Controls, feature pair and evidence reset deterministically | Plain HTML | same |
 | `outcome-7-1-3.how-it-works` | Disclosure | Explains the single scalar state and feature distinction | "How one engine state drives both models" | Native summary | Closed initially | Plain HTML | runtime parity |
 
+### 1.5 Outcome 7.1.4 direct simulator controls
+
+All controls below live on `/simulators/7.1.4`. The 2D tuner is intentionally
+continuous and logarithmic; no 3D interaction is needed to compare scalar
+wavelength, frequency, region and energy-order relationships.
+
+| ID | Control | Effect | Accessible name | Keyboard | Reset / validation | Fallback | Browser evidence |
+|---|---|---|---|---|---|---|---|
+| `outcome-7-1-4.tour-open` | Button | Opens the optional three-step Spectrum Tuner tour | "Show quick tour" | Tab; Enter/Space | Closed on first entry | Plain HTML | `outcome-714.spec.ts` tour path |
+| `outcome-7-1-4.tour-dismiss` | Button | Closes the tour immediately | "Skip tour" | Native button | No science state changes | Plain HTML | same |
+| `outcome-7-1-4.tour-next` | Button | Advances and closes the bounded tour | "Next" / "Start tuning" | Native button | Three steps maximum | Plain HTML | same |
+| `outcome-7-1-4.position` | Range slider | Tunes continuously across 10³–10⁻¹² m on a logarithmic wavelength scale | "Continuous spectrum position" | Arrows fine; Home/End bounds | Clamped 0–1; updates λ, f, candidate regions and field display together | Semantic state table | `outcome-714.spec.ts` continuous linkage |
+| `outcome-7-1-4.region-jumps` | Seven-button group | Jumps to a representative wavelength without turning regions into equal-sized bins | Region names | Native buttons | Uses reviewed representative values; clears stale tune result | Same state table | same |
+| `outcome-7-1-4.calibrate` | Button | Checks the current continuous state against the deterministic tune mission | "Calibrate current setting" | Native button | Within 1% of log span; rejects inconsistent forged state in engine | Pure-engine evaluation | `outcome-714.spec.ts` challenge path |
+| `outcome-7-1-4.wavelength-entry`; `outcome-7-1-4.wavelength-apply` | Textbox + button | Applies wavelength and derives frequency | "Enter wavelength in metres" / "Apply wavelength" | Native text/button | Positive 10⁻¹²–10³ m only; invalid value names the range | Linked readouts/table | `outcome-714.spec.ts` validation and overlap path |
+| `outcome-7-1-4.frequency-entry`; `outcome-7-1-4.frequency-apply` | Textbox + button | Applies frequency and derives wavelength | "Enter frequency in hertz" / "Apply frequency" | Native text/button | Positive values whose λ is within the displayed span | Linked readouts/table | same |
+| `outcome-7-1-4.pin-a`; `outcome-7-1-4.pin-b` | Buttons | Save immutable comparison states A and B | "Pin current as A/B" | Native buttons | Re-pinning replaces only that slot | Plain HTML cards | `outcome-714.spec.ts` inverse-order comparison |
+| `outcome-7-1-4.clear-pins` | Button | Clears both saved states and comparison | "Clear pins" | Native button | Returns A/B to empty | Plain HTML | same |
+| `outcome-7-1-4.compare-answer` | Three-radio group | Selects A, B or equal for mission wavelength/frequency/photon-energy order | "Mission 2 answer" | Native radio arrows/Space | Engine comparison supplies one deterministic expected selection | Plain HTML | `outcome-714.spec.ts` 300-point completion |
+| `outcome-7-1-4.boundary-answer` | Seven-checkbox group | Selects every named region valid at an overlapping boundary | "Mission 3 candidates" | Native checkbox Space | Exact candidate set required; one-region false certainty does not pass | Plain HTML | same |
+| `outcome-7-1-4.challenge-check` | Button | Scores tune, comparison and boundary missions | "Check all missions" | Native button | Three 100-point engine missions; tune may grant bounded proximity credit | Pure engine + HTML feedback | same |
+| `outcome-7-1-4.challenge-replay` | Button | Advances deterministic target/pins/boundary missions | "New calibration" | Native button | Clears answers/result and changes replay index | Plain HTML | same |
+| `outcome-7-1-4.sources` | Disclosure | Names BIPM/NASA provenance and boundary limits | "Authoritative sources and model limits" | Native summary/link behavior | Open initially so source links remain discoverable | Plain HTML | runtime parity |
+
 ---
 
 ## 2. Wave foundations workspace (`wave-lab`) — Stage S2

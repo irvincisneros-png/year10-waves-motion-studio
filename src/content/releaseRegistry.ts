@@ -15,7 +15,7 @@ const routesByOutcome: Record<string, { routes: readonly string[]; activity: str
   '7.1.1': { routes: ['/simulators/7.1.1', '/waves/medium'], activity: 'Transmission Lab — medium or vacuum?' },
   '7.1.2': { routes: ['/simulators/7.1.2', '/waves/energy'], activity: 'Energy Relay — particle passport challenge' },
   '7.1.3': { routes: ['/simulators/7.1.3', '/waves/types'], activity: 'Twin Wave Observatory — feature lock challenge' },
-  '7.1.4': { routes: ['/spectrum'], activity: 'EM spectrum explorer' },
+  '7.1.4': { routes: ['/simulators/7.1.4', '/spectrum'], activity: 'Spectrum Tuner — pin and calibrate two wave forms' },
   '7.1.5': { routes: ['/waves/measure'], activity: 'Wave measurement' },
   '7.1.6': { routes: ['/waves/measure'], activity: 'Wave equation investigation' },
   '7.1.7': { routes: ['/spectrum'], activity: 'EM uses evidence analysis' },

@@ -74,6 +74,13 @@ export const OUTCOME_ROUTES: ShellRoute[] = [
     title: "7.1.3 Twin Wave Observatory — WaveMotion Studio",
     navLabel: "All simulators",
   },
+  {
+    path: "/simulators/7.1.4",
+    url: "/#/simulators/7.1.4",
+    heading: "7.1.4 Spectrum Tuner",
+    title: "7.1.4 Spectrum Tuner — WaveMotion Studio",
+    navLabel: "All simulators",
+  },
 ];
 
 /**

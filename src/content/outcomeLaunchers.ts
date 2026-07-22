@@ -18,7 +18,7 @@ export interface OutcomeLauncher {
  * its sequential build gate. Other active outcomes retain a clearly labelled
  * route to their existing model until their own mode is converted.
  */
-export const CANONICAL_OUTCOME_CODES = new Set(['7.1.1', '7.1.2', '7.1.3']);
+export const CANONICAL_OUTCOME_CODES = new Set(['7.1.1', '7.1.2', '7.1.3', '7.1.4']);
 
 export const OUTCOME_LAUNCHERS: readonly OutcomeLauncher[] =
   OUTCOME_RELEASE_REGISTRY.filter((entry) => entry.status === 'active').map((entry) => {

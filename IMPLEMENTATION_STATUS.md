@@ -71,10 +71,10 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 > now `docs/PRODUCT_VISION.md` with the route model in
 > `docs/OUTCOME_FIRST_IA.md`. The learner home is an outcome gallery with 24
 > active cards and no 7.2.5 card; the primary shell exposes only All simulators.
-> Outcome 7.1.1 is the sole canonical gold-standard prototype at
-> `/simulators/7.1.1`. All other cards are labelled Existing model and retain a
-> non-destructive legacy destination. Bulk conversion, release packaging, tag and
-> push remain stopped pending user review under PV-09. Final builder-run
+> Outcomes 7.1.1–7.1.4 are canonical outcome-first simulators at their
+> `/simulators/<code>` routes. Remaining cards are labelled Existing model and
+> retain a non-destructive legacy destination. Bulk conversion beyond 7.1.4
+> remains stopped pending user review under PV-09. The earlier builder-run
 > `npm run verify` is green: oxlint 0 errors, TypeScript clean, 217 unit tests,
 > 687 browser tests passed and 3 expected WebKit capability skips across Chromium
 > + WebKit.
@@ -86,7 +86,7 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | 7.1.1 | verified (builder; corrected-direction prototype) | `/simulators/7.1.1` outcome-specific Transmission Lab: immediate three-bay causal comparison, deterministic engine, state-based 300-point challenge, replay, optional tour, Canvas/text equivalence and reduced-motion stepping. Legacy `/waves/medium` preserved. Evidence: `docs/evidence/7.1.1-prototype-evidence.md`; user approval pending |
 | 7.1.2 | verified (builder; canonical) | `/simulators/7.1.2` Energy Relay: one-pulse particle passport with an immutable-home engine, peak/return capture, receiver-energy evidence, deterministic replay, Canvas/text equivalence and reduced-motion stepping. Legacy `/waves/energy` preserved. Evidence: `docs/evidence/7.1.2-evidence.md`; user approval pending |
 | 7.1.3 | verified (builder; canonical) | `/simulators/7.1.3` Twin Wave Observatory: one scalar engine state drives linked transverse/longitudinal views, safe ordered spring particles, live feature-probe locks, direction comparison, graph-representation trap and deterministic replay. Legacy `/waves/types` preserved. Evidence: `docs/evidence/7.1.3-evidence.md`; user approval pending |
-| 7.1.4 | verified (builder) | `/spectrum` continuous log-position explorer, approximate/overlapping regions, linked f/λ values, ionising/risk guardrails and comparison evidence |
+| 7.1.4 | verified (builder; canonical) | `/simulators/7.1.4` Spectrum Tuner: continuous log-scale model with invariant-linked f/λ values, approximate/overlapping region candidates, A/B pins, three deterministic 100-point calibration missions, replay and Canvas/text equivalence. Legacy `/spectrum` preserved. Evidence: `docs/evidence/7.1.4-evidence.md`; user approval pending |
 | 7.1.5 | verified | `/waves/measure` ruler/timer/probe tools, presets (rope/water/sound/EM), seeded-noise mode, limitation prompt. Audited speed-cap bug is structurally gone (presets fix speed; λ derived) |
 | 7.1.6 | verified | v=fλ calculator (all rearrangements, unit-aware, division-guarded, inconsistent-triple rejection), λ vs 1/f trials table + graph + CSV/JSON export, interpretation prompt |
 | 7.1.7 | verified (builder) | `/spectrum` review-dated secondary-source table, property comparison and required citation evidence |
