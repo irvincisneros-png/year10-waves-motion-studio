@@ -12,16 +12,17 @@ Prototype code from the pre-audit build does **not** count as coverage — every
 
 > Corrected-direction note (2026-07-22): `docs/PRODUCT_VISION.md` and
 > `docs/OUTCOME_FIRST_IA.md` supersede the workspace/course architecture. Legacy
-> status below remains historical science and technical coverage. Only 7.1.1 has
-> completed the new canonical simulator-first prototype gate; the remaining active
-> outcomes are explicit transitional launchers, not corrected-direction completion.
+> status below remains historical science and technical coverage. Outcomes 7.1.1
+> and 7.1.2 have completed the new canonical simulator-first gate; the remaining
+> active outcomes are explicit transitional launchers, not corrected-direction
+> completion.
 
 ## 7.1 Common properties of waves — Stage 2 (wave lab) + Stage 6 (spectrum)
 
 | Code | Route | Teaching content | Interaction / simulation | Representation | Student task | Assessable evidence | Misconception addressed | Model limitation | Stage | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 7.1.1 | `/simulators/7.1.1` (canonical); `/waves/medium` (legacy preserved) | Mechanical waves need a medium; EM waves don't | One-launch material / vacuum / EM comparison with causal controls, live detectors and a scored replayable challenge | Engine-driven Canvas world + always-present detector table and fallback | Predict which signals transmit, launch the same disturbance and check against simulated evidence | 300-point state-based mastery result + replay | "No waves travel in space"; "the source cannot move in a vacuum"; amplitude changes speed | Display speeds/scales are illustrative; EM vectors are field representation, not particles | Prototype gate | verified (builder; user approval pending) |
-| 7.1.2 | `/waves/energy` | Energy transfers without net particle transfer | Tag particles during pulse; energy marker travels, particles oscillate | Canvas + tagged-particle table | Track a tagged particle over whole cycles | Explanation: net displacement ≈ 0 | "Particles travel along with the wave" | Ideal lossless medium; ≈0 net displacement | 2 | verified |
+| 7.1.2 | `/simulators/7.1.2` (canonical); `/waves/energy` (legacy preserved) | Energy transfers without net particle transfer | Launch one travelling pulse; capture an assigned particle near peak and after it returns home; verify energy at the receiver | Engine-driven Canvas world + always-present particle/receiver table and fallback | Complete a particle passport from two valid model states | State-scored 100-point result proving receiver energy with final particle displacement below 1% of amplitude | "Particles travel along with the wave" | Uniform, linear, non-dispersive and lossless medium; fixed display speed is illustrative | Outcome-first gate | verified (builder; user approval pending) |
 | 7.1.3 | `/waves/types` | Transverse vs longitudinal features | Linked transverse + longitudinal views, one wave state | Canvas dual view + labelled SVG | Identify crest/trough/compression/rarefaction, displacement vs propagation direction | Labelled comparison + representation-trap check | "A pressure graph shows particles moving up and down" | Water waves not perfectly transverse | 2 | verified |
 | 7.1.4 | `/spectrum` | EM spectrum wave forms compared | Continuous position/region explorer with log/linear comparison | Semantic CSS spectrum + numeric/table alternatives | Compare wavelength/frequency/energy/sources/uses | Saved region comparison | "Higher frequency is always more dangerous"; "all radiation is radioactive" | Band boundaries approximate/overlapping | 6 | verified (builder) |
 | 7.1.5 | `/waves/measure` | Amplitude, frequency, speed, wavelength | Placeable rulers/timers/probes across wave types | Canvas + measurement tools | Measure each feature across presets | Completed measurement record | Amplitude ≠ frequency ≠ speed conflation | Linear non-dispersive model | 2 | verified |

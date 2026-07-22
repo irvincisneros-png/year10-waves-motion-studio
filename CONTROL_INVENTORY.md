@@ -114,6 +114,26 @@ All controls below live on `/simulators/7.1.1`. The shared toolbar also uses
 | `outcome-7-1-1.challenge-check` | Button | Scores complete predictions against simulated transmission state | "Check predictions" | Tab; Enter/Space | Requires all three predictions and at least one pulse launch; incomplete state names the next action | Plain HTML engine scoring | `outcome-711.spec.ts` feedback/scoring |
 | `outcome-7-1-1.challenge-replay` | Button | Clears predictions, result and completion state | "Replay challenge" | Tab; Enter/Space | Deterministic empty challenge baseline | Plain HTML | `outcome-711.spec.ts` replay |
 
+### 1.3 Outcome 7.1.2 direct simulator controls
+
+All controls below live on `/simulators/7.1.2`. Shared toolbar IDs keep their
+§1 behavior; reduced motion uses the identical manual-step engine state.
+
+| ID | Control | Effect | Accessible name | Keyboard | Reset / validation | Fallback | Browser evidence |
+|---|---|---|---|---|---|---|---|
+| `outcome-7-1-2.tour-open` | Button | Opens optional three-step Energy Relay tour | "Show quick tour" | Tab; Enter/Space | Closed on first entry | Plain HTML | `outcome-712.spec.ts` tour path |
+| `outcome-7-1-2.tour-dismiss` | Button | Closes tour immediately | "Skip tour" | Native button | No science state changes | Plain HTML | same |
+| `outcome-7-1-2.tour-next` | Button | Advances and closes the bounded tour | "Next" / "Start experimenting" | Native button | Three steps maximum | Plain HTML | same |
+| `outcome-7-1-2.launch` | Button | Creates one deterministic pulse run from current controls | "Launch energy pulse" | Native button | Re-launch clears stale captures and restarts this run | Table is updated from the same pure state | `outcome-712.spec.ts` transfer path |
+| `outcome-7-1-2.amplitude` | Range slider | Changes local displacement amplitude only | "Pulse amplitude" | SimControl range pattern | 0.20–1.00 model m; invalid values clamped; fixed speed unchanged | Numeric readout/table | `outcome-712.spec.ts` controls plus unit invariants |
+| `outcome-7-1-2.width` | Range slider | Changes pulse width/duration only | "Pulse width" | SimControl range pattern | 0.35–1.20 model m; receiver arrival unchanged | Numeric readout/table | same |
+| `outcome-7-1-2.particle-picker` | Four-radio group | Selects B, D, F or H as the passport target | "Particle passport" | Native radio arrows/Space | Changing target invalidates the prior run and evidence | Selected row is text-labelled | `outcome-712.spec.ts` replay path |
+| `outcome-7-1-2.capture-peak` | Button | Captures the target particle's current engine state | "Capture peak snapshot" | Native button | Scorer accepts only ≥90% of model peak for the current run/target | Operates from semantic state without Canvas | `outcome-712.spec.ts` challenge path |
+| `outcome-7-1-2.capture-home` | Button | Captures the post-peak return state | "Capture return home" | Native button | Scorer accepts only <1% amplitude after target peak | Operates from semantic state without Canvas | same |
+| `outcome-7-1-2.challenge-check` | Button | Recomputes the complete three-part evidence gate | "Check particle passport" | Native button | Receiver/final event, same-particle peak and home evidence required | Pure-engine scoring + HTML feedback | same |
+| `outcome-7-1-2.challenge-replay` | Button | Advances to the next deterministic particle scenario | "New relay challenge" | Native button | Clears run/evidence/result and cycles a fixed sequence | Plain HTML | same |
+| `outcome-7-1-2.how-it-works` | Disclosure | Explains particle/pattern/energy separation | "How the model separates particle motion, wave motion and energy" | Native summary | Closed initially | Plain HTML | runtime parity |
+
 ---
 
 ## 2. Wave foundations workspace (`wave-lab`) — Stage S2

@@ -15,10 +15,14 @@ describe('outcome-first launcher registry', () => {
     }
   });
 
-  it('launches the gold-standard 7.1.1 experience from its canonical route', () => {
+  it('launches each completed simulator from its canonical route', () => {
     expect(OUTCOME_LAUNCHERS.find((launcher) => launcher.code === '7.1.1')).toMatchObject({
       route: '/simulators/7.1.1',
       experienceStatus: 'gold-standard',
+    });
+    expect(OUTCOME_LAUNCHERS.find((launcher) => launcher.code === '7.1.2')).toMatchObject({
+      route: '/simulators/7.1.2',
+      experienceStatus: 'canonical',
     });
   });
 });

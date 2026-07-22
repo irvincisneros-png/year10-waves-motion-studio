@@ -84,7 +84,7 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 | Code | Status | Notes |
 |---|---|---|
 | 7.1.1 | verified (builder; corrected-direction prototype) | `/simulators/7.1.1` outcome-specific Transmission Lab: immediate three-bay causal comparison, deterministic engine, state-based 300-point challenge, replay, optional tour, Canvas/text equivalence and reduced-motion stepping. Legacy `/waves/medium` preserved. Evidence: `docs/evidence/7.1.1-prototype-evidence.md`; user approval pending |
-| 7.1.2 | verified | `/waves/energy` tagged particles + energy marker; net-displacement ≈ 0 table (invariant 20.2 unit-tested + visible) |
+| 7.1.2 | verified (builder; canonical) | `/simulators/7.1.2` Energy Relay: one-pulse particle passport with an immutable-home engine, peak/return capture, receiver-energy evidence, deterministic replay, Canvas/text equivalence and reduced-motion stepping. Legacy `/waves/energy` preserved. Evidence: `docs/evidence/7.1.2-evidence.md`; user approval pending |
 | 7.1.3 | verified | `/waves/types` linked transverse+longitudinal views of one state; probe; mark-period; label toggles; representation trap w/ false-positive regression |
 | 7.1.4 | verified (builder) | `/spectrum` continuous log-position explorer, approximate/overlapping regions, linked f/λ values, ionising/risk guardrails and comparison evidence |
 | 7.1.5 | verified | `/waves/measure` ruler/timer/probe tools, presets (rope/water/sound/EM), seeded-noise mode, limitation prompt. Audited speed-cap bug is structurally gone (presets fix speed; λ derived) |

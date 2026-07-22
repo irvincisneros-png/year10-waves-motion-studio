@@ -9,6 +9,10 @@ import './HomePage.css';
 
 /** Outcome-first launcher gallery. Each card represents one active dot point. */
 export default function HomePage() {
+  const canonicalLaunchers = OUTCOME_LAUNCHERS.filter(
+    (launcher) => launcher.experienceStatus !== 'legacy',
+  );
+
   return (
     <Page title="Simulators" heading="Choose a science simulator">
       <section className="gallery-hero" aria-labelledby="gallery-intro">
@@ -23,15 +27,15 @@ export default function HomePage() {
             the experiment.
           </p>
         </div>
-        <div className="gallery-hero__prototype" aria-label="Prototype status">
-          <span>Gold-standard prototype</span>
-          <strong>7.1.1 is ready to explore</strong>
+        <div className="gallery-hero__prototype" aria-label="Purpose-built simulator status">
+          <span>Purpose-built simulators</span>
+          <strong>{canonicalLaunchers.map((launcher) => launcher.code).join(' and ')} are ready</strong>
         </div>
       </section>
 
       <p className="gallery-status" role="status">
         <strong>24 active outcomes</strong> are represented below. The new
-        simulator-first design begins with 7.1.1; existing models remain
+        simulator-first design is live for {canonicalLaunchers.length} outcomes; existing models remain
         available while each outcome receives its purpose-built mode.
       </p>
 
@@ -51,33 +55,31 @@ export default function HomePage() {
             </div>
             <div className="outcome-gallery">
               {launchers.map((launcher) => {
-                const isGold = launcher.experienceStatus === 'gold-standard';
+                const isCanonical = launcher.experienceStatus !== 'legacy';
                 return (
                   <article
                     key={launcher.code}
-                    className={`outcome-card${isGold ? ' outcome-card--gold' : ''}`}
+                    className={`outcome-card${isCanonical ? ' outcome-card--gold' : ''}`}
                   >
                     <div className="outcome-card__meta">
                       <span className="outcome-card__code">{launcher.code}</span>
                       <span
                         className={`outcome-card__status outcome-card__status--${launcher.experienceStatus}`}
                       >
-                        {isGold ? 'New simulator' : 'Existing model'}
+                        {isCanonical ? 'New simulator' : 'Existing model'}
                       </span>
                     </div>
                     <h3>{launcher.wording}</h3>
                     <p className="outcome-card__activity">
                       <Beaker size={16} aria-hidden="true" />
-                      {isGold
-                        ? 'Transmission Lab · free play + signal challenge'
-                        : launcher.activity}
+                      {launcher.activity}
                     </p>
                     <Link
                       to={launcher.route}
-                      className={`outcome-card__launch${isGold ? ' outcome-card__launch--primary' : ''}`}
-                      aria-label={`${isGold ? 'Launch simulator' : 'Open existing model'} for outcome ${launcher.code}: ${launcher.wording}`}
+                      className={`outcome-card__launch${isCanonical ? ' outcome-card__launch--primary' : ''}`}
+                      aria-label={`${isCanonical ? 'Launch simulator' : 'Open existing model'} for outcome ${launcher.code}: ${launcher.wording}`}
                     >
-                      {isGold ? 'Launch simulator' : 'Open existing model'}
+                      {isCanonical ? 'Launch simulator' : 'Open existing model'}
                       <ArrowRight size={17} aria-hidden="true" />
                     </Link>
                   </article>

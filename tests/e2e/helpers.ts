@@ -60,6 +60,13 @@ export const OUTCOME_ROUTES: ShellRoute[] = [
     title: "7.1.1 Transmission Lab — WaveMotion Studio",
     navLabel: "All simulators",
   },
+  {
+    path: "/simulators/7.1.2",
+    url: "/#/simulators/7.1.2",
+    heading: "7.1.2 Energy Relay",
+    title: "7.1.2 Energy Relay — WaveMotion Studio",
+    navLabel: "All simulators",
+  },
 ];
 
 /**

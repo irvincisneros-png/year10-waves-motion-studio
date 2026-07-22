@@ -28,7 +28,7 @@ const inventorySource = readFileSync(
   'utf8',
 );
 
-const PRODUCT_CONTROL_NAMESPACE = /^(?:global|shell|outcome-7-1-1|wave-lab|em-spectrum|sound-lab|hearing|cultural-sound|ultrasound|optics|vision|astronomy|motion|forces|society|mastery|teacher|progress)\./;
+const PRODUCT_CONTROL_NAMESPACE = /^(?:global|shell|outcome-7-1-[1-4]|wave-lab|em-spectrum|sound-lab|hearing|cultural-sound|ultrasound|optics|vision|astronomy|motion|forces|society|mastery|teacher|progress)\./;
 
 /** Stable control IDs are documented as backtick-delimited workspace.control tokens. */
 const DOCUMENTED_CONTROL_IDS = new Set(
