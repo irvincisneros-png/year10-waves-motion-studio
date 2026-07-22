@@ -4,6 +4,7 @@ import {
   COMPLETION_ROUTES,
   LIGHT_ROUTES,
   MOTION_ROUTES,
+  OUTCOME_ROUTES,
   SHELL_ROUTES,
   SOUND_ROUTES,
   WAVES_ROUTES,
@@ -15,6 +16,7 @@ import {
  */
 const ROUTES = [
   ...SHELL_ROUTES.map((r) => r.url),
+  ...OUTCOME_ROUTES.map((r) => r.url),
   ...WAVES_ROUTES.map((r) => r.url),
   ...SOUND_ROUTES.map((r) => r.url),
   ...LIGHT_ROUTES.map((r) => r.url),

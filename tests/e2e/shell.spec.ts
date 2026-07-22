@@ -22,26 +22,25 @@ test.describe('shell routes', () => {
     });
   }
 
-  test('client-side navigation reaches every route, updates the title, and moves focus to the heading', async ({
+  test('minimal primary navigation and secondary utilities reach their destinations', async ({
     page,
   }) => {
-    await page.goto('/#/');
-    const nav = page.getByRole('navigation', { name: 'Primary' });
+    await page.goto('/#/simulators/7.1.1');
+    const primary = page.getByRole('navigation', { name: 'Primary' });
+    await expect(primary.getByRole('link')).toHaveCount(1);
+    await primary.getByRole('link', { name: 'All simulators' }).click();
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Choose a science simulator' }),
+    ).toBeFocused();
 
+    const utilities = page.getByRole('navigation', { name: 'Utilities' });
     for (const route of SHELL_ROUTES.filter((r) => r.path !== '/')) {
-      await nav.getByRole('link', { name: route.navLabel }).click();
+      await utilities.getByRole('link', { name: route.heading }).click();
       const heading = page.getByRole('heading', { level: 1, name: route.heading });
       await expect(heading).toBeVisible();
       await expect(page).toHaveTitle(route.title);
-      // Focus management gate: focus moves to the main heading on route change
       await expect(heading).toBeFocused();
     }
-
-    // And back home
-    await nav.getByRole('link', { name: 'Home' }).click();
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'WaveMotion Studio' }),
-    ).toBeFocused();
   });
 
   test('unknown URL shows the not-found page with working navigation back', async ({
@@ -53,27 +52,22 @@ test.describe('shell routes', () => {
     ).toBeVisible();
     await expect(page).toHaveTitle('Page not found — WaveMotion Studio');
 
-    await page.getByRole('link', { name: 'Home — the learning map' }).click();
+    await page.getByRole('link', { name: 'All outcome simulators' }).click();
     await expect(
-      page.getByRole('heading', { level: 1, name: 'WaveMotion Studio' }),
+      page.getByRole('heading', { level: 1, name: 'Choose a science simulator' }),
     ).toBeVisible();
   });
 
-  test('home learning map exposes every released workspace as a real link', async ({
+  test('home gallery exposes one launcher per active outcome', async ({
     page,
   }) => {
     await page.goto('/#/');
-    // Stage 6: all twelve shipped workspaces are real links. Deferred 7.2.5
-    // has no placeholder card or dead control.
-    await expect(page.getByText('In development')).toHaveCount(0);
-    await expect(page.locator('article.workspace-card .badge--available')).toHaveCount(
-      12,
-    );
-    const cardControls = page.locator(
-      'article.workspace-card a, article.workspace-card button',
-    );
-    await expect(cardControls).toHaveCount(12);
-    await expect(cardControls).toHaveText(['Wave foundations', 'EM spectrum', 'Sound laboratory', 'Hearing', 'Ultrasound', 'Light & optics', 'Vision', 'Reading starlight', 'Describing motion', 'Forces & Newton’s laws', 'Argument studio', 'Mastery challenge']);
+    await expect(page.locator('article.outcome-card')).toHaveCount(24);
+    await expect(page.locator('article.outcome-card a')).toHaveCount(24);
+    await expect(page.getByText('7.2.5', { exact: true })).toHaveCount(0);
+    const prototype = page.locator('article.outcome-card', { hasText: '7.1.1' });
+    await expect(prototype.getByText('New simulator')).toBeVisible();
+    await expect(prototype.getByRole('link', { name: /Launch simulator for outcome 7\.1\.1/ })).toHaveAttribute('href', '#/simulators/7.1.1');
   });
 
   test('offline: shell and visited routes still work after first load', async ({
@@ -97,11 +91,11 @@ test.describe('shell routes', () => {
     try {
       await page.reload();
       await expect(
-        page.getByRole('heading', { level: 1, name: 'WaveMotion Studio' }),
+        page.getByRole('heading', { level: 1, name: 'Choose a science simulator' }),
       ).toBeVisible();
-      // Client-side navigation to another shell route while offline
+      // Secondary utility navigation remains available while offline.
       await page
-        .getByRole('navigation', { name: 'Primary' })
+        .getByRole('navigation', { name: 'Utilities' })
         .getByRole('link', { name: 'Glossary' })
         .click();
       await expect(

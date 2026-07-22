@@ -1,34 +1,29 @@
 import { test, expect } from '@playwright/test';
-import { SHELL_ROUTES, tabKey } from './helpers';
+import { tabKey } from './helpers';
 
 test.describe('keyboard-only operation', () => {
-  test('every primary nav item is reachable and operable by keyboard', async ({
+  test('minimal primary gallery link is reachable and operable by keyboard', async ({
     page,
     browserName,
   }) => {
     const key = tabKey(browserName);
-    for (const route of SHELL_ROUTES.filter((r) => r.path !== '/')) {
-      await page.goto('/#/');
-      const link = page
-        .getByRole('navigation', { name: 'Primary' })
-        .getByRole('link', { name: route.navLabel });
-      // Tab until the target nav link has focus (bounded walk).
-      let reached = false;
-      // Keep enough headroom for all shipped workspace links plus the shell
-      // links that precede the target; the bound still catches focus traps.
-      for (let i = 0; i < 50; i++) {
-        await page.keyboard.press(key);
-        if (await link.evaluate((el) => el === document.activeElement)) {
-          reached = true;
-          break;
-        }
+    await page.goto('/#/simulators/7.1.1');
+    const link = page
+      .getByRole('navigation', { name: 'Primary' })
+      .getByRole('link', { name: 'All simulators' });
+    let reached = false;
+    for (let i = 0; i < 12; i++) {
+      await page.keyboard.press(key);
+      if (await link.evaluate((el) => el === document.activeElement)) {
+        reached = true;
+        break;
       }
-      expect(reached, `${route.navLabel} link reachable by keyboard`).toBe(true);
-      await page.keyboard.press('Enter');
-      await expect(
-        page.getByRole('heading', { level: 1, name: route.heading }),
-      ).toBeVisible();
     }
+    expect(reached, 'All simulators link reachable by keyboard').toBe(true);
+    await page.keyboard.press('Enter');
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Choose a science simulator' }),
+    ).toBeVisible();
   });
 
   test('settings disclosure and toggles are fully keyboard operable', async ({

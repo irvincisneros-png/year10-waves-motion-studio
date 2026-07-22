@@ -89,14 +89,14 @@ test.describe('wave-lab routing and deep links', () => {
     await expect(page.getByTestId('measure-speed')).toHaveText(/3\.00 × 10⁸ m\/s/);
   });
 
-  test('home learning map links to the wave laboratory and card is marked available', async ({
+  test('home gallery launches the dedicated 7.1.1 simulator', async ({
     page,
   }) => {
     await page.goto('/#/');
-    const card = page.locator('.workspace-card', { hasText: 'Wave foundations' });
-    await expect(card.getByText('Available')).toBeVisible();
-    await card.getByRole('link', { name: 'Wave foundations' }).click();
-    await expect(page.getByRole('heading', { level: 1, name: 'Wave foundations' })).toBeVisible();
+    const card = page.locator('.outcome-card', { hasText: '7.1.1' });
+    await expect(card.getByText('New simulator')).toBeVisible();
+    await card.getByRole('link', { name: /Launch simulator for outcome 7\.1\.1/ }).click();
+    await expect(page.getByRole('heading', { level: 1, name: /7\.1\.1/ })).toBeVisible();
   });
 });
 

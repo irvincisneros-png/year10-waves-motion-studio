@@ -47,6 +47,7 @@ import { ForcesConnectPage, MotionConnectPage } from '../simulations/motion-forc
 import { SettingsEffects } from './SettingsEffects';
 import { AstronomyPage, HearingPage, SocietyPage, SpectrumPage, UltrasoundPage } from '../simulations/completion/StageSixPages';
 import MasteryPage from '../simulations/completion/MasteryPage';
+import Outcome711Page from '../simulations/outcomes/Outcome711Page';
 
 /**
  * Route table — shell routes (Stage 1) + the wave-foundations workspace
@@ -65,6 +66,7 @@ export default function App() {
       <Routes>
         <Route element={<AppLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="simulators/7.1.1" element={<Outcome711Page />} />
           <Route path="waves" element={<WavesLayout />}>
             <Route index element={<WavesHubPage />} />
             <Route path="medium" element={<MediumChambersPage />} />

@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { SkipLink } from '../accessibility/SkipLink';
 import { ErrorBoundary } from '../app/ErrorBoundary';
 import { StorageNotice } from '../app/StorageNotice';
@@ -8,23 +8,7 @@ import { SettingsPanel } from './SettingsPanel';
 import './AppLayout.css';
 
 const NAV_ITEMS = [
-  { id: 'shell.nav-home', to: '/', label: 'Home', end: true },
-  { id: 'shell.nav-waves', to: '/waves', label: 'Waves', end: false },
-  { id: 'shell.nav-sound', to: '/sound', label: 'Sound', end: false },
-  { id: 'shell.nav-light', to: '/light', label: 'Light', end: false },
-  { id: 'shell.nav-vision', to: '/vision', label: 'Vision', end: false },
-  { id: 'shell.nav-motion', to: '/motion', label: 'Motion', end: false },
-  { id: 'shell.nav-forces', to: '/forces', label: 'Forces', end: false },
-  { id: 'shell.nav-spectrum', to: '/spectrum', label: 'Spectrum', end: false },
-  { id: 'shell.nav-hearing', to: '/hearing', label: 'Hearing', end: false },
-  { id: 'shell.nav-ultrasound', to: '/ultrasound', label: 'Ultrasound', end: false },
-  { id: 'shell.nav-astronomy', to: '/astronomy', label: 'Astronomy', end: false },
-  { id: 'shell.nav-society', to: '/society', label: 'Society', end: false },
-  { id: 'shell.nav-mastery', to: '/mastery', label: 'Mastery', end: false },
-  { id: 'shell.nav-glossary', to: '/glossary', label: 'Glossary', end: false },
-  { id: 'shell.nav-progress', to: '/progress', label: 'Progress', end: false },
-  { id: 'shell.nav-teacher', to: '/teacher', label: 'Teacher', end: false },
-  { id: 'shell.nav-about', to: '/about', label: 'About', end: false },
+  { id: 'shell.nav-home', to: '/', label: 'All simulators', end: true },
 ];
 
 function BrandMark() {
@@ -104,10 +88,18 @@ export function AppLayout() {
 
       <footer className="shell__footer">
         <div className="shell__footer-inner">
-          <p>
-            WaveMotion Studio — NSW Year 10 Waves &amp; Motion. No sign-in, no
-            analytics; your progress stays on this device.
-          </p>
+          <div>
+            <p>
+              WaveMotion Studio — NSW Year 10 Waves &amp; Motion. No sign-in,
+              no analytics; your progress stays on this device.
+            </p>
+            <nav aria-label="Utilities" className="shell__utility-nav">
+              <Link to="/progress">Progress</Link>
+              <Link to="/glossary">Glossary</Link>
+              <Link to="/teacher">Teacher tools</Link>
+              <Link to="/about">About &amp; model limits</Link>
+            </nav>
+          </div>
           <p className="shell__footer-version">Version {APP_VERSION}</p>
         </div>
       </footer>

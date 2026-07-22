@@ -6,24 +6,12 @@ export default function NotFoundPage() {
   return (
     <Page
       title="Page not found"
-      lead="That address does not exist in this release of WaveMotion Studio. The laboratories unlock in stages, so a link that worked elsewhere may not be available yet."
+      lead="That address does not exist in this release of WaveMotion Studio. Choose an active outcome simulator from the gallery."
     >
       <p>You can go to:</p>
       <ul>
         <li>
-          <Link to="/">Home — the learning map</Link>
-        </li>
-        <li>
-          <Link to="/waves">Wave foundations</Link>
-        </li>
-        <li>
-          <Link to="/sound">Sound laboratory</Link>
-        </li>
-        <li>
-          <Link to="/light">Light &amp; optics laboratory</Link>
-        </li>
-        <li>
-          <Link to="/vision">Vision model</Link>
+          <Link to="/">All outcome simulators</Link>
         </li>
         <li>
           <Link to="/glossary">Glossary</Link>

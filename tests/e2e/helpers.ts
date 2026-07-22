@@ -17,9 +17,9 @@ export const SHELL_ROUTES: ShellRoute[] = [
   {
     path: "/",
     url: "/#/",
-    heading: "WaveMotion Studio",
-    title: "Home — WaveMotion Studio",
-    navLabel: "Home",
+    heading: "Choose a science simulator",
+    title: "Simulators — WaveMotion Studio",
+    navLabel: "All simulators",
   },
   {
     path: "/glossary",
@@ -48,6 +48,17 @@ export const SHELL_ROUTES: ShellRoute[] = [
     heading: "About",
     title: "About — WaveMotion Studio",
     navLabel: "About",
+  },
+];
+
+/** Corrected-direction outcome simulator routes. */
+export const OUTCOME_ROUTES: ShellRoute[] = [
+  {
+    path: "/simulators/7.1.1",
+    url: "/#/simulators/7.1.1",
+    heading: "7.1.1 Medium or vacuum?",
+    title: "7.1.1 Transmission Lab — WaveMotion Studio",
+    navLabel: "All simulators",
   },
 ];
 

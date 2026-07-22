@@ -16,17 +16,19 @@ test.describe("Stage 5 routes and availability", () => {
     });
   }
 
-  test("home exposes real Motion, Forces and Stage 6 links", async ({
+  test("outcome gallery exposes real Motion, Forces and Stage 6 models", async ({
     page,
   }) => {
     await page.goto("/#/");
     await expect(
-      page.getByRole("link", { name: "Describing motion" }),
-    ).toHaveAttribute("href", "#/motion");
+      page.getByRole("link", { name: /Open existing model for outcome 7\.4\.1/ }),
+    ).toHaveAttribute("href", "#/motion/track");
     await expect(
-      page.getByRole("link", { name: "Forces & Newton’s laws" }),
-    ).toHaveAttribute("href", "#/forces");
-    await expect(page.getByRole("link", { name: "Reading starlight" })).toHaveAttribute("href", "#/astronomy");
+      page.getByRole("link", { name: /Open existing model for outcome 7\.4\.4/ }),
+    ).toHaveAttribute("href", "#/forces/cart");
+    await expect(
+      page.getByRole("link", { name: /Open existing model for outcome 7\.3\.4/ }),
+    ).toHaveAttribute("href", "#/astronomy");
     await page.goto("/#/astronomy");
     await expect(
       page.getByRole("heading", { name: "Reading starlight" }),

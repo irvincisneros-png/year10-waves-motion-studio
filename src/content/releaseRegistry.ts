@@ -12,7 +12,7 @@ export interface OutcomeReleaseEntry {
 }
 
 const routesByOutcome: Record<string, { routes: readonly string[]; activity: string }> = {
-  '7.1.1': { routes: ['/waves/medium'], activity: 'Medium or vacuum?' },
+  '7.1.1': { routes: ['/simulators/7.1.1', '/waves/medium'], activity: 'Transmission Lab — medium or vacuum?' },
   '7.1.2': { routes: ['/waves/energy'], activity: 'Energy transfer' },
   '7.1.3': { routes: ['/waves/types'], activity: 'Wave types' },
   '7.1.4': { routes: ['/spectrum'], activity: 'EM spectrum explorer' },

@@ -5,6 +5,7 @@ import {
   COMPLETION_ROUTES,
   LIGHT_ROUTES,
   MOTION_ROUTES,
+  OUTCOME_ROUTES,
   SHELL_ROUTES,
   SOUND_ROUTES,
   WAVES_ROUTES,
@@ -14,6 +15,7 @@ import {
 test.describe("accessibility audit", () => {
   for (const route of [
     ...SHELL_ROUTES,
+    ...OUTCOME_ROUTES,
     ...WAVES_ROUTES,
     ...SOUND_ROUTES,
     ...LIGHT_ROUTES,
@@ -98,7 +100,7 @@ test.describe("accessibility audit", () => {
     // without horizontal page scrolling.
     await page.setViewportSize({ width: 640, height: 400 });
     await expect(
-      page.getByRole("heading", { level: 1, name: "WaveMotion Studio" }),
+      page.getByRole("heading", { level: 1, name: "Choose a science simulator" }),
     ).toBeVisible();
     const overflow = await page.evaluate(
       () =>

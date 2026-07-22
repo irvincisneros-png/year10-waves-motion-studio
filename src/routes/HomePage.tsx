@@ -1,80 +1,93 @@
+import { ArrowRight, Beaker, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Page } from '../components/Page';
-import { learningMap } from '../content/workspaces';
-import { outcomeMap } from '../content/outcomes';
+import {
+  OUTCOME_LAUNCHERS,
+  OUTCOME_LAUNCHER_GROUPS,
+} from '../content/outcomeLaunchers';
 import './HomePage.css';
 
-/**
- * Home / learning map. Shows every planned workspace grouped by strand with
- * the outcomes it will cover. Available workspaces link to their route; the
- * rest are deliberately NON-interactive panels labelled "In development" —
- * never a clickable control with no effect.
- */
+/** Outcome-first launcher gallery. Each card represents one active dot point. */
 export default function HomePage() {
   return (
-    <Page
-      title="Home"
-      heading="WaveMotion Studio"
-      lead="Interactive laboratories for the NSW Year 10 Waves & Motion topic — model waves, sound, light and motion, collect evidence, and check your understanding."
-    >
-      <p className="home__status-note">
-        All release laboratories are open. Glossary, Progress, Teacher and
-        About are also available.
+    <Page title="Simulators" heading="Choose a science simulator">
+      <section className="gallery-hero" aria-labelledby="gallery-intro">
+        <div>
+          <p className="gallery-hero__eyebrow">
+            <Sparkles size={16} aria-hidden="true" /> WaveMotion Studio
+          </p>
+          <h2 id="gallery-intro">One outcome. One interactive world.</h2>
+          <p>
+            Launch a syllabus dot point directly, change the science, and see
+            the result. No lesson sequence or worksheet stands between you and
+            the experiment.
+          </p>
+        </div>
+        <div className="gallery-hero__prototype" aria-label="Prototype status">
+          <span>Gold-standard prototype</span>
+          <strong>7.1.1 is ready to explore</strong>
+        </div>
+      </section>
+
+      <p className="gallery-status" role="status">
+        <strong>24 active outcomes</strong> are represented below. The new
+        simulator-first design begins with 7.1.1; existing models remain
+        available while each outcome receives its purpose-built mode.
       </p>
 
-      {learningMap.map((group) => (
-        <section
-          key={group.id}
-          className={`strand strand--${group.accent}`}
-          aria-labelledby={`strand-${group.id}`}
-        >
-          <h2 id={`strand-${group.id}`}>{group.title}</h2>
-          <p className="strand__blurb">{group.blurb}</p>
-          <div className="strand__grid">
-            {group.workspaces.map((ws) => (
-              <article key={ws.id} className="card workspace-card">
-                <div className="workspace-card__top">
-                  <h3>
-                    {ws.status === 'available' && ws.route ? (
-                      <Link to={ws.route}>{ws.name}</Link>
-                    ) : (
-                      ws.name
-                    )}
-                  </h3>
-                  {ws.status === 'available' ? (
-                    <span className="badge badge--available">
-                      <span aria-hidden="true">✓</span> Available
-                    </span>
-                  ) : (
-                    <span className="badge badge--in-development">
-                      <span aria-hidden="true">🛠</span> In development
-                    </span>
-                  )}
-                </div>
-                <p>{ws.summary}</p>
-                {ws.outcomeCodes.length > 0 ? (
-                  <ul
-                    role="list"
-                    className="workspace-card__outcomes"
-                    aria-label={`Syllabus outcomes covered by ${ws.name}`}
+      {OUTCOME_LAUNCHER_GROUPS.map((group) => {
+        const launchers = OUTCOME_LAUNCHERS.filter((item) =>
+          item.code.startsWith(group.id),
+        );
+        return (
+          <section
+            key={group.id}
+            className={`outcome-group outcome-group--${group.accent}`}
+            aria-labelledby={`outcome-group-${group.id}`}
+          >
+            <div className="outcome-group__heading">
+              <span>{group.id}</span>
+              <h2 id={`outcome-group-${group.id}`}>{group.title}</h2>
+            </div>
+            <div className="outcome-gallery">
+              {launchers.map((launcher) => {
+                const isGold = launcher.experienceStatus === 'gold-standard';
+                return (
+                  <article
+                    key={launcher.code}
+                    className={`outcome-card${isGold ? ' outcome-card--gold' : ''}`}
                   >
-                    {ws.outcomeCodes.map((code) => (
-                      <li key={code}>
-                        <span className="chip" title={outcomeMap[code]?.text}>
-                          {code}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-                {ws.note ? (
-                  <p className="workspace-card__note">{ws.note}</p>
-                ) : null}
-              </article>
-            ))}
-          </div>
-        </section>
-      ))}
+                    <div className="outcome-card__meta">
+                      <span className="outcome-card__code">{launcher.code}</span>
+                      <span
+                        className={`outcome-card__status outcome-card__status--${launcher.experienceStatus}`}
+                      >
+                        {isGold ? 'New simulator' : 'Existing model'}
+                      </span>
+                    </div>
+                    <h3>{launcher.wording}</h3>
+                    <p className="outcome-card__activity">
+                      <Beaker size={16} aria-hidden="true" />
+                      {isGold
+                        ? 'Transmission Lab · free play + signal challenge'
+                        : launcher.activity}
+                    </p>
+                    <Link
+                      to={launcher.route}
+                      className={`outcome-card__launch${isGold ? ' outcome-card__launch--primary' : ''}`}
+                      aria-label={`${isGold ? 'Launch simulator' : 'Open existing model'} for outcome ${launcher.code}: ${launcher.wording}`}
+                    >
+                      {isGold ? 'Launch simulator' : 'Open existing model'}
+                      <ArrowRight size={17} aria-hidden="true" />
+                    </Link>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
+
     </Page>
   );
 }

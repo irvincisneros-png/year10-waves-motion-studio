@@ -38,7 +38,7 @@ test.describe('production performance and memory budgets', () => {
     ).toBeVisible();
     await page.goto('/#/');
     await expect(
-      page.getByRole('heading', { level: 1, name: 'WaveMotion Studio' }),
+      page.getByRole('heading', { level: 1, name: 'Choose a science simulator' }),
     ).toBeVisible();
 
     const startedAt = Date.now();

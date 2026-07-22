@@ -67,11 +67,23 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 > skips. The deployable `dist/` and review ZIP are ready. Exact evidence and
 > human-only promotion gates are in `docs/evidence/stage-7-evidence.md`.
 
+> Corrected product-direction note (2026-07-22): the binding product contract is
+> now `docs/PRODUCT_VISION.md` with the route model in
+> `docs/OUTCOME_FIRST_IA.md`. The learner home is an outcome gallery with 24
+> active cards and no 7.2.5 card; the primary shell exposes only All simulators.
+> Outcome 7.1.1 is the sole canonical gold-standard prototype at
+> `/simulators/7.1.1`. All other cards are labelled Existing model and retain a
+> non-destructive legacy destination. Bulk conversion, release packaging, tag and
+> push remain stopped pending user review under PV-09. Final builder-run
+> `npm run verify` is green: oxlint 0 errors, TypeScript clean, 217 unit tests,
+> 687 browser tests passed and 3 expected WebKit capability skips across Chromium
+> + WebKit.
+
 ## Outcomes
 
 | Code | Status | Notes |
 |---|---|---|
-| 7.1.1 | verified | `/waves/medium` three synchronised chambers; trigger/pause/step/reset; accessible alternatives; evidence capture. Stage 2 suite green |
+| 7.1.1 | verified (builder; corrected-direction prototype) | `/simulators/7.1.1` outcome-specific Transmission Lab: immediate three-bay causal comparison, deterministic engine, state-based 300-point challenge, replay, optional tour, Canvas/text equivalence and reduced-motion stepping. Legacy `/waves/medium` preserved. Evidence: `docs/evidence/7.1.1-prototype-evidence.md`; user approval pending |
 | 7.1.2 | verified | `/waves/energy` tagged particles + energy marker; net-displacement ≈ 0 table (invariant 20.2 unit-tested + visible) |
 | 7.1.3 | verified | `/waves/types` linked transverse+longitudinal views of one state; probe; mark-period; label toggles; representation trap w/ false-positive regression |
 | 7.1.4 | verified (builder) | `/spectrum` continuous log-position explorer, approximate/overlapping regions, linked f/λ values, ionising/risk guardrails and comparison evidence |

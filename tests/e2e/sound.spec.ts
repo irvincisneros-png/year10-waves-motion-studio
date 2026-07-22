@@ -96,11 +96,12 @@ test.describe('sound-lab routing and integration', () => {
     });
   }
 
-  test('phase navigation reaches every sound activity and the home card is available', async ({ page }) => {
+  test('outcome gallery reaches the existing sound model and legacy phase routes remain functional', async ({ page }) => {
     await page.goto('/#/');
-    const card = page.locator('.workspace-card', { hasText: 'Sound laboratory' });
-    await expect(card.getByText('Available')).toBeVisible();
-    await card.getByRole('link', { name: 'Sound laboratory' }).click();
+    const card = page.locator('.outcome-card', { hasText: '7.2.1' });
+    await expect(card.locator('.outcome-card__status')).toHaveText('Existing model');
+    await card.getByRole('link', { name: /Open existing model for outcome 7\.2\.1/ }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Compression & rarefaction' })).toBeVisible();
     const nav = page.getByRole('navigation', { name: 'Sound laboratory phases' });
     for (const [label, heading] of [
       ['Compression & rarefaction', 'Compression & rarefaction'],

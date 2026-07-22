@@ -69,7 +69,7 @@ redefining them.
 | ID | Control | Effect | Accessible name | Keyboard behaviour | Units / current-value display | Reset behaviour | Error handling | Fallback | Browser test |
 |---|---|---|---|---|---|---|---|---|---|
 | `shell.skip-link` | Skip link | Moves focus directly to `<main>`, bypassing repeated navigation | "Skip to main content" | First focusable element on every page; `Enter` activates; visible on focus only | N/A | N/A | N/A | N/A — pure HTML anchor | `e2e/shell.spec.ts › skip link is the first tab stop and moves focus to main` |
-| `shell.nav-home` | Nav link | Routes to `/` topic map | "Home" | Tab-reachable in the primary nav landmark; `Enter` activates | Current-page state indicated with `aria-current="page"` | N/A | Unknown route falls back to the 404 route, never a blank page | N/A | runtime parity/naming check in `tests/e2e/control-inventory.spec.ts`; navigation flow in `tests/e2e/shell.spec.ts` |
+| `shell.nav-home` | Nav link | Routes to the `/` outcome simulator gallery | "All simulators" | Tab-reachable in the sole primary-nav position; `Enter` activates | Current-page state indicated with `aria-current="page"` | N/A | Unknown route falls back to the 404 route, never a blank page | N/A | runtime parity/naming check in `tests/e2e/control-inventory.spec.ts`; minimal navigation flow in `tests/e2e/shell.spec.ts` |
 | `shell.nav-waves` | Nav link | Routes to `/waves` | "Waves" | as above | as above | N/A | as above | N/A | same |
 | `shell.nav-sound` | Nav link | Routes to `/sound` | "Sound" | as above | as above | N/A | as above | N/A | same |
 | `shell.nav-light` | Nav link | Routes to `/light` | "Light" | as above | as above | N/A | as above | N/A | same |
@@ -86,6 +86,33 @@ redefining them.
 | `shell.nav-progress` | Nav link | Routes to `/progress` | "Progress" | as above | as above | N/A | as above | N/A | same |
 | `shell.nav-teacher` | Nav link | Routes to `/teacher` | "Teacher" | as above | as above | N/A | as above | N/A | same |
 | `shell.nav-about` | Nav link | Routes to `/about` (sources, model limitations, accessibility, privacy) | "About" | as above | as above | N/A | as above | N/A | same |
+
+The workspace and utility IDs from `shell.nav-waves` through
+`shell.nav-about` are retained as historical inventory records, but no longer
+render in the primary learner navigation. Progress, Glossary, Teacher and About
+are ordinary links in the secondary footer Utilities landmark. Legacy workspace
+routes remain addressable during the prototype migration.
+
+### 1.2 Outcome 7.1.1 direct simulator controls (prototype gate)
+
+All controls below live on `/simulators/7.1.1`. The shared toolbar also uses
+`global.pause-button`, `global.step-button`, `global.slow-motion-toggle` and
+`global.reset-button`.
+
+| ID | Control | Effect | Accessible name | Keyboard behaviour | Reset / validation | Fallback | Browser evidence |
+|---|---|---|---|---|---|---|---|
+| `outcome-7-1-1.tour-open` | Button | Opens the optional three-step quick tour | "Show quick tour" | Tab; Enter/Space | Tour is closed on first entry so the simulator dominates | Plain HTML | `outcome-711.spec.ts` optional onboarding |
+| `outcome-7-1-1.tour-dismiss` | Button | Dismisses the quick tour immediately | "Skip tour" | Tab; Enter/Space | No science state changes | Plain HTML | `outcome-711.spec.ts` optional onboarding |
+| `outcome-7-1-1.tour-next` | Button | Advances the tour; final step closes it | "Next" / "Start experimenting" | Tab; Enter/Space | Bounded to three steps | Plain HTML | `outcome-711.spec.ts` optional onboarding |
+| `outcome-7-1-1.launch-all` | Button | Launches matched events in the material, mechanical-vacuum and EM-vacuum bays | "Launch all pulses" | Tab; Enter/Space | Re-launch restarts elapsed time deterministically | Text/table detector state updates even without Canvas | `outcome-711.spec.ts` live transmission comparison |
+| `outcome-7-1-1.amplitude` | Range slider | Changes pulse size only | "Pulse amplitude" | Arrows fine; PageUp/Down coarse; Home/End bounds | 10–100%; reset 40%; speed and frequency unchanged | Semantic readout and table remain complete | `outcome-711.spec.ts` amplitude invariant |
+| `outcome-7-1-1.coupling` | Range slider | Changes mechanical model speed through material only | "Material coupling" | Native range keyboard pattern | 0–100%; reset 50%; clamped by input | Same calculated readout | `outcome-711.spec.ts` causal model controls |
+| `outcome-7-1-1.density` | Range slider | Changes mechanical model speed through material only | "Model particle density" | Native range keyboard pattern | 0.5–3.0×; reset 1.0×; clamped by input | Same calculated readout | `outcome-711.spec.ts` causal model controls |
+| `outcome-7-1-1.prediction-mechanical-medium` | Two-radio group | Predicts whether the material-bay detector receives or is blocked | "Mechanical + material" | Tab/arrow keys; Space selects | Required before scoring; replay clears | Plain HTML and engine truth table | `outcome-711.spec.ts` challenge completion |
+| `outcome-7-1-1.prediction-mechanical-vacuum` | Two-radio group | Predicts whether the mechanical-vacuum detector receives or is blocked | "Mechanical + vacuum" | as above | as above | as above | `outcome-711.spec.ts` challenge completion |
+| `outcome-7-1-1.prediction-em-vacuum` | Two-radio group | Predicts whether the EM-vacuum detector receives or is blocked | "EM + vacuum" | as above | as above | as above | `outcome-711.spec.ts` challenge completion |
+| `outcome-7-1-1.challenge-check` | Button | Scores complete predictions against simulated transmission state | "Check predictions" | Tab; Enter/Space | Requires all three predictions and at least one pulse launch; incomplete state names the next action | Plain HTML engine scoring | `outcome-711.spec.ts` feedback/scoring |
+| `outcome-7-1-1.challenge-replay` | Button | Clears predictions, result and completion state | "Replay challenge" | Tab; Enter/Space | Deterministic empty challenge baseline | Plain HTML | `outcome-711.spec.ts` replay |
 
 ---
 

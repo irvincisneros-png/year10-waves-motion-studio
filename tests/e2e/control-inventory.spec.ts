@@ -6,6 +6,7 @@ import {
   FORCE_ROUTES,
   LIGHT_ROUTES,
   MOTION_ROUTES,
+  OUTCOME_ROUTES,
   SHELL_ROUTES,
   SOUND_ROUTES,
   WAVES_ROUTES,
@@ -13,6 +14,7 @@ import {
 
 const SHIPPED_ROUTES = [
   ...SHELL_ROUTES,
+  ...OUTCOME_ROUTES,
   ...WAVES_ROUTES,
   ...SOUND_ROUTES,
   ...LIGHT_ROUTES,
@@ -26,7 +28,7 @@ const inventorySource = readFileSync(
   'utf8',
 );
 
-const PRODUCT_CONTROL_NAMESPACE = /^(?:global|shell|wave-lab|em-spectrum|sound-lab|hearing|cultural-sound|ultrasound|optics|vision|astronomy|motion|forces|society|mastery|teacher|progress)\./;
+const PRODUCT_CONTROL_NAMESPACE = /^(?:global|shell|outcome-7-1-1|wave-lab|em-spectrum|sound-lab|hearing|cultural-sound|ultrasound|optics|vision|astronomy|motion|forces|society|mastery|teacher|progress)\./;
 
 /** Stable control IDs are documented as backtick-delimited workspace.control tokens. */
 const DOCUMENTED_CONTROL_IDS = new Set(

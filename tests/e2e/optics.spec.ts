@@ -22,12 +22,12 @@ test.describe('light and vision routing', () => {
     });
   }
 
-  test('home cards and the seven-phase path reach all Stage 4 activities', async ({ page }) => {
+  test('outcome cards and preserved legacy paths reach all Stage 4 activities', async ({ page }) => {
     await page.goto('/#/');
-    await expect(page.locator('.workspace-card', { hasText: 'Light & optics' }).getByText('Available')).toBeVisible();
-    await expect(page.locator('article.workspace-card', { has: page.getByRole('link', { name: 'Vision', exact: true }) }).getByText('Available')).toBeVisible();
-    await expect(page.locator('.workspace-card', { hasText: 'Reading starlight' }).getByText('Available')).toBeVisible();
-    await page.locator('.workspace-card', { hasText: 'Light & optics' }).getByRole('link').click();
+    await expect(page.locator('.outcome-card', { hasText: '7.3.1' })).toBeVisible();
+    await expect(page.locator('.outcome-card', { hasText: '7.3.2' })).toBeVisible();
+    await expect(page.locator('.outcome-card', { hasText: '7.3.4' })).toBeVisible();
+    await page.locator('.outcome-card', { hasText: '7.3.2' }).getByRole('link').click();
     const nav = page.getByRole('navigation', { name: 'Light and vision phases' });
     for (const [label, heading] of [
       ['Eye response', 'How the eye responds to light'],
@@ -43,9 +43,10 @@ test.describe('light and vision routing', () => {
   });
 
   test('astronomy is exposed after Stage 6 completion', async ({ page }) => {
-    await page.goto('/#/light');
-    await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Astronomy' })).toBeVisible();
-    await page.goto('/#/astronomy');
+    await page.goto('/#/');
+    const card = page.locator('.outcome-card', { hasText: '7.3.4' });
+    await expect(card.getByRole('link')).toHaveAttribute('href', '#/astronomy');
+    await card.getByRole('link').click();
     await expect(page.getByRole('heading', { level: 1, name: 'Reading starlight' })).toBeVisible();
   });
 });

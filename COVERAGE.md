@@ -10,11 +10,17 @@ misconception addressed, model limitation, and build stage.
 Prototype code from the pre-audit build does **not** count as coverage — every row starts
 `not built` until it passes `docs/plans/stage-gates.md`.
 
+> Corrected-direction note (2026-07-22): `docs/PRODUCT_VISION.md` and
+> `docs/OUTCOME_FIRST_IA.md` supersede the workspace/course architecture. Legacy
+> status below remains historical science and technical coverage. Only 7.1.1 has
+> completed the new canonical simulator-first prototype gate; the remaining active
+> outcomes are explicit transitional launchers, not corrected-direction completion.
+
 ## 7.1 Common properties of waves — Stage 2 (wave lab) + Stage 6 (spectrum)
 
 | Code | Route | Teaching content | Interaction / simulation | Representation | Student task | Assessable evidence | Misconception addressed | Model limitation | Stage | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 7.1.1 | `/waves/medium` | Mechanical waves need a medium; EM waves don't | Synchronised medium / vacuum / EM-field chambers, trigger disturbance | Canvas particle field + field-vector view | Compare propagation in each chamber; explain | CER: why sound fails in vacuum but light doesn't | "Space is empty so no waves travel" | EM field vectors are a representation, not particles in space | 2 | verified |
+| 7.1.1 | `/simulators/7.1.1` (canonical); `/waves/medium` (legacy preserved) | Mechanical waves need a medium; EM waves don't | One-launch material / vacuum / EM comparison with causal controls, live detectors and a scored replayable challenge | Engine-driven Canvas world + always-present detector table and fallback | Predict which signals transmit, launch the same disturbance and check against simulated evidence | 300-point state-based mastery result + replay | "No waves travel in space"; "the source cannot move in a vacuum"; amplitude changes speed | Display speeds/scales are illustrative; EM vectors are field representation, not particles | Prototype gate | verified (builder; user approval pending) |
 | 7.1.2 | `/waves/energy` | Energy transfers without net particle transfer | Tag particles during pulse; energy marker travels, particles oscillate | Canvas + tagged-particle table | Track a tagged particle over whole cycles | Explanation: net displacement ≈ 0 | "Particles travel along with the wave" | Ideal lossless medium; ≈0 net displacement | 2 | verified |
 | 7.1.3 | `/waves/types` | Transverse vs longitudinal features | Linked transverse + longitudinal views, one wave state | Canvas dual view + labelled SVG | Identify crest/trough/compression/rarefaction, displacement vs propagation direction | Labelled comparison + representation-trap check | "A pressure graph shows particles moving up and down" | Water waves not perfectly transverse | 2 | verified |
 | 7.1.4 | `/spectrum` | EM spectrum wave forms compared | Continuous position/region explorer with log/linear comparison | Semantic CSS spectrum + numeric/table alternatives | Compare wavelength/frequency/energy/sources/uses | Saved region comparison | "Higher frequency is always more dangerous"; "all radiation is radioactive" | Band boundaries approximate/overlapping | 6 | verified (builder) |

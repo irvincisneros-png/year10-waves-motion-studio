@@ -120,3 +120,21 @@
 .shell__footer-version {
   white-space: nowrap;
 }
+
+.shell__utility-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.shell__utility-nav a {
+  display: inline-flex;
+  min-height: var(--target-min);
+  align-items: center;
+  color: var(--ink-on-nav-muted);
+}
+
+.shell__utility-nav a:hover {
+  color: var(--ink-on-nav);
+}

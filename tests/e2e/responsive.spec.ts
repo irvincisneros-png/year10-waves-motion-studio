@@ -4,6 +4,7 @@ import {
   COMPLETION_ROUTES,
   LIGHT_ROUTES,
   MOTION_ROUTES,
+  OUTCOME_ROUTES,
   SHELL_ROUTES,
   SOUND_ROUTES,
   WAVES_ROUTES,
@@ -20,6 +21,7 @@ test.describe("responsive layout", () => {
 
       for (const route of [
         ...SHELL_ROUTES,
+        ...OUTCOME_ROUTES,
         ...WAVES_ROUTES,
         ...SOUND_ROUTES,
         ...LIGHT_ROUTES,
@@ -52,10 +54,10 @@ test.describe("responsive layout", () => {
         expect(masked.html).not.toBe("hidden");
         expect(masked.body).not.toBe("hidden");
 
-        // Primary nav stays available at every width (no collapsed dead end).
+        // Minimal primary gallery route stays available at every width.
         const nav = page.getByRole("navigation", { name: "Primary" });
         await expect(
-          nav.getByRole("link", { name: route.navLabel, exact: true }),
+          nav.getByRole("link", { name: "All simulators", exact: true }),
         ).toBeVisible();
       }
     });
@@ -182,6 +184,7 @@ test.describe("responsive layout", () => {
     await page.setViewportSize({ width: 320, height: 800 });
     for (const route of [
       ...SHELL_ROUTES,
+      ...OUTCOME_ROUTES,
       ...WAVES_ROUTES,
       ...SOUND_ROUTES,
       ...LIGHT_ROUTES,

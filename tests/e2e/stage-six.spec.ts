@@ -224,7 +224,7 @@ test.describe('Stage 6 teacher, update and offline hardening', () => {
 
   test('visible update prompt supports defer and refresh actions', async ({ page }) => {
     await page.goto('/#/');
-    await expect(page.getByRole('heading', { level: 1, name: 'WaveMotion Studio' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Choose a science simulator' })).toBeVisible();
     await page.waitForTimeout(100);
     await page.evaluate(() => window.dispatchEvent(new CustomEvent('wavemotion:update-available')));
     await expect(page.getByText('A new version of WaveMotion Studio is available.')).toBeVisible();
