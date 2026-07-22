@@ -24,5 +24,9 @@ describe('outcome-first launcher registry', () => {
       route: '/simulators/7.1.2',
       experienceStatus: 'canonical',
     });
+    expect(OUTCOME_LAUNCHERS.find((launcher) => launcher.code === '7.1.3')).toMatchObject({
+      route: '/simulators/7.1.3',
+      experienceStatus: 'canonical',
+    });
   });
 });

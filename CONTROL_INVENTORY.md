@@ -134,6 +134,29 @@ All controls below live on `/simulators/7.1.2`. Shared toolbar IDs keep their
 | `outcome-7-1-2.challenge-replay` | Button | Advances to the next deterministic particle scenario | "New relay challenge" | Native button | Clears run/evidence/result and cycles a fixed sequence | Plain HTML | same |
 | `outcome-7-1-2.how-it-works` | Disclosure | Explains particle/pattern/energy separation | "How the model separates particle motion, wave motion and energy" | Native summary | Closed initially | Plain HTML | runtime parity |
 
+### 1.4 Outcome 7.1.3 direct simulator controls
+
+All controls below live on `/simulators/7.1.3`. The shared toolbar controls one
+clock that drives both wave representations; reduced motion exposes the same
+state through manual stepping.
+
+| ID | Control | Effect | Accessible name | Keyboard | Reset / validation | Fallback | Browser evidence |
+|---|---|---|---|---|---|---|---|
+| `outcome-7-1-3.tour-open` | Button | Opens the optional three-step comparison tour | "Show quick tour" | Tab; Enter/Space | Closed on first entry | Plain HTML | `outcome-713.spec.ts` tour path |
+| `outcome-7-1-3.tour-dismiss` | Button | Closes the tour immediately | "Skip tour" | Native button | No science state changes | Plain HTML | same |
+| `outcome-7-1-3.tour-next` | Button | Advances and closes the bounded tour | "Next" / "Start comparing" | Native button | Three steps maximum | Plain HTML | same |
+| `outcome-7-1-3.launch` | Button | Starts or restarts one shared transverse/longitudinal run | "Launch linked wave" / "Restart linked wave" | Native button | Re-launch resets elapsed time and stale evidence | Table is derived from the same pure state | `outcome-713.spec.ts` linked-state path |
+| `outcome-7-1-3.amplitude` | Range slider | Changes the scalar displacement used in both views | "Shared amplitude" | SimControl range pattern | 0.20–0.80 model m; speed unchanged; existing run/evidence clears | Numeric table/readout | `outcome-713.spec.ts` control causality |
+| `outcome-7-1-3.frequency` | Range slider | Changes shared frequency and derived wavelength | "Shared frequency" | SimControl range pattern | 0.75–2.50 Hz; fixed 3 m/s speed; invalid values clamped | Numeric table/readout | same plus engine invariants |
+| `outcome-7-1-3.probe` | Range slider | Positions the gold probe in both linked views | "Gold feature probe" | Arrows precise; Home/End bounds | 0–6 m, 0.02 m step; feature lock uses the live engine position | Operates directly on semantic state | `outcome-713.spec.ts` feature-lock path |
+| `outcome-7-1-3.lock-transverse` | Button | Captures and evaluates the assigned crest/trough position | "Lock crest" or "Lock trough" | Native button | Valid within 5% of current wavelength; launch required | Pure engine evaluation without Canvas | same |
+| `outcome-7-1-3.lock-longitudinal` | Button | Captures and evaluates the assigned compression/rarefaction position | "Lock compression" or "Lock rarefaction" | Native button | Same live-position tolerance; launch required | Pure engine evaluation without Canvas | same |
+| `outcome-7-1-3.direction-answer` | Two-radio group | Compares particle displacement with propagation in both views | "Compare the directions" | Native radio arrows/Space | Correct only when transverse is perpendicular and longitudinal parallel | Plain HTML | `outcome-713.spec.ts` scored comparison |
+| `outcome-7-1-3.graph-answer` | Two-radio group | Rejects the plotted-curve-as-particle-path misconception | "Representation trap" | Native radio arrows/Space | Only quantity-versus-position is correct | Plain HTML | same plus unit false-positive regression |
+| `outcome-7-1-3.challenge-check` | Button | Scores two state locks and two reasoning checks | "Check comparison" | Native button | Four 25-point checks; no click-count scoring | Pure engine + HTML feedback | same |
+| `outcome-7-1-3.challenge-replay` | Button | Advances to the next fixed feature/phase scenario | "New feature challenge" | Native button | Controls, feature pair and evidence reset deterministically | Plain HTML | same |
+| `outcome-7-1-3.how-it-works` | Disclosure | Explains the single scalar state and feature distinction | "How one engine state drives both models" | Native summary | Closed initially | Plain HTML | runtime parity |
+
 ---
 
 ## 2. Wave foundations workspace (`wave-lab`) — Stage S2

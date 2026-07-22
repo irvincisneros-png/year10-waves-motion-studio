@@ -49,6 +49,7 @@ import { AstronomyPage, HearingPage, SocietyPage, SpectrumPage, UltrasoundPage }
 import MasteryPage from '../simulations/completion/MasteryPage';
 import Outcome711Page from '../simulations/outcomes/Outcome711Page';
 import Outcome712Page from '../simulations/outcomes/Outcome712Page';
+import Outcome713Page from '../simulations/outcomes/Outcome713Page';
 
 /**
  * Route table — shell routes (Stage 1) + the wave-foundations workspace
@@ -69,6 +70,7 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="simulators/7.1.1" element={<Outcome711Page />} />
           <Route path="simulators/7.1.2" element={<Outcome712Page />} />
+          <Route path="simulators/7.1.3" element={<Outcome713Page />} />
           <Route path="waves" element={<WavesLayout />}>
             <Route index element={<WavesHubPage />} />
             <Route path="medium" element={<MediumChambersPage />} />
