@@ -74,10 +74,9 @@ Status values: `not built` · `prototype — not verified` · `in build` · `ver
 > Outcomes 7.1.1–7.1.4 are canonical outcome-first simulators at their
 > `/simulators/<code>` routes. Remaining cards are labelled Existing model and
 > retain a non-destructive legacy destination. Bulk conversion beyond 7.1.4
-> remains stopped pending user review under PV-09. The earlier builder-run
-> `npm run verify` is green: oxlint 0 errors, TypeScript clean, 217 unit tests,
-> 687 browser tests passed and 3 expected WebKit capability skips across Chromium
-> + WebKit.
+> remains stopped pending user review under PV-09. The 7.1.1–7.1.4 release gate
+> is green: oxlint 0 errors, TypeScript clean, 254 unit tests, 761 browser tests
+> passed and 3 expected WebKit capability skips across Chromium + WebKit.
 
 ## Outcomes
 

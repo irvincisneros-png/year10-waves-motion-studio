@@ -7,11 +7,13 @@ const pkg = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
 ) as { version: string };
 
+const deploymentBase = process.env.PAGES_BASE_PATH || './';
+
 // https://vitejs.dev/config/
 export default defineConfig({
   // Keep the release archive deployable from a domain root, a school-site
   // subdirectory, or another static folder. HashRouter handles route state.
-  base: './',
+  base: deploymentBase,
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),

@@ -9,6 +9,17 @@ Part of the NSW Junior Science Simulator suite — see
 `../SCIENCE_SIMULATOR_SUITE_SHARED_SPEC.md` (platform contract) and
 `../YEAR_10_WAVES_MOTION_APP_PLAN.md` (scientific content contract).
 
+## Live classroom site
+
+[Open WaveMotion Studio](https://irvincisneros-png.github.io/year10-waves-motion-studio/)
+
+The outcome-first release currently includes four canonical simulators:
+
+- [7.1.1 Transmission Lab](https://irvincisneros-png.github.io/year10-waves-motion-studio/#/simulators/7.1.1)
+- [7.1.2 Energy Relay](https://irvincisneros-png.github.io/year10-waves-motion-studio/#/simulators/7.1.2)
+- [7.1.3 Twin Wave Observatory](https://irvincisneros-png.github.io/year10-waves-motion-studio/#/simulators/7.1.3)
+- [7.1.4 Spectrum Tuner](https://irvincisneros-png.github.io/year10-waves-motion-studio/#/simulators/7.1.4)
+
 ## Status
 
 Stages 0–6 are builder-complete. The release includes 24 active syllabus
@@ -18,6 +29,11 @@ explicitly deferred until attributable, community-approved sources are supplied;
 it has no route, navigation item, card or mastery question. Stage 7 is the
 fresh-context release audit. See `IMPLEMENTATION_STATUS.md`, `COVERAGE.md` and
 the evidence packs under `docs/evidence/`.
+
+The complete 2026-07-22 release gate passed 254 unit/invariant checks and 761
+browser checks across Chromium and WebKit, with three expected WebKit capability
+skips. GitHub Actions builds the site for its repository subpath and deploys the
+verified static artifact to GitHub Pages on each push to `main`.
 
 ## Stack
 
