@@ -14,13 +14,13 @@ test.describe('Wave Rider mastery run', () => {
     await expect(page.getByLabel('3 hearts remaining')).toBeVisible();
     await expect(page.getByText('Stage 1 of 5')).toBeVisible();
     await expect(page.locator('.wave-rider__question')).toContainText('A pulse crosses a rope');
-    const rider = page.locator('.wave-rider__rider');
-    await expect(rider).toHaveAttribute('style', /left: 50%/);
+    const course = page.getByLabel(/Wave Rider course/);
+    await expect(course).toHaveAttribute('data-player-lane', '1');
 
     await page.getByRole('button', { name: 'Steer left' }).click();
-    await expect(rider).toHaveAttribute('style', /left: 16/);
+    await expect(course).toHaveAttribute('data-player-lane', '0');
     await page.getByRole('button', { name: 'Steer right' }).click();
-    await expect(rider).toHaveAttribute('style', /left: 50%/);
+    await expect(course).toHaveAttribute('data-player-lane', '1');
 
     await expect(page.getByRole('button', { name: 'Use speed boost. 1 remaining' })).toBeVisible();
   });
@@ -40,7 +40,7 @@ test.describe('Wave Rider mastery run', () => {
     await page.getByRole('button', { name: 'Start Stage 1' }).click();
     const course = page.getByLabel(/Wave Rider course/);
     await course.press('ArrowRight');
-    await expect(page.locator('.wave-rider__rider')).toHaveAttribute('style', /left: 83/);
+    await expect(course).toHaveAttribute('data-player-lane', '2');
     await course.press('Space');
     await expect(page.getByRole('heading', { level: 3, name: 'Run paused' })).toBeVisible();
     await page.getByRole('button', { name: 'Resume run' }).click();

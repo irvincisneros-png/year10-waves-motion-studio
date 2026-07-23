@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -23,7 +23,6 @@ import {
   WAVE_RIDER_GATES,
   WAVE_RIDER_POWERUP_QUESTIONS,
   WAVE_RIDER_STAGES,
-  waveRiderEventY,
   waveRiderSpeed,
   type WaveRiderCourseEvent,
   type WaveRiderPowerupKind,
@@ -35,21 +34,51 @@ type GamePhase = 'intro' | 'running' | 'paused' | 'question' | 'stageComplete' |
 type Lane = 0 | 1 | 2;
 type PowerupEvent = Extract<WaveRiderCourseEvent, { type: 'powerup' }>;
 
-const LOOK_AHEAD_METRES = 180;
 const PLAYER_Y_PERCENT = 86;
 const MAX_LIVES = 5;
 
 const RIDERS = [
-  { id: 'pulse', name: 'Pulse', symbol: '⚡', description: 'WaveMotion mascot' },
-  { id: 'nova', name: 'Nova', symbol: '🌟', description: 'Star navigator' },
-  { id: 'orbit', name: 'Orbit', symbol: '🤖', description: 'Robot rider' },
-  { id: 'reef', name: 'Reef', symbol: '🤿', description: 'Ocean explorer' },
+  { id: 'pulse', name: 'Pulse', asset: 'rider-pulse.webp', description: 'WaveMotion mascot' },
+  { id: 'nova', name: 'Nova', asset: 'rider-nova.webp', description: 'Star navigator' },
+  { id: 'orbit', name: 'Orbit', asset: 'rider-orbit.webp', description: 'Robot rider' },
+  { id: 'reef', name: 'Reef', asset: 'rider-reef.webp', description: 'Ocean explorer' },
 ] as const;
 
-const hazardSymbols = { shark: '🦈', debris: '🪵', whirlpool: '🌀', reef: '🪸' } as const;
-const powerupSymbols: Record<WaveRiderPowerupKind, string> = { speed: '⚡', life: '❤️', jump: '⬆️', shield: '🛡️' };
+const hazardAssets = { shark: 'hazard-shark.webp', debris: 'hazard-debris.webp', whirlpool: 'hazard-whirlpool.webp', reef: 'hazard-reef.webp' } as const;
+const powerupAssets: Record<WaveRiderPowerupKind, string> = { speed: 'power-speed.webp', life: 'power-life.webp', jump: 'power-jump.webp', shield: 'power-shield.webp' };
 const powerupNames: Record<WaveRiderPowerupKind, string> = { speed: 'speed boost', life: 'extra life', jump: 'super jump', shield: 'shield' };
-const laneLeft = (lane: Lane) => `${16.667 + lane * 33.333}%`;
+const laneX = (lane: Lane) => (lane + 0.5) / 3;
+const nearestLane = (position: number) => clampWaveRiderLane(Math.round(position * 3 - 0.5));
+const assetUrl = (file: string) => `${import.meta.env.BASE_URL}assets/game/wave-rider/${file}`;
+const allSpriteFiles = [...RIDERS.map((rider) => rider.asset), ...Object.values(hazardAssets), ...Object.values(powerupAssets)];
+
+const fitCanvas = (canvas: HTMLCanvasElement) => {
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const width = Math.max(1, Math.round(canvas.clientWidth));
+  const height = Math.max(1, Math.round(canvas.clientHeight));
+  if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) {
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(height * ratio);
+  }
+  const context = canvas.getContext('2d');
+  context?.setTransform(ratio, 0, 0, ratio, 0, 0);
+  return { context, width, height };
+};
+
+const wrapCanvasText = (context: CanvasRenderingContext2D, text: string, maxWidth: number) => {
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let line = '';
+  for (const word of words) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (context.measureText(candidate).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else line = candidate;
+  }
+  if (line) lines.push(line);
+  return lines.slice(0, 3);
+};
 
 export default function WaveRiderPage() {
   const [phase, setPhase] = useState<GamePhase>('intro');
@@ -77,9 +106,14 @@ export default function WaveRiderPage() {
   const [callSign, setCallSign] = useState('Pulse');
 
   const boardRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const phaseRef = useRef<GamePhase>('intro');
   const stageRef = useRef(0);
   const laneRef = useRef<Lane>(1);
+  const playerXRef = useRef(0.5);
+  const playerVelocityRef = useRef(0);
+  const targetXRef = useRef<number | null>(0.5);
+  const steerRef = useRef({ left: false, right: false });
   const distanceRef = useRef(0);
   const livesRef = useRef(3);
   const boostsRef = useRef(1);
@@ -89,7 +123,10 @@ export default function WaveRiderPage() {
   const boostUntilRef = useRef(0);
   const jumpUntilRef = useRef(0);
   const slowUntilRef = useRef(0);
+  const impactUntilRef = useRef(0);
+  const lastHudRef = useRef(0);
   const lastFrameRef = useRef<number | null>(null);
+  const spritesRef = useRef<Record<string, HTMLImageElement>>({});
   const manualReducedMotion = useSettingsStore((state) => state.reducedMotion);
   const reducedMotion = useReducedMotion(manualReducedMotion);
   const { announce } = useAnnouncer();
@@ -97,6 +134,15 @@ export default function WaveRiderPage() {
   useEffect(() => {
     if (reducedMotion) setCalmSpeed(true);
   }, [reducedMotion]);
+
+  useEffect(() => {
+    for (const file of allSpriteFiles) {
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = assetUrl(file);
+      spritesRef.current[file] = image;
+    }
+  }, []);
 
   const changePhase = (next: GamePhase) => {
     phaseRef.current = next;
@@ -108,6 +154,10 @@ export default function WaveRiderPage() {
   const resetRun = () => {
     stageRef.current = 0;
     laneRef.current = 1;
+    playerXRef.current = 0.5;
+    playerVelocityRef.current = 0;
+    targetXRef.current = 0.5;
+    steerRef.current = { left: false, right: false };
     distanceRef.current = 0;
     livesRef.current = 3;
     boostsRef.current = 1;
@@ -148,6 +198,9 @@ export default function WaveRiderPage() {
     stageRef.current = next;
     setStageIndex(next);
     laneRef.current = 1;
+    playerXRef.current = 0.5;
+    playerVelocityRef.current = 0;
+    targetXRef.current = 0.5;
     setLane(1);
     lastFrameRef.current = null;
     setMessage(`Stage ${next + 1} live. ${WAVE_RIDER_STAGES[next].tagline}`);
@@ -158,8 +211,9 @@ export default function WaveRiderPage() {
 
   const moveLane = (change: number) => {
     if (phaseRef.current !== 'running') return;
-    const next = clampWaveRiderLane(laneRef.current + change);
+    const next = clampWaveRiderLane(nearestLane(playerXRef.current) + change);
     laneRef.current = next;
+    targetXRef.current = laneX(next);
     setLane(next);
   };
 
@@ -230,9 +284,13 @@ export default function WaveRiderPage() {
 
   const handleBoardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') {
-      event.preventDefault(); moveLane(-1);
+      event.preventDefault();
+      if (!event.repeat) targetXRef.current = Math.max(0.08, playerXRef.current - 1 / 3);
+      steerRef.current.left = true;
     } else if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') {
-      event.preventDefault(); moveLane(1);
+      event.preventDefault();
+      if (!event.repeat) targetXRef.current = Math.min(0.92, playerXRef.current + 1 / 3);
+      steerRef.current.right = true;
     } else if (event.key.toLowerCase() === 'f') {
       event.preventDefault(); activateBoost();
     } else if (event.key.toLowerCase() === 'j') {
@@ -242,9 +300,165 @@ export default function WaveRiderPage() {
     }
   };
 
+  const handleBoardKeyUp = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') steerRef.current.left = false;
+    if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') steerRef.current.right = false;
+  };
+
+  const steerToPointer = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (phaseRef.current !== 'running') return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    targetXRef.current = Math.max(0.08, Math.min(0.92, (event.clientX - bounds.left) / bounds.width));
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    steerToPointer(event);
+  };
+
   useEffect(() => {
     if (phase !== 'running') return;
     let animationFrame = 0;
+
+    const drawCourse = (now: number, isBoosting: boolean, isJumping: boolean, isSlowed: boolean) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const { context, width, height } = fitCanvas(canvas);
+      if (!context) return;
+      const stage = stageRef.current;
+      const palettes = [
+        ['#53d9f3', '#087fb3', '#042f67'],
+        ['#40d2d4', '#067f9d', '#053f69'],
+        ['#55a9e8', '#3c64bd', '#252f78'],
+        ['#518fd2', '#6841a8', '#281d62'],
+        ['#347aa9', '#323978', '#1b164f'],
+      ];
+      const [sky, middle, deep] = highVisibility ? ['#0aa5ce', '#00527f', '#001c3e'] : palettes[stage];
+      context.clearRect(0, 0, width, height);
+      context.save();
+      if (now < impactUntilRef.current && !reducedMotion) {
+        const shake = Math.sin(now * 0.11) * 5 * ((impactUntilRef.current - now) / 360);
+        context.translate(shake, shake * 0.35);
+      }
+      const ocean = context.createLinearGradient(0, 0, 0, height);
+      ocean.addColorStop(0, sky);
+      ocean.addColorStop(0.52, middle);
+      ocean.addColorStop(1, deep);
+      context.fillStyle = ocean;
+      context.fillRect(-8, -8, width + 16, height + 16);
+
+      const scroll = reducedMotion ? 0 : (now * (isBoosting ? 0.085 : isSlowed ? 0.026 : 0.048)) % 74;
+      context.lineCap = 'round';
+      for (let row = -2; row < 14; row += 1) {
+        const y = row * 58 + scroll;
+        const perspective = Math.max(0.22, y / height);
+        context.beginPath();
+        for (let x = -30; x <= width + 30; x += 12) {
+          const wave = Math.sin(x * 0.027 + now * 0.0015 + row * 0.8) * (4 + perspective * 7);
+          if (x === -30) context.moveTo(x, y + wave);
+          else context.lineTo(x, y + wave);
+        }
+        context.strokeStyle = `rgba(225, 253, 255, ${0.08 + perspective * 0.18})`;
+        context.lineWidth = 1 + perspective * 2.4;
+        context.stroke();
+      }
+      const glow = context.createRadialGradient(width / 2, height * 0.88, 0, width / 2, height * 0.88, width * 0.55);
+      glow.addColorStop(0, 'rgba(82,255,221,.22)');
+      glow.addColorStop(1, 'rgba(82,255,221,0)');
+      context.fillStyle = glow;
+      context.fillRect(0, 0, width, height);
+
+      const distanceNow = distanceRef.current;
+      const activeGate = WAVE_RIDER_COURSE.find(
+        (courseEvent): courseEvent is Extract<WaveRiderCourseEvent, { type: 'gate' }> => courseEvent.type === 'gate' && !resolvedRef.current.has(courseEvent.id),
+      );
+      const activeGateIndex = activeGate?.gateIndex;
+      for (const courseEvent of WAVE_RIDER_COURSE) {
+        if (resolvedRef.current.has(courseEvent.id)) continue;
+        if (courseEvent.type === 'gate' && courseEvent.gateIndex !== activeGateIndex) continue;
+        if (courseEvent.distance < WAVE_RIDER_STAGES[stage].startDistance || courseEvent.distance > WAVE_RIDER_STAGES[stage].finishDistance) continue;
+        const relative = courseEvent.distance - distanceNow;
+        if (relative < -18 || relative > 180) continue;
+        const progress = 1 - relative / 180;
+        const y = height * (0.10 + progress * (PLAYER_Y_PERCENT / 100 - 0.10));
+        const scale = 0.44 + Math.max(0, progress) * 0.68;
+        if (courseEvent.type === 'gate') {
+          const gate = WAVE_RIDER_GATES[courseEvent.gateIndex];
+          const gap = Math.max(8, width * 0.012);
+          const gateWidth = (width - gap * 4) / 3;
+          const gateHeight = Math.max(54, Math.min(94, height * 0.13)) * scale;
+          gate.options.forEach((option, optionLane) => {
+            const x = gap * 2 + optionLane * (gateWidth + gap);
+            context.fillStyle = 'rgba(3,25,61,.88)';
+            context.strokeStyle = '#ffe86d';
+            context.lineWidth = Math.max(3, 6 * scale);
+            context.beginPath();
+            context.roundRect(x, y - gateHeight / 2, gateWidth, gateHeight, 12);
+            context.fill();
+            context.stroke();
+            context.fillStyle = '#fff';
+            context.font = `800 ${Math.max(10, 14 * scale)}px Lexend, sans-serif`;
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            const lines = wrapCanvasText(context, option, gateWidth - 22);
+            lines.forEach((line, index) => context.fillText(line, x + gateWidth / 2, y + (index - (lines.length - 1) / 2) * 16 * scale));
+          });
+          continue;
+        }
+        const file = courseEvent.type === 'hazard' ? hazardAssets[courseEvent.kind] : powerupAssets[courseEvent.powerup];
+        const image = spritesRef.current[file];
+        const size = (courseEvent.type === 'powerup' ? 68 : 82) * scale;
+        const x = laneX(courseEvent.lane) * width;
+        context.save();
+        context.translate(x, y);
+        if (courseEvent.type === 'powerup') {
+          const pulse = reducedMotion ? 1 : 1 + Math.sin(now * 0.006) * 0.07;
+          context.scale(pulse, pulse);
+          context.shadowColor = '#ffe66d';
+          context.shadowBlur = 22;
+        } else if (courseEvent.kind === 'whirlpool' && !reducedMotion) context.rotate(now * 0.0012);
+        if (image?.complete && image.naturalWidth) context.drawImage(image, -size / 2, -size / 2, size, size);
+        context.restore();
+      }
+
+      const playerX = playerXRef.current * width;
+      const baseY = height * PLAYER_Y_PERCENT / 100;
+      const jumpLift = isJumping ? (reducedMotion ? 28 : 48 + Math.sin(now * 0.01) * 9) : 0;
+      const playerY = baseY - jumpLift;
+      const trailGradient = context.createLinearGradient(playerX - 150, 0, playerX - 15, 0);
+      if (trail === 'rainbow') {
+        trailGradient.addColorStop(0, 'rgba(168,131,255,0)'); trailGradient.addColorStop(0.45, '#a883ff'); trailGradient.addColorStop(0.72, '#55e6ff'); trailGradient.addColorStop(1, '#ffe66d');
+      } else {
+        trailGradient.addColorStop(0, trail === 'bubble' ? 'rgba(220,252,255,0)' : 'rgba(255,230,93,0)');
+        trailGradient.addColorStop(1, trail === 'bubble' ? '#d9fbff' : '#ffe65d');
+      }
+      context.strokeStyle = trailGradient;
+      context.lineWidth = isBoosting ? 12 : 7;
+      context.shadowColor = trail === 'rainbow' ? '#7de8ff' : '#ffe65d';
+      context.shadowBlur = isBoosting ? 24 : 12;
+      context.beginPath();
+      context.moveTo(playerX - (isBoosting ? 205 : 130), playerY + 24);
+      context.quadraticCurveTo(playerX - 70, playerY + 12 + Math.sin(now * 0.01) * 7, playerX - 17, playerY + 20);
+      context.stroke();
+      context.shadowBlur = 0;
+      context.fillStyle = boardColour;
+      context.strokeStyle = '#0b3769';
+      context.lineWidth = 4;
+      context.beginPath();
+      context.ellipse(playerX, playerY + 28, 48, 11, -playerVelocityRef.current * 0.2, 0, Math.PI * 2);
+      context.fill();
+      context.stroke();
+      const riderAsset = RIDERS.find((option) => option.id === riderId)?.asset ?? RIDERS[0].asset;
+      const riderImage = spritesRef.current[riderAsset];
+      const riderSize = Math.min(138, Math.max(96, width * 0.14));
+      context.save();
+      context.translate(playerX, playerY);
+      context.rotate(playerVelocityRef.current * 0.16);
+      context.globalAlpha = isSlowed ? 0.72 : 1;
+      if (riderImage?.complete && riderImage.naturalWidth) context.drawImage(riderImage, -riderSize / 2, -riderSize * 0.72, riderSize, riderSize);
+      context.restore();
+      context.restore();
+    };
 
     const takeHit = (feedback: string) => {
       const nextLives = livesRef.current - 1;
@@ -252,6 +466,7 @@ export default function WaveRiderPage() {
       setLives(nextLives);
       setStreak(0);
       setMessage(feedback);
+      impactUntilRef.current = performance.now() + 360;
       announce(feedback);
       if (nextLives <= 0) {
         changePhase('over');
@@ -281,11 +496,13 @@ export default function WaveRiderPage() {
         const stageStart = WAVE_RIDER_STAGES[stageRef.current].startDistance;
         distanceRef.current = Math.max(stageStart, distanceRef.current - 55);
         setDistance(distanceRef.current);
+        impactUntilRef.current = now + 360;
         setStreak(0);
         setMessage('Whirlpool! The current pulled your rider 55 m backwards.');
       } else if (event.kind === 'shark') {
         const pushedLane = clampWaveRiderLane(laneRef.current + (laneRef.current === 2 ? -1 : 1));
         laneRef.current = pushedLane;
+        targetXRef.current = laneX(pushedLane);
         setLane(pushedLane);
         takeHit('Shark strike: one heart lost and your rider was knocked into the next lane.');
       } else {
@@ -332,9 +549,19 @@ export default function WaveRiderPage() {
       const isBoosting = now < boostUntilRef.current;
       const isJumping = now < jumpUntilRef.current;
       const isSlowed = now < slowUntilRef.current;
-      setBoosting(isBoosting);
-      setJumping(isJumping);
-      setSlowed(isSlowed);
+      const steerDirection = Number(steerRef.current.right) - Number(steerRef.current.left);
+      if (steerDirection !== 0) {
+        playerVelocityRef.current += steerDirection * 2.2 * deltaSeconds;
+      }
+      playerVelocityRef.current *= Math.exp(-6.2 * deltaSeconds);
+      if (targetXRef.current !== null) {
+        const easing = 1 - Math.exp(-10.5 * deltaSeconds);
+        playerXRef.current += (targetXRef.current - playerXRef.current) * easing;
+        if (Math.abs(targetXRef.current - playerXRef.current) < 0.002) targetXRef.current = null;
+      }
+      playerXRef.current = Math.max(0.075, Math.min(0.925, playerXRef.current + playerVelocityRef.current * deltaSeconds));
+      if (playerXRef.current <= 0.076 || playerXRef.current >= 0.924) playerVelocityRef.current *= -0.24;
+      laneRef.current = nearestLane(playerXRef.current);
       const stage = WAVE_RIDER_STAGES[stageRef.current];
       const previousDistance = distanceRef.current;
       const nextDistance = Math.min(
@@ -342,7 +569,15 @@ export default function WaveRiderPage() {
         previousDistance + waveRiderSpeed(previousDistance, calmSpeed || reducedMotion, isBoosting, stage.speedMultiplier, isSlowed) * deltaSeconds,
       );
       distanceRef.current = nextDistance;
-      setDistance(nextDistance);
+
+      if (now - lastHudRef.current > 90) {
+        lastHudRef.current = now;
+        setDistance(nextDistance);
+        setLane(laneRef.current);
+        setBoosting(isBoosting);
+        setJumping(isJumping);
+        setSlowed(isSlowed);
+      }
 
       for (const event of WAVE_RIDER_COURSE) {
         if (!resolvedRef.current.has(event.id) && event.distance > previousDistance && event.distance <= nextDistance) {
@@ -365,6 +600,7 @@ export default function WaveRiderPage() {
         }
         return;
       }
+      drawCourse(now, isBoosting, isJumping, isSlowed);
       animationFrame = requestAnimationFrame(frame);
     };
 
@@ -373,18 +609,9 @@ export default function WaveRiderPage() {
       cancelAnimationFrame(animationFrame);
       lastFrameRef.current = null;
     };
-  }, [announce, calmSpeed, phase, reducedMotion]);
+  }, [announce, boardColour, calmSpeed, highVisibility, phase, reducedMotion, riderId, trail]);
 
   const currentStage = WAVE_RIDER_STAGES[stageIndex];
-  const visibleEvents = useMemo(
-    () => WAVE_RIDER_COURSE.filter((event) => {
-      if (event.distance < currentStage.startDistance || event.distance > currentStage.finishDistance) return false;
-      if (event.type === 'gate' && event.gateIndex !== gateIndex) return false;
-      const relative = event.distance - distance;
-      return relative >= -18 && relative <= LOOK_AHEAD_METRES;
-    }),
-    [currentStage, distance, gateIndex],
-  );
   const nextGate = WAVE_RIDER_GATES[Math.min(gateIndex, WAVE_RIDER_GATES.length - 1)];
   const rider = RIDERS.find((option) => option.id === riderId) ?? RIDERS[0];
   const score = Math.floor(distance) + bonusScore;
@@ -417,40 +644,18 @@ export default function WaveRiderPage() {
         </ol>
         <div className="wave-rider__progress" aria-hidden="true"><span style={{ width: `${stageProgress}%` }} /></div>
 
-        <div ref={boardRef} className="wave-rider__course" data-phase={phase} data-stage={stageIndex + 1} data-high-visibility={highVisibility} data-boosting={boosting} data-jumping={jumping} data-slowed={slowed} tabIndex={phase === 'running' || phase === 'paused' ? 0 : -1} onKeyDown={handleBoardKeyDown} aria-label="Wave Rider course. Use left and right arrows or A and D to change lanes. Press F to boost, J to super jump and Space to pause.">
-          <div className="wave-rider__water-lines" aria-hidden="true" />
-          <div className="wave-rider__lane-lines" aria-hidden="true"><span /><span /></div>
+        <div ref={boardRef} className="wave-rider__course" data-phase={phase} data-stage={stageIndex + 1} data-high-visibility={highVisibility} data-boosting={boosting} data-jumping={jumping} data-slowed={slowed} data-player-lane={lane} tabIndex={phase === 'running' || phase === 'paused' ? 0 : -1} onKeyDown={handleBoardKeyDown} onKeyUp={handleBoardKeyUp} onBlur={() => { steerRef.current = { left: false, right: false }; }} aria-label="Wave Rider course. Hold left and right arrows or A and D for smooth steering. Drag or tap the water to steer. Press F to boost, J to super jump and Space to pause.">
+          <canvas ref={canvasRef} className="wave-rider__canvas" aria-hidden="true" onPointerDown={handlePointerDown} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) steerToPointer(event); }} />
 
           {(phase === 'running' || phase === 'paused') && gateIndex < WAVE_RIDER_GATES.length && (
             <div className="wave-rider__question" role="status"><span>Outcome {nextGate.outcome}</span><strong>{nextGate.prompt}</strong></div>
           )}
 
-          <div className="wave-rider__objects" aria-hidden="true">
-            {visibleEvents.map((event) => {
-              const y = waveRiderEventY(event.distance, distance);
-              if (event.type === 'gate') {
-                const gate = WAVE_RIDER_GATES[event.gateIndex];
-                return <div className="wave-rider__gate-row" key={event.id} style={{ top: `${y}%` }}>{gate.options.map((option, optionLane) => <div className="wave-rider__gate" key={option} data-lane={optionLane}><span>{option}</span></div>)}</div>;
-              }
-              if (event.type === 'powerup') {
-                return <div className="wave-rider__pickup" data-kind={event.powerup} key={event.id} style={{ left: laneLeft(event.lane), top: `${y}%` }}><span>{powerupSymbols[event.powerup]}</span><small>QUIZ</small></div>;
-              }
-              return <div className="wave-rider__hazard" data-kind={event.kind} key={event.id} style={{ left: laneLeft(event.lane), top: `${y}%` }}><span>{hazardSymbols[event.kind]}</span></div>;
-            })}
-          </div>
-
-          <div className={`wave-rider__rider trail-${trail}`} style={{ left: laneLeft(lane), top: `${PLAYER_Y_PERCENT}%` }} aria-hidden="true">
-            <div className="wave-rider__trail" />
-            <div className="wave-rider__board" style={{ background: boardColour }} />
-            {rider.id === 'pulse' ? <img src={`${import.meta.env.BASE_URL}assets/game/pulse-wave-runner.png`} alt="" /> : <span className="wave-rider__avatar">{rider.symbol}</span>}
-            <span>{(callSign || rider.name).toUpperCase()} &middot; ENERGY TRACKER</span>
-          </div>
-
           {phase === 'intro' && (
             <div className="wave-rider__overlay wave-rider__builder">
               <p className="wave-rider__overlay-eyebrow">Build your rider</p>
               <h3>Choose your style</h3>
-              <fieldset className="wave-rider__rider-picks" data-control-id="bonus-wave-rider.character"><legend>Character</legend>{RIDERS.map((option) => <label key={option.id}><input type="radio" name="rider" value={option.id} checked={riderId === option.id} onChange={() => { setRiderId(option.id); if (callSign === 'Pulse' || !callSign) setCallSign(option.name); }} /><span aria-hidden="true">{option.symbol}</span><strong>{option.name}</strong><small>{option.description}</small></label>)}</fieldset>
+              <fieldset className="wave-rider__rider-picks" data-control-id="bonus-wave-rider.character"><legend>Character</legend>{RIDERS.map((option) => <label key={option.id}><input type="radio" name="rider" value={option.id} checked={riderId === option.id} onChange={() => { setRiderId(option.id); if (callSign === 'Pulse' || !callSign) setCallSign(option.name); }} /><img src={assetUrl(option.asset)} alt="" /><strong>{option.name}</strong><small>{option.description}</small></label>)}</fieldset>
               <div className="wave-rider__design-grid">
                 <label>Call sign<input value={callSign} maxLength={12} onChange={(event) => setCallSign(event.target.value.replace(/[^a-zA-Z0-9 -]/g, ''))} data-control-id="bonus-wave-rider.call-sign" /></label>
                 <label>Board colour<select value={boardColour} onChange={(event) => setBoardColour(event.target.value)} data-control-id="bonus-wave-rider.board-colour"><option value="#ffdc5e">Solar yellow</option><option value="#55ecdc">Current teal</option><option value="#ff6f91">Coral pink</option><option value="#a988ff">Violet pulse</option></select></label>
@@ -464,7 +669,7 @@ export default function WaveRiderPage() {
 
           {phase === 'question' && activePowerup && powerupQuestion && (
             <div className="wave-rider__overlay is-question">
-              <div className="wave-rider__powerup-prize" aria-hidden="true">{powerupSymbols[activePowerup.powerup]}</div>
+              <div className="wave-rider__powerup-prize" aria-hidden="true"><img src={assetUrl(powerupAssets[activePowerup.powerup])} alt="" /></div>
               <p className="wave-rider__overlay-eyebrow">Outcome {powerupQuestion.outcome} &middot; win a {powerupNames[activePowerup.powerup]}</p>
               <h3>Power-up challenge</h3>
               <p><strong>{powerupQuestion.prompt}</strong></p>
