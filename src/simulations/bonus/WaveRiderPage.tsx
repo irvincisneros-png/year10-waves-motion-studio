@@ -34,7 +34,7 @@ type GamePhase = 'intro' | 'running' | 'paused' | 'question' | 'stageComplete' |
 type Lane = 0 | 1 | 2;
 type PowerupEvent = Extract<WaveRiderCourseEvent, { type: 'powerup' }>;
 
-const PLAYER_Y_PERCENT = 86;
+const PLAYER_Y_PERCENT = 43;
 const MAX_LIVES = 5;
 
 const RIDERS = [
@@ -327,13 +327,14 @@ export default function WaveRiderPage() {
       if (!context) return;
       const stage = stageRef.current;
       const palettes = [
-        ['#53d9f3', '#087fb3', '#042f67'],
-        ['#40d2d4', '#067f9d', '#053f69'],
-        ['#55a9e8', '#3c64bd', '#252f78'],
-        ['#518fd2', '#6841a8', '#281d62'],
-        ['#347aa9', '#323978', '#1b164f'],
+        ['#69cdea', '#54c3e3', '#43b6da'],
+        ['#62d5df', '#4ac3d3', '#35adc6'],
+        ['#65c5e5', '#55acd8', '#468fc7'],
+        ['#6ab8df', '#5898ce', '#5079bc'],
+        ['#65aace', '#5685b9', '#4a68a5'],
       ];
-      const [sky, middle, deep] = highVisibility ? ['#0aa5ce', '#00527f', '#001c3e'] : palettes[stage];
+      const [sky, middle, deep] = highVisibility ? ['#65daf4', '#1595c4', '#08709e'] : palettes[stage];
+      const distanceNow = distanceRef.current;
       context.clearRect(0, 0, width, height);
       context.save();
       if (now < impactUntilRef.current && !reducedMotion) {
@@ -347,19 +348,19 @@ export default function WaveRiderPage() {
       context.fillStyle = ocean;
       context.fillRect(-8, -8, width + 16, height + 16);
 
-      const scroll = reducedMotion ? 0 : (now * (isBoosting ? 0.085 : isSlowed ? 0.026 : 0.048)) % 74;
+      const scroll = reducedMotion ? 0 : (now * (isBoosting ? 0.055 : isSlowed ? 0.018 : 0.032)) % 94;
       context.lineCap = 'round';
-      for (let row = -2; row < 14; row += 1) {
-        const y = row * 58 + scroll;
+      for (let row = -2; row < 11; row += 1) {
+        const y = row * 86 + scroll;
         const perspective = Math.max(0.22, y / height);
         context.beginPath();
         for (let x = -30; x <= width + 30; x += 12) {
-          const wave = Math.sin(x * 0.027 + now * 0.0015 + row * 0.8) * (4 + perspective * 7);
+          const wave = Math.sin(x * 0.022 + now * 0.0012 + row * 0.8) * (2.5 + perspective * 3);
           if (x === -30) context.moveTo(x, y + wave);
           else context.lineTo(x, y + wave);
         }
-        context.strokeStyle = `rgba(225, 253, 255, ${0.08 + perspective * 0.18})`;
-        context.lineWidth = 1 + perspective * 2.4;
+        context.strokeStyle = `rgba(226, 253, 255, ${0.12 + perspective * 0.08})`;
+        context.lineWidth = 1.2;
         context.stroke();
       }
       const glow = context.createRadialGradient(width / 2, height * 0.88, 0, width / 2, height * 0.88, width * 0.55);
@@ -368,7 +369,48 @@ export default function WaveRiderPage() {
       context.fillStyle = glow;
       context.fillRect(0, 0, width, height);
 
-      const distanceNow = distanceRef.current;
+      const worldScroll = distanceNow * 2.1;
+      for (let cell = -2; cell < 8; cell += 1) {
+        const worldIndex = Math.floor(worldScroll / 175) + cell;
+        const seed = Math.abs(Math.sin(worldIndex * 91.713) * 43758.5453) % 1;
+        const x = width * (0.08 + ((seed * 7.31) % 0.84));
+        const y = ((worldIndex * 175 + worldScroll) % (height + 260)) - 130;
+        const kind = Math.abs(worldIndex) % 4;
+        context.save();
+        context.translate(x, y);
+        if (kind === 0) {
+          context.fillStyle = 'rgba(245,255,255,.55)';
+          context.beginPath(); context.ellipse(0, 18, 76, 18, 0, 0, Math.PI * 2); context.fill();
+          context.fillStyle = '#f3dfaa';
+          context.beginPath(); context.ellipse(0, 8, 64, 30, -0.08, 0, Math.PI * 2); context.fill();
+          context.fillStyle = '#5b986d';
+          context.beginPath(); context.ellipse(-4, -1, 35, 14, 0, 0, Math.PI * 2); context.fill();
+          context.fillStyle = '#665f5b';
+          for (const rock of [-28, 3, 26]) { context.beginPath(); context.arc(rock, 5 + Math.abs(rock) * 0.1, 8, 0, Math.PI * 2); context.fill(); }
+          context.strokeStyle = '#7b5b3b'; context.lineWidth = 6; context.beginPath(); context.moveTo(17, 1); context.lineTo(22, -31); context.stroke();
+          context.fillStyle = '#39765a';
+          for (let leaf = 0; leaf < 6; leaf += 1) { context.save(); context.translate(22, -31); context.rotate(leaf * Math.PI / 3); context.beginPath(); context.ellipse(13, 0, 16, 5, 0, 0, Math.PI * 2); context.fill(); context.restore(); }
+        } else if (kind === 1) {
+          context.fillStyle = '#876d58';
+          for (let plank = -2; plank <= 2; plank += 1) context.fillRect(plank * 20 - 9, -13, 18, 72);
+          context.strokeStyle = '#5c493d'; context.lineWidth = 2;
+          context.strokeRect(-49, -13, 98, 72);
+          context.fillStyle = '#d85a55'; context.fillRect(54, -30, 6, 40);
+          context.fillStyle = '#fff'; context.beginPath(); context.moveTo(60, -28); context.lineTo(82, -20); context.lineTo(60, -10); context.fill();
+        } else if (kind === 2) {
+          context.fillStyle = 'rgba(245,255,255,.58)'; context.beginPath(); context.ellipse(0, 12, 39, 12, 0, 0, Math.PI * 2); context.fill();
+          context.fillStyle = '#68777b';
+          for (const rock of [-19, 0, 20]) { context.beginPath(); context.arc(rock, 2 + Math.abs(rock) * 0.12, 13, 0, Math.PI * 2); context.fill(); }
+        } else {
+          context.fillStyle = 'rgba(245,255,255,.55)'; context.beginPath(); context.ellipse(0, 10, 24, 10, 0, 0, Math.PI * 2); context.fill();
+          context.fillStyle = '#e15f5b'; context.beginPath(); context.ellipse(0, 1, 14, 11, 0, 0, Math.PI * 2); context.fill();
+          context.fillStyle = '#fff'; context.fillRect(-11, -2, 22, 6);
+          context.strokeStyle = '#555'; context.lineWidth = 3; context.beginPath(); context.moveTo(0, -10); context.lineTo(0, -29); context.stroke();
+          context.fillStyle = '#fff'; context.beginPath(); context.moveTo(0, -29); context.lineTo(18, -21); context.lineTo(0, -15); context.fill();
+        }
+        context.restore();
+      }
+
       const activeGate = WAVE_RIDER_COURSE.find(
         (courseEvent): courseEvent is Extract<WaveRiderCourseEvent, { type: 'gate' }> => courseEvent.type === 'gate' && !resolvedRef.current.has(courseEvent.id),
       );
@@ -385,18 +427,18 @@ export default function WaveRiderPage() {
         if (courseEvent.type === 'gate') {
           const gate = WAVE_RIDER_GATES[courseEvent.gateIndex];
           const gap = Math.max(8, width * 0.012);
-          const gateWidth = (width - gap * 4) / 3;
-          const gateHeight = Math.max(54, Math.min(94, height * 0.13)) * scale;
+          const gateWidth = (width - gap * 6) / 3;
+          const gateHeight = Math.max(50, Math.min(76, height * 0.1)) * scale;
           gate.options.forEach((option, optionLane) => {
-            const x = gap * 2 + optionLane * (gateWidth + gap);
-            context.fillStyle = 'rgba(3,25,61,.88)';
-            context.strokeStyle = '#ffe86d';
-            context.lineWidth = Math.max(3, 6 * scale);
+            const x = gap * 3 + optionLane * (gateWidth + gap);
+            context.fillStyle = 'rgba(255,255,255,.83)';
+            context.strokeStyle = '#143b57';
+            context.lineWidth = Math.max(2, 3 * scale);
             context.beginPath();
             context.roundRect(x, y - gateHeight / 2, gateWidth, gateHeight, 12);
             context.fill();
             context.stroke();
-            context.fillStyle = '#fff';
+            context.fillStyle = '#142d3f';
             context.font = `800 ${Math.max(10, 14 * scale)}px Lexend, sans-serif`;
             context.textAlign = 'center';
             context.textBaseline = 'middle';
@@ -450,7 +492,7 @@ export default function WaveRiderPage() {
       context.stroke();
       const riderAsset = RIDERS.find((option) => option.id === riderId)?.asset ?? RIDERS[0].asset;
       const riderImage = spritesRef.current[riderAsset];
-      const riderSize = Math.min(138, Math.max(96, width * 0.14));
+      const riderSize = Math.min(94, Math.max(68, width * 0.085));
       context.save();
       context.translate(playerX, playerY);
       context.rotate(playerVelocityRef.current * 0.16);
@@ -654,16 +696,16 @@ export default function WaveRiderPage() {
           {phase === 'intro' && (
             <div className="wave-rider__overlay wave-rider__builder">
               <p className="wave-rider__overlay-eyebrow">Build your rider</p>
-              <h3>Choose your style</h3>
+              <h3>Let's ride waves</h3>
               <fieldset className="wave-rider__rider-picks" data-control-id="bonus-wave-rider.character"><legend>Character</legend>{RIDERS.map((option) => <label key={option.id}><input type="radio" name="rider" value={option.id} checked={riderId === option.id} onChange={() => { setRiderId(option.id); if (callSign === 'Pulse' || !callSign) setCallSign(option.name); }} /><img src={assetUrl(option.asset)} alt="" /><strong>{option.name}</strong><small>{option.description}</small></label>)}</fieldset>
               <div className="wave-rider__design-grid">
                 <label>Call sign<input value={callSign} maxLength={12} onChange={(event) => setCallSign(event.target.value.replace(/[^a-zA-Z0-9 -]/g, ''))} data-control-id="bonus-wave-rider.call-sign" /></label>
                 <label>Board colour<select value={boardColour} onChange={(event) => setBoardColour(event.target.value)} data-control-id="bonus-wave-rider.board-colour"><option value="#ffdc5e">Solar yellow</option><option value="#55ecdc">Current teal</option><option value="#ff6f91">Coral pink</option><option value="#a988ff">Violet pulse</option></select></label>
                 <label>Trail style<select value={trail} onChange={(event) => setTrail(event.target.value)} data-control-id="bonus-wave-rider.trail"><option value="spark">Energy sparks</option><option value="bubble">Bubbles</option><option value="rainbow">Spectrum</option></select></label>
               </div>
-              <p>Five stages get faster and denser. Correct power-up answers earn abilities; wrong answers give feedback but no reward.</p>
-              <div className="wave-rider__keymap" aria-label="Game controls"><span><kbd>←</kbd><kbd>→</kbd> steer</span><span><kbd>F</kbd> boost</span><span><kbd>J</kbd> jump</span><span><kbd>Space</kbd> pause</span></div>
-              <button type="button" className="wave-rider__primary" onClick={startRun} data-control-id="bonus-wave-rider.start"><Play size={20} aria-hidden="true" /> Start Stage 1</button>
+              <p>Surf an open-water course through five progressively harder science stages.</p>
+              <div className="wave-rider__keymap" aria-label="Game controls"><span><kbd>←</kbd><kbd>→</kbd> steer</span><span><kbd>F</kbd> boost</span><span><kbd>J</kbd> jump</span></div>
+              <button type="button" className="wave-rider__primary" aria-label="Start Stage 1" onClick={startRun} data-control-id="bonus-wave-rider.start"><Play size={20} aria-hidden="true" /> Start surfing</button>
             </div>
           )}
 

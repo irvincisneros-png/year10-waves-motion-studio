@@ -4,7 +4,7 @@ test.describe('Wave Rider mastery run', () => {
   test('starts a steerable arcade run with lives, score and boost controls', async ({ page }) => {
     await page.goto('/#/bonus/wave-rider');
     await expect(page.getByRole('heading', { level: 1, name: 'Wave Rider' })).toBeVisible();
-    await expect(page.getByRole('heading', { level: 3, name: 'Choose your style' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 3, name: "Let's ride waves" })).toBeVisible();
     await page.getByRole('radio', { name: /Orbit/ }).check();
     await page.getByLabel('Board colour').selectOption({ label: 'Violet pulse' });
     await page.getByLabel('Trail style').selectOption({ label: 'Spectrum' });
