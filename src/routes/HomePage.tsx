@@ -104,13 +104,13 @@ export default function HomePage() {
           <p className="bonus-rider__eyebrow"><Gamepad2 size={16} aria-hidden="true" /> Bonus challenge</p>
           <h2 id="bonus-rider-title">Surf the science in Wave Rider</h2>
           <p>
-            Tune a live wave, clear three checkpoints, and help Pulse track the
-            energy front while the medium particles stay near home.
+            Steer through a fast arcade course, dodge hazards, collect boosts
+            and choose the correct science gates before your hearts run out.
           </p>
           <div className="bonus-rider__tags" aria-label="Wave Rider topics">
             <span><Waves size={14} aria-hidden="true" /> Energy transfer</span>
-            <span>v = fλ</span>
-            <span>Particle motion</span>
+            <span>λ = v/f</span>
+            <span>Wave features</span>
           </div>
           <Link to="/bonus/wave-rider" className="bonus-rider__launch">
             Play Wave Rider <ArrowRight size={18} aria-hidden="true" />

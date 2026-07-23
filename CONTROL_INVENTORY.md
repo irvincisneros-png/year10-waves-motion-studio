@@ -769,11 +769,22 @@ cannot score a checkpoint.
 
 | ID | Control | Effect | Accessible name | Keyboard behaviour | Reset / validation | Fallback | Browser evidence |
 |---|---|---|---|---|---|---|---|
-| `bonus-wave-rider.matter-choice` | Two-radio group | Chooses whether medium particles travel with the disturbance or oscillate near home | "What medium particles do" | Native radio arrows/Space | Only local oscillation passes; misconception receives specific feedback | Semantic HTML | `wave-rider.spec.ts` misconception and completion paths |
-| `bonus-wave-rider.amplitude` | Range slider | Tunes amplitude for the energy checkpoint | "Wave Rider amplitude" | Native range arrows/Home/End | 0.5–2.0 m; target 1.5 m; updates relative A² energy but not speed | Live output and telemetry | same |
-| `bonus-wave-rider.wavelength` | Range slider | Tunes wavelength for the equation checkpoint | "Wave Rider wavelength" | Native range arrows/Home/End | 2–8 m; with f = 1.2 Hz and medium speed 6 m/s, λ = 5 m passes | Live output and telemetry | same plus `waveRider.test.ts` |
-| `bonus-wave-rider.ride-checkpoint` | Button | Evaluates the active checkpoint from current science state | "Ride checkpoint" | Native button | Disabled until the first choice is made and while a result is resolving | Status text exposes identical result | same |
-| `bonus-wave-rider.reset` | Button | Replays the course deterministically | "Ride again" | Native button | Restores stage 1, no choice, A = 0.8 m and λ = 3.0 m | Status announcement | same |
+| `bonus-wave-rider.character` | Radio-card group | Chooses one of four decorative rider characters | "Character" | Native radio arrows/Space | Cosmetic only; never changes scoring or science | Text names and descriptions | `wave-rider.spec.ts` customisation path |
+| `bonus-wave-rider.call-sign` | Text input | Sets a local, non-persisted rider call sign | "Call sign" | Native text editing | Maximum 12 letters, numbers, spaces or hyphens | Character name remains the fallback | same |
+| `bonus-wave-rider.board-colour` | Select | Chooses the surfboard colour | "Board colour" | Native select | Cosmetic only | Named colour options | same |
+| `bonus-wave-rider.trail` | Select | Chooses energy sparks, bubbles or spectrum trail | "Trail style" | Native select | Cosmetic only and animation is removed under reduced motion | Named trail option | same |
+| `bonus-wave-rider.start` | Button | Starts Stage 1 and resets the deterministic five-stage course | "Start Stage 1" | Native button | Restores three lives and one speed boost | Status announcement | same |
+| `bonus-wave-rider.steer-left` | Button | Moves the rider one lane left | "Steer left" | Native button; ArrowLeft/A on course | Clamped at left lane | Rider position and focusable course label | same |
+| `bonus-wave-rider.steer-right` | Button | Moves the rider one lane right | "Steer right" | Native button; ArrowRight/D on course | Clamped at right lane | Rider position and focusable course label | same |
+| `bonus-wave-rider.boost` | Button | Uses one earned speed boost | Dynamic "Use speed boost. N remaining" | Native button; F on course | Disabled with zero inventory or while active; changes arcade marker only | Live inventory and status | same |
+| `bonus-wave-rider.jump` | Button | Uses one earned super jump to clear hazards | Dynamic "Use super jump. N remaining" | Native button; J on course | Disabled with zero inventory or while airborne | Live inventory and status | same |
+| `bonus-wave-rider.calm-speed` | Checkbox | Reduces all five stage speeds | "Calm speed" | Native checkbox | Automatically enabled for reduced-motion preference | Identical course and scoring | same |
+| `bonus-wave-rider.high-visibility` | Checkbox | Raises course and gate contrast | "High visibility" | Native checkbox | Visual only | Text and semantic controls remain | same |
+| `bonus-wave-rider.pause` | Button | Pauses or resumes the active course | "Pause" / "Resume" | Native button; Space on course | Available only while running or paused | Pause overlay | same |
+| `bonus-wave-rider.powerup-answer` | Three-button group | Answers a syllabus question before a power-up is awarded | Visible answer text | Native buttons | One attempt; incorrect answer awards nothing and gives corrective feedback | Question, outcome and feedback are text | same plus `waveRider.test.ts` |
+| `bonus-wave-rider.next-stage` | Button | Starts the next, progressively faster stage | Dynamic "Start Stage N" | Native button | Appears only at a stage boundary | Next-stage name and briefing | same |
+| `bonus-wave-rider.resume` | Button | Resumes from the pause overlay | "Resume run" | Native button | Appears only while paused | Pause state announcement | same |
+| `bonus-wave-rider.restart` | Button | Replays all five stages with current character design | "Ride again" | Native button | Resets course state and inventory | Completion/run-over summary remains visible first | same |
 
 The illustrated surfer is explicitly labelled as an energy-front game marker,
 not a particle, photon or literal person carried by the wave. Home-position dots,

@@ -1,55 +1,61 @@
 import { expect, test } from '@playwright/test';
 
-test.describe('Wave Rider bonus challenge', () => {
-  test('scores all three science checkpoints and supports deterministic replay', async ({ page }) => {
+test.describe('Wave Rider mastery run', () => {
+  test('starts a steerable arcade run with lives, score and boost controls', async ({ page }) => {
     await page.goto('/#/bonus/wave-rider');
     await expect(page.getByRole('heading', { level: 1, name: 'Wave Rider' })).toBeVisible();
-    await expect(page.getByText('0/3')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 3, name: 'Choose your style' })).toBeVisible();
+    await page.getByRole('radio', { name: /Orbit/ }).check();
+    await page.getByLabel('Board colour').selectOption({ label: 'Violet pulse' });
+    await page.getByLabel('Trail style').selectOption({ label: 'Spectrum' });
+    await page.getByLabel('Call sign').fill('Vector');
+    await page.getByRole('button', { name: 'Start Stage 1' }).click();
 
-    await page.getByRole('radio', { name: 'Oscillate near a fixed home position' }).check();
-    await page.getByRole('button', { name: 'Ride checkpoint' }).click();
-    await expect(page.getByText('1/3')).toBeVisible();
+    await expect(page.getByLabel('3 hearts remaining')).toBeVisible();
+    await expect(page.getByText('Stage 1 of 5')).toBeVisible();
+    await expect(page.locator('.wave-rider__question')).toContainText('A pulse crosses a rope');
+    const rider = page.locator('.wave-rider__rider');
+    await expect(rider).toHaveAttribute('style', /left: 50%/);
 
-    const amplitude = page.getByRole('slider', { name: 'Wave Rider amplitude' });
-    await amplitude.evaluate((element) => {
-      const input = element as HTMLInputElement;
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
-      setter?.call(input, '1.5');
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-    });
-    await expect(amplitude).toHaveValue('1.5');
-    await page.getByRole('button', { name: 'Ride checkpoint' }).click();
-    await expect(page.getByText('2/3')).toBeVisible();
+    await page.getByRole('button', { name: 'Steer left' }).click();
+    await expect(rider).toHaveAttribute('style', /left: 16/);
+    await page.getByRole('button', { name: 'Steer right' }).click();
+    await expect(rider).toHaveAttribute('style', /left: 50%/);
 
-    await page.getByRole('slider', { name: 'Wave Rider wavelength' }).evaluate((element) => {
-      const input = element as HTMLInputElement;
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
-      setter?.call(input, '5');
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-    });
-    await page.getByRole('button', { name: 'Ride checkpoint' }).click();
-    await expect(page.getByRole('heading', { level: 3, name: 'Wave Rider patch earned' })).toBeVisible();
-    await expect(page.getByText('3/3')).toBeVisible();
-
-    await page.getByRole('button', { name: 'Ride again' }).click();
-    await expect(page.getByText('0/3')).toBeVisible();
-    await expect(page.getByRole('radio', { name: 'Oscillate near a fixed home position' })).not.toBeChecked();
+    await expect(page.getByRole('button', { name: 'Use speed boost. 1 remaining' })).toBeVisible();
   });
 
-  test('rejects the matter-transport misconception with corrective feedback', async ({ page }) => {
+  test('awards a power-up only after a correct syllabus answer', async ({ page }) => {
     await page.goto('/#/bonus/wave-rider');
-    await page.getByRole('radio', { name: 'Travel across the course with Pulse' }).check();
-    await page.getByRole('button', { name: 'Ride checkpoint' }).click();
-    await expect(page.locator('.wave-rider__message')).toContainText('particles travelled away');
-    await expect(page.getByText('0/3')).toBeVisible();
+    await page.getByRole('button', { name: 'Start Stage 1' }).click();
+    await expect(page.getByRole('heading', { level: 3, name: 'Power-up challenge' })).toBeVisible({ timeout: 6_000 });
+    await expect(page.getByText('win a speed boost')).toBeVisible();
+    await page.getByRole('button', { name: 'Energy', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Use speed boost. 2 remaining' })).toBeVisible();
+    await expect(page.locator('.wave-rider__message')).toContainText('speed boost awarded');
   });
 
-  test('remains playable and overflow-free at 320 pixels', async ({ page }) => {
+  test('supports keyboard steering, pause and accessible speed options', async ({ page }) => {
+    await page.goto('/#/bonus/wave-rider');
+    await page.getByRole('button', { name: 'Start Stage 1' }).click();
+    const course = page.getByLabel(/Wave Rider course/);
+    await course.press('ArrowRight');
+    await expect(page.locator('.wave-rider__rider')).toHaveAttribute('style', /left: 83/);
+    await course.press('Space');
+    await expect(page.getByRole('heading', { level: 3, name: 'Run paused' })).toBeVisible();
+    await page.getByRole('button', { name: 'Resume run' }).click();
+    await expect(page.getByLabel('Calm speed')).toBeVisible();
+    await page.getByLabel('High visibility').check();
+    await expect(course).toHaveAttribute('data-high-visibility', 'true');
+  });
+
+  test('explains the syllabus mapping and remains overflow-free at 320 pixels', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto('/#/bonus/wave-rider');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
-    const rideBox = await page.getByRole('button', { name: 'Ride checkpoint' }).boundingBox();
-    expect(rideBox?.height).toBeGreaterThanOrEqual(44);
-    await expect(page.getByText('The surfing is a metaphor. The physics is real.')).toBeVisible();
+    const startBox = await page.getByRole('button', { name: 'Start Stage 1' }).boundingBox();
+    expect(startBox?.height).toBeGreaterThanOrEqual(44);
+    await expect(page.getByText('Every stage raises both the game and science challenge.')).toBeVisible();
+    await expect(page.getByText(/numerical and proportional reasoning with λ = v\/f/)).toBeVisible();
   });
 });

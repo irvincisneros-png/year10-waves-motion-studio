@@ -1,348 +1,504 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Check, Gauge, RotateCcw, Sparkles, Waves } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  CirclePause,
+  Gauge,
+  Heart,
+  Play,
+  RotateCcw,
+  Shield,
+  Sparkles,
+  Waves,
+  Zap,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAnnouncer } from '../../accessibility/LiveRegion';
 import { useReducedMotion } from '../../accessibility/useReducedMotion';
 import { Page } from '../../components/Page';
 import {
-  directionalHint,
-  particlePosition,
-  relativeEnergy,
-  scoreEnergyGate,
-  scoreMatterGate,
-  scoreSpeedGate,
-  waveSpeed,
-  WAVE_RIDER_TARGETS,
-  type MatterChoice,
+  clampWaveRiderLane,
+  isCorrectWaveRiderLane,
+  WAVE_RIDER_COURSE,
+  WAVE_RIDER_GATES,
+  WAVE_RIDER_POWERUP_QUESTIONS,
+  WAVE_RIDER_STAGES,
+  waveRiderEventY,
+  waveRiderSpeed,
+  type WaveRiderCourseEvent,
+  type WaveRiderPowerupKind,
 } from '../../science/waveRider';
 import { useSettingsStore } from '../../store/settingsStore';
 import './WaveRiderPage.css';
 
-const STAGES = [
-  { id: 'matter', label: 'Particle cove', outcome: '7.1.2' },
-  { id: 'energy', label: 'Energy ramp', outcome: '7.1.2' },
-  { id: 'speed', label: 'Equation tunnel', outcome: '7.1.3' },
+type GamePhase = 'intro' | 'running' | 'paused' | 'question' | 'stageComplete' | 'over' | 'complete';
+type Lane = 0 | 1 | 2;
+type PowerupEvent = Extract<WaveRiderCourseEvent, { type: 'powerup' }>;
+
+const LOOK_AHEAD_METRES = 180;
+const PLAYER_Y_PERCENT = 86;
+const MAX_LIVES = 5;
+
+const RIDERS = [
+  { id: 'pulse', name: 'Pulse', symbol: '⚡', description: 'WaveMotion mascot' },
+  { id: 'nova', name: 'Nova', symbol: '🌟', description: 'Star navigator' },
+  { id: 'orbit', name: 'Orbit', symbol: '🤖', description: 'Robot rider' },
+  { id: 'reef', name: 'Reef', symbol: '🤿', description: 'Ocean explorer' },
 ] as const;
 
-type RideState = 'ready' | 'riding' | 'retry' | 'success' | 'complete';
-
-function waveY(x: number, amplitudeM: number, wavelengthM: number) {
-  const amplitudePx = amplitudeM * 36;
-  const wavelengthPx = wavelengthM * 48;
-  return 288 - amplitudePx * Math.sin((x / wavelengthPx) * Math.PI * 2);
-}
-
-function makeWavePath(amplitudeM: number, wavelengthM: number) {
-  const points: string[] = [];
-  for (let x = 0; x <= 1000; x += 8) {
-    points.push(`${x === 0 ? 'M' : 'L'} ${x} ${waveY(x, amplitudeM, wavelengthM)}`);
-  }
-  return points.join(' ');
-}
+const hazardSymbols = { shark: '🦈', debris: '🪵', whirlpool: '🌀', reef: '🪸' } as const;
+const powerupSymbols: Record<WaveRiderPowerupKind, string> = { speed: '⚡', life: '❤️', jump: '⬆️', shield: '🛡️' };
+const powerupNames: Record<WaveRiderPowerupKind, string> = { speed: 'speed boost', life: 'extra life', jump: 'super jump', shield: 'shield' };
+const laneLeft = (lane: Lane) => `${16.667 + lane * 33.333}%`;
 
 export default function WaveRiderPage() {
-  const [stage, setStage] = useState(0);
-  const [matterChoice, setMatterChoice] = useState<MatterChoice>(null);
-  const [amplitude, setAmplitude] = useState(0.8);
-  const [wavelength, setWavelength] = useState(3);
-  const [rideState, setRideState] = useState<RideState>('ready');
-  const [message, setMessage] = useState('Choose what the medium particles do, then ride the first gate.');
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const gradientId = useId().replace(/:/g, '');
-  const clipId = useId().replace(/:/g, '');
+  const [phase, setPhase] = useState<GamePhase>('intro');
+  const [stageIndex, setStageIndex] = useState(0);
+  const [lane, setLane] = useState<Lane>(1);
+  const [distance, setDistance] = useState(0);
+  const [lives, setLives] = useState(3);
+  const [boosts, setBoosts] = useState(1);
+  const [jumps, setJumps] = useState(0);
+  const [shields, setShields] = useState(0);
+  const [boosting, setBoosting] = useState(false);
+  const [jumping, setJumping] = useState(false);
+  const [slowed, setSlowed] = useState(false);
+  const [bonusScore, setBonusScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [clearedGates, setClearedGates] = useState(0);
+  const [gateIndex, setGateIndex] = useState(0);
+  const [message, setMessage] = useState('Build your rider, then begin Stage 1.');
+  const [activePowerup, setActivePowerup] = useState<PowerupEvent | null>(null);
+  const [calmSpeed, setCalmSpeed] = useState(false);
+  const [highVisibility, setHighVisibility] = useState(false);
+  const [riderId, setRiderId] = useState<(typeof RIDERS)[number]['id']>('pulse');
+  const [boardColour, setBoardColour] = useState('#ffdc5e');
+  const [trail, setTrail] = useState('spark');
+  const [callSign, setCallSign] = useState('Pulse');
+
+  const boardRef = useRef<HTMLDivElement>(null);
+  const phaseRef = useRef<GamePhase>('intro');
+  const stageRef = useRef(0);
+  const laneRef = useRef<Lane>(1);
+  const distanceRef = useRef(0);
+  const livesRef = useRef(3);
+  const boostsRef = useRef(1);
+  const jumpsRef = useRef(0);
+  const shieldsRef = useRef(0);
+  const resolvedRef = useRef(new Set<string>());
+  const boostUntilRef = useRef(0);
+  const jumpUntilRef = useRef(0);
+  const slowUntilRef = useRef(0);
+  const lastFrameRef = useRef<number | null>(null);
   const manualReducedMotion = useSettingsStore((state) => state.reducedMotion);
   const reducedMotion = useReducedMotion(manualReducedMotion);
   const { announce } = useAnnouncer();
 
-  const wavePath = useMemo(
-    () => makeWavePath(amplitude, wavelength),
-    [amplitude, wavelength],
-  );
-  const speed = waveSpeed(WAVE_RIDER_TARGETS.frequencyHz, wavelength);
-  const energy = relativeEnergy(amplitude);
-  const completed = stage >= STAGES.length;
-  const riderX = completed ? 900 : 150 + stage * 275;
-  const riderY = waveY(riderX, amplitude, wavelength) - 10;
+  useEffect(() => {
+    if (reducedMotion) setCalmSpeed(true);
+  }, [reducedMotion]);
 
-  useEffect(
-    () => () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    },
-    [],
-  );
-
-  const resetGame = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setStage(0);
-    setMatterChoice(null);
-    setAmplitude(0.8);
-    setWavelength(3);
-    setRideState('ready');
-    setMessage('Choose what the medium particles do, then ride the first gate.');
-    announce('Wave Rider reset. Particle cove is ready.');
+  const changePhase = (next: GamePhase) => {
+    phaseRef.current = next;
+    setPhase(next);
   };
 
-  const evaluateStage = () => {
-    if (stage === 0) return scoreMatterGate(matterChoice);
-    if (stage === 1) return scoreEnergyGate(amplitude);
-    return scoreSpeedGate(wavelength);
+  const focusCourse = () => window.setTimeout(() => boardRef.current?.focus(), 0);
+
+  const resetRun = () => {
+    stageRef.current = 0;
+    laneRef.current = 1;
+    distanceRef.current = 0;
+    livesRef.current = 3;
+    boostsRef.current = 1;
+    jumpsRef.current = 0;
+    shieldsRef.current = 0;
+    resolvedRef.current = new Set();
+    boostUntilRef.current = 0;
+    jumpUntilRef.current = 0;
+    slowUntilRef.current = 0;
+    lastFrameRef.current = null;
+    setStageIndex(0);
+    setLane(1);
+    setDistance(0);
+    setLives(3);
+    setBoosts(1);
+    setJumps(0);
+    setShields(0);
+    setBoosting(false);
+    setJumping(false);
+    setSlowed(false);
+    setBonusScore(0);
+    setStreak(0);
+    setClearedGates(0);
+    setGateIndex(0);
+    setActivePowerup(null);
+    setMessage('Stage 1 live. Track what the wave transfers.');
   };
 
-  const retryMessage = () => {
-    if (stage === 0) return 'The medium would be emptied if particles travelled away. Try the home-position answer.';
-    if (stage === 1) return `${directionalHint(amplitude, WAVE_RIDER_TARGETS.amplitudeM)} Amplitude changes the relative energy, not the wave speed.`;
-    return `${directionalHint(speed, WAVE_RIDER_TARGETS.mediumSpeedMps)} Use v = fλ with f fixed at 1.2 Hz.`;
+  const startRun = () => {
+    resetRun();
+    changePhase('running');
+    announce(`Wave Rider started for ${callSign || 'your rider'}. Stage 1, Particle Lagoon.`);
+    focusCourse();
   };
 
-  const rideCheckpoint = () => {
-    if (rideState === 'riding' || completed) return;
-    const passed = evaluateStage();
-    setRideState('riding');
-    setMessage('Pulse is scanning the checkpoint…');
+  const continueStage = () => {
+    const next = Math.min(stageRef.current + 1, WAVE_RIDER_STAGES.length - 1);
+    stageRef.current = next;
+    setStageIndex(next);
+    laneRef.current = 1;
+    setLane(1);
+    lastFrameRef.current = null;
+    setMessage(`Stage ${next + 1} live. ${WAVE_RIDER_STAGES[next].tagline}`);
+    changePhase('running');
+    announce(`Stage ${next + 1}, ${WAVE_RIDER_STAGES[next].name}.`);
+    focusCourse();
+  };
 
-    const finishRide = () => {
-      if (!passed) {
-        const nextMessage = retryMessage();
-        setRideState('retry');
-        setMessage(nextMessage);
-        announce(`Checkpoint needs another tune. ${nextMessage}`);
-        return;
+  const moveLane = (change: number) => {
+    if (phaseRef.current !== 'running') return;
+    const next = clampWaveRiderLane(laneRef.current + change);
+    laneRef.current = next;
+    setLane(next);
+  };
+
+  const activateBoost = () => {
+    if (phaseRef.current !== 'running' || boostsRef.current <= 0 || performance.now() < boostUntilRef.current) return;
+    boostsRef.current -= 1;
+    setBoosts(boostsRef.current);
+    boostUntilRef.current = performance.now() + 1600;
+    setBoosting(true);
+    setMessage('Speed boost active. This changes the arcade marker, not the modelled wave speed.');
+  };
+
+  const activateJump = () => {
+    if (phaseRef.current !== 'running' || jumpsRef.current <= 0 || performance.now() < jumpUntilRef.current) return;
+    jumpsRef.current -= 1;
+    setJumps(jumpsRef.current);
+    jumpUntilRef.current = performance.now() + 2300;
+    setJumping(true);
+    setMessage('Super jump active. You can clear every hazard while airborne.');
+  };
+
+  const togglePause = () => {
+    if (phaseRef.current === 'running') {
+      changePhase('paused');
+      setBoosting(false);
+      setJumping(false);
+      announce('Wave Rider paused.');
+    } else if (phaseRef.current === 'paused') {
+      lastFrameRef.current = null;
+      changePhase('running');
+      announce('Wave Rider resumed.');
+      focusCourse();
+    }
+  };
+
+  const answerPowerup = (answerIndex: number) => {
+    if (!activePowerup) return;
+    const question = WAVE_RIDER_POWERUP_QUESTIONS[activePowerup.questionIndex];
+    const correct = answerIndex === question.correctIndex;
+    if (correct) {
+      const kind = activePowerup.powerup;
+      if (kind === 'speed') {
+        boostsRef.current = Math.min(3, boostsRef.current + 1);
+        setBoosts(boostsRef.current);
+      } else if (kind === 'life') {
+        livesRef.current = Math.min(MAX_LIVES, livesRef.current + 1);
+        setLives(livesRef.current);
+      } else if (kind === 'jump') {
+        jumpsRef.current = Math.min(3, jumpsRef.current + 1);
+        setJumps(jumpsRef.current);
+      } else {
+        shieldsRef.current = Math.min(2, shieldsRef.current + 1);
+        setShields(shieldsRef.current);
       }
+      setBonusScore((score) => score + 100);
+      setMessage(`Correct: ${question.explanation} ${powerupNames[kind]} awarded.`);
+      announce(`Correct. ${powerupNames[kind]} awarded.`);
+    } else {
+      setStreak(0);
+      setMessage(`No power-up: ${question.explanation}`);
+      announce(`Not this time. ${question.explanation}`);
+    }
+    setActivePowerup(null);
+    lastFrameRef.current = null;
+    changePhase('running');
+    focusCourse();
+  };
 
-      const nextStage = stage + 1;
-      if (nextStage === STAGES.length) {
-        setStage(nextStage);
-        setRideState('complete');
-        setMessage('Wave Rider patch earned. Energy crossed the course; the particles stayed near home.');
-        announce('Wave Rider complete. Patch earned.');
-        return;
+  const handleBoardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') {
+      event.preventDefault(); moveLane(-1);
+    } else if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') {
+      event.preventDefault(); moveLane(1);
+    } else if (event.key.toLowerCase() === 'f') {
+      event.preventDefault(); activateBoost();
+    } else if (event.key.toLowerCase() === 'j') {
+      event.preventDefault(); activateJump();
+    } else if (event.key === ' ') {
+      event.preventDefault(); togglePause();
+    }
+  };
+
+  useEffect(() => {
+    if (phase !== 'running') return;
+    let animationFrame = 0;
+
+    const takeHit = (feedback: string) => {
+      const nextLives = livesRef.current - 1;
+      livesRef.current = nextLives;
+      setLives(nextLives);
+      setStreak(0);
+      setMessage(feedback);
+      announce(feedback);
+      if (nextLives <= 0) {
+        changePhase('over');
+        announce('Run over. Review the feedback and try the five-stage course again.');
       }
-
-      setStage(nextStage);
-      setRideState('success');
-      const nextMessage = nextStage === 1
-        ? 'Particle cove cleared. Tune the amplitude to 1.5 m for the energy ramp.'
-        : 'Energy ramp cleared. Use v = fλ to match the 6 m/s equation tunnel.';
-      setMessage(nextMessage);
-      announce(nextMessage);
     };
 
-    if (reducedMotion) finishRide();
-    else timeoutRef.current = setTimeout(finishRide, 650);
-  };
+    const resolveHazard = (event: Extract<WaveRiderCourseEvent, { type: 'hazard' }>, now: number) => {
+      if (event.lane !== laneRef.current) return;
+      if (now < jumpUntilRef.current) {
+        setBonusScore((score) => score + 35);
+        setMessage(`Super jump cleared the ${event.kind}.`);
+        return;
+      }
+      if (shieldsRef.current > 0) {
+        shieldsRef.current -= 1;
+        setShields(shieldsRef.current);
+        setMessage(`Shield absorbed the ${event.kind}.`);
+        return;
+      }
+      if (event.kind === 'debris') {
+        slowUntilRef.current = now + 3300;
+        setSlowed(true);
+        setStreak(0);
+        setMessage('Debris drag: steering still works, but speed is reduced for 3 seconds.');
+      } else if (event.kind === 'whirlpool') {
+        const stageStart = WAVE_RIDER_STAGES[stageRef.current].startDistance;
+        distanceRef.current = Math.max(stageStart, distanceRef.current - 55);
+        setDistance(distanceRef.current);
+        setStreak(0);
+        setMessage('Whirlpool! The current pulled your rider 55 m backwards.');
+      } else if (event.kind === 'shark') {
+        const pushedLane = clampWaveRiderLane(laneRef.current + (laneRef.current === 2 ? -1 : 1));
+        laneRef.current = pushedLane;
+        setLane(pushedLane);
+        takeHit('Shark strike: one heart lost and your rider was knocked into the next lane.');
+      } else {
+        takeHit('Reef collision: one heart lost. A super jump or shield can clear reefs safely.');
+      }
+    };
+
+    const resolveEvent = (event: WaveRiderCourseEvent, now: number) => {
+      resolvedRef.current.add(event.id);
+      if (event.type === 'hazard') {
+        resolveHazard(event, now);
+        return;
+      }
+      if (event.type === 'powerup') {
+        if (event.lane === laneRef.current) {
+          setActivePowerup(event);
+          setMessage(`Answer correctly to earn a ${powerupNames[event.powerup]}.`);
+          changePhase('question');
+          announce(`Power-up challenge. Answer correctly to earn a ${powerupNames[event.powerup]}.`);
+        }
+        return;
+      }
+      const challenge = WAVE_RIDER_GATES[event.gateIndex];
+      setGateIndex(event.gateIndex + 1);
+      if (isCorrectWaveRiderLane(event.gateIndex, laneRef.current)) {
+        setClearedGates((count) => count + 1);
+        setStreak((current) => {
+          const next = current + 1;
+          setBonusScore((score) => score + 100 + next * 25);
+          return next;
+        });
+        setMessage(`Gate cleared: ${challenge.explanation}`);
+        announce(`Correct. ${challenge.explanation}`);
+      } else {
+        takeHit(`Gate missed. ${challenge.explanation}`);
+      }
+    };
+
+    const frame = (now: number) => {
+      if (phaseRef.current !== 'running') return;
+      if (lastFrameRef.current === null) lastFrameRef.current = now;
+      const deltaSeconds = Math.min((now - lastFrameRef.current) / 1000, 0.05);
+      lastFrameRef.current = now;
+      const isBoosting = now < boostUntilRef.current;
+      const isJumping = now < jumpUntilRef.current;
+      const isSlowed = now < slowUntilRef.current;
+      setBoosting(isBoosting);
+      setJumping(isJumping);
+      setSlowed(isSlowed);
+      const stage = WAVE_RIDER_STAGES[stageRef.current];
+      const previousDistance = distanceRef.current;
+      const nextDistance = Math.min(
+        stage.finishDistance,
+        previousDistance + waveRiderSpeed(previousDistance, calmSpeed || reducedMotion, isBoosting, stage.speedMultiplier, isSlowed) * deltaSeconds,
+      );
+      distanceRef.current = nextDistance;
+      setDistance(nextDistance);
+
+      for (const event of WAVE_RIDER_COURSE) {
+        if (!resolvedRef.current.has(event.id) && event.distance > previousDistance && event.distance <= nextDistance) {
+          resolveEvent(event, now);
+          if (phaseRef.current !== 'running') break;
+        }
+      }
+
+      if (nextDistance >= stage.finishDistance && phaseRef.current === 'running') {
+        if (stageRef.current === WAVE_RIDER_STAGES.length - 1) {
+          changePhase('complete');
+          setBonusScore((score) => score + livesRef.current * 200);
+          setMessage('All five stages complete. The mastery patch is yours.');
+          announce('All five Wave Rider stages complete. Mastery patch earned.');
+        } else {
+          changePhase('stageComplete');
+          setBonusScore((score) => score + 250);
+          setMessage(`Stage ${stageRef.current + 1} complete.`);
+          announce(`Stage ${stageRef.current + 1} complete.`);
+        }
+        return;
+      }
+      animationFrame = requestAnimationFrame(frame);
+    };
+
+    animationFrame = requestAnimationFrame(frame);
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      lastFrameRef.current = null;
+    };
+  }, [announce, calmSpeed, phase, reducedMotion]);
+
+  const currentStage = WAVE_RIDER_STAGES[stageIndex];
+  const visibleEvents = useMemo(
+    () => WAVE_RIDER_COURSE.filter((event) => {
+      if (event.distance < currentStage.startDistance || event.distance > currentStage.finishDistance) return false;
+      if (event.type === 'gate' && event.gateIndex !== gateIndex) return false;
+      const relative = event.distance - distance;
+      return relative >= -18 && relative <= LOOK_AHEAD_METRES;
+    }),
+    [currentStage, distance, gateIndex],
+  );
+  const nextGate = WAVE_RIDER_GATES[Math.min(gateIndex, WAVE_RIDER_GATES.length - 1)];
+  const rider = RIDERS.find((option) => option.id === riderId) ?? RIDERS[0];
+  const score = Math.floor(distance) + bonusScore;
+  const stageProgress = Math.min(100, Math.max(0, ((distance - currentStage.startDistance) / (currentStage.finishDistance - currentStage.startDistance)) * 100));
+  const powerupQuestion = activePowerup ? WAVE_RIDER_POWERUP_QUESTIONS[activePowerup.questionIndex] : null;
 
   return (
-    <Page
-      title="Wave Rider bonus challenge"
-      heading="Wave Rider"
-      lead="Tune the wave, clear three science checkpoints, and help Pulse carry energy across the course."
-    >
+    <Page title="Wave Rider five-stage mastery game" heading="Wave Rider" lead="Build a rider, master five progressively harder wave-physics stages, and earn power-ups by answering science questions.">
       <div className="wave-rider__topline">
         <span><Sparkles size={15} aria-hidden="true" /> Bonus mastery game</span>
         <Link to="/" className="wave-rider__back">Back to all simulators</Link>
       </div>
 
       <section className="wave-rider__game" aria-labelledby="wave-rider-course-title">
-        <div className="wave-rider__hud">
+        <header className="wave-rider__hud">
           <div>
-            <p className="wave-rider__kicker">Pulse training course</p>
-            <h2 id="wave-rider-course-title">Surf the energy front</h2>
+            <p className="wave-rider__kicker">Stage {stageIndex + 1} of 5 &middot; {currentStage.name}</p>
+            <h2 id="wave-rider-course-title">Ride the energy front</h2>
           </div>
-          <div className="wave-rider__score" aria-label={`${stage} of ${STAGES.length} checkpoints cleared`}>
-            <strong>{stage}/{STAGES.length}</strong>
-            <span>gates cleared</span>
+          <div className="wave-rider__stats" aria-label="Current game statistics">
+            <span aria-label={`${lives} hearts remaining`}><Heart size={18} aria-hidden="true" /> {lives}</span>
+            <span aria-label={`${Math.floor(distance)} metres travelled`}><Gauge size={18} aria-hidden="true" /> {Math.floor(distance)} m</span>
+            <span aria-label={`${shields} shields available`}><Shield size={18} aria-hidden="true" /> {shields}</span>
+            <span aria-label={`${score} points`}><Sparkles size={18} aria-hidden="true" /> {score}</span>
           </div>
-        </div>
+        </header>
 
-        <ol className="wave-rider__checkpoints" aria-label="Course checkpoints">
-          {STAGES.map((item, index) => {
-            const state = index < stage ? 'complete' : index === stage && !completed ? 'active' : 'locked';
-            return (
-              <li key={item.id} data-state={state}>
-                <span className="wave-rider__gate-number" aria-hidden="true">
-                  {state === 'complete' ? <Check size={15} /> : index + 1}
-                </span>
-                <span><strong>{item.label}</strong><small>Outcome {item.outcome}</small></span>
-              </li>
-            );
-          })}
+        <ol className="wave-rider__stages" aria-label="Five-stage course progress">
+          {WAVE_RIDER_STAGES.map((stage, index) => <li key={stage.id} data-state={index < stageIndex ? 'complete' : index === stageIndex ? 'active' : 'locked'}><strong>{index + 1}</strong><span>{stage.name}</span></li>)}
         </ol>
+        <div className="wave-rider__progress" aria-hidden="true"><span style={{ width: `${stageProgress}%` }} /></div>
 
-        <div className={`wave-rider__course is-${rideState}`}>
-          <svg
-            viewBox="0 0 1000 430"
-            role="img"
-            aria-label="A game course showing an energy-front tracker above a transverse wave while medium particles oscillate near fixed home positions."
-          >
-            <defs>
-              <linearGradient id={gradientId} x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stopColor="#07152b" />
-                <stop offset="0.55" stopColor="#122b50" />
-                <stop offset="1" stopColor="#271c58" />
-              </linearGradient>
-              <filter id={`${gradientId}-glow`} x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur stdDeviation="5" result="blur" />
-                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-              </filter>
-              <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
-                <rect x="-72" y="-112" width="96" height="115" rx="8" />
-              </clipPath>
-            </defs>
-            <rect width="1000" height="430" rx="22" fill={`url(#${gradientId})`} />
-            <path className="wave-rider__grid" d="M0 90H1000M0 170H1000M0 250H1000M0 330H1000M125 0V430M250 0V430M375 0V430M500 0V430M625 0V430M750 0V430M875 0V430" />
-            <circle cx="850" cy="78" r="125" fill="rgba(130,94,255,.13)" />
-            <path className="wave-rider__wave-glow" d={wavePath} />
-            <path className="wave-rider__wave" d={wavePath} />
+        <div ref={boardRef} className="wave-rider__course" data-phase={phase} data-stage={stageIndex + 1} data-high-visibility={highVisibility} data-boosting={boosting} data-jumping={jumping} data-slowed={slowed} tabIndex={phase === 'running' || phase === 'paused' ? 0 : -1} onKeyDown={handleBoardKeyDown} aria-label="Wave Rider course. Use left and right arrows or A and D to change lanes. Press F to boost, J to super jump and Space to pause.">
+          <div className="wave-rider__water-lines" aria-hidden="true" />
+          <div className="wave-rider__lane-lines" aria-hidden="true"><span /><span /></div>
 
-            {Array.from({ length: 19 }, (_, index) => {
-              const x = 55 + index * 50;
-              const displacement = particlePosition(0, amplitude * 11, (x / (wavelength * 48)) * Math.PI * 2);
-              return (
-                <g key={x} className="wave-rider__particle">
-                  <line x1={x} y1="365" x2={x} y2={365 + displacement} />
-                  <circle cx={x} cy="365" r="3" className="wave-rider__particle-home" />
-                  <circle cx={x} cy={365 + displacement} r="7" />
-                </g>
-              );
+          {(phase === 'running' || phase === 'paused') && gateIndex < WAVE_RIDER_GATES.length && (
+            <div className="wave-rider__question" role="status"><span>Outcome {nextGate.outcome}</span><strong>{nextGate.prompt}</strong></div>
+          )}
+
+          <div className="wave-rider__objects" aria-hidden="true">
+            {visibleEvents.map((event) => {
+              const y = waveRiderEventY(event.distance, distance);
+              if (event.type === 'gate') {
+                const gate = WAVE_RIDER_GATES[event.gateIndex];
+                return <div className="wave-rider__gate-row" key={event.id} style={{ top: `${y}%` }}>{gate.options.map((option, optionLane) => <div className="wave-rider__gate" key={option} data-lane={optionLane}><span>{option}</span></div>)}</div>;
+              }
+              if (event.type === 'powerup') {
+                return <div className="wave-rider__pickup" data-kind={event.powerup} key={event.id} style={{ left: laneLeft(event.lane), top: `${y}%` }}><span>{powerupSymbols[event.powerup]}</span><small>QUIZ</small></div>;
+              }
+              return <div className="wave-rider__hazard" data-kind={event.kind} key={event.id} style={{ left: laneLeft(event.lane), top: `${y}%` }}><span>{hazardSymbols[event.kind]}</span></div>;
             })}
-
-            {[150, 425, 700, 900].map((x, index) => (
-              <g key={x} className={`wave-rider__beacon${index < stage ? ' is-cleared' : ''}`}>
-                <line x1={x} y1="88" x2={x} y2="340" />
-                <circle cx={x} cy="78" r="22" />
-                <text x={x} y="84" textAnchor="middle">
-                  {index < stage ? '✓' : index === STAGES.length ? '★' : index + 1}
-                </text>
-              </g>
-            ))}
-
-            <g
-              className="wave-rider__rider"
-              style={{ transform: `translate(${riderX}px, ${riderY}px)` }}
-              aria-hidden="true"
-            >
-              <ellipse cx="-18" cy="6" rx="61" ry="10" />
-              <path d="M-77 2 Q-20 22 42 1" />
-              <image
-                href={`${import.meta.env.BASE_URL}assets/game/pulse-wave-runner.png`}
-                x="-78"
-                y="-115"
-                width="176"
-                height="117"
-                clipPath={`url(#${clipId})`}
-              />
-              <circle cx="0" cy="3" r="25" className="wave-rider__rider-glow" filter={`url(#${gradientId}-glow)`} />
-            </g>
-            <text x="40" y="36" className="wave-rider__scene-label">ENERGY-FRONT TRACKER · GAME MARKER</text>
-            <text x="40" y="410" className="wave-rider__scene-label">HOME POSITIONS · PARTICLES OSCILLATE LOCALLY</text>
-          </svg>
-        </div>
-
-        <div className="wave-rider__console">
-          <div className="wave-rider__briefing">
-            <p className="wave-rider__kicker">Checkpoint {Math.min(stage + 1, 3)} briefing</p>
-            {stage === 0 ? (
-              <>
-                <h3>Particle cove</h3>
-                <p>When a wave crosses a medium, what happens to its particles?</p>
-                <fieldset data-control-id="bonus-wave-rider.matter-choice">
-                  <legend className="u-visually-hidden">What medium particles do</legend>
-                  <label><input type="radio" name="matter-choice" checked={matterChoice === 'travels'} onChange={() => setMatterChoice('travels')} /> Travel across the course with Pulse</label>
-                  <label><input type="radio" name="matter-choice" checked={matterChoice === 'oscillates'} onChange={() => setMatterChoice('oscillates')} /> Oscillate near a fixed home position</label>
-                </fieldset>
-              </>
-            ) : stage === 1 ? (
-              <>
-                <h3>Energy ramp</h3>
-                <p>Set amplitude to <strong>1.5 m</strong>. In this fixed medium, a larger amplitude carries more energy but does not make the wave travel faster.</p>
-                <label className="wave-rider__slider">
-                  <span><strong>Amplitude</strong><output>{amplitude.toFixed(1)} m</output></span>
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="2"
-                    step="0.1"
-                    value={amplitude}
-                    aria-label="Wave Rider amplitude"
-                    data-control-id="bonus-wave-rider.amplitude"
-                    onChange={(event) => setAmplitude(Number(event.target.value))}
-                  />
-                </label>
-              </>
-            ) : stage === 2 ? (
-              <>
-                <h3>Equation tunnel</h3>
-                <p>The medium fixes speed at <strong>6 m/s</strong> and the source fixes frequency at <strong>1.2 Hz</strong>. Tune wavelength so v = fλ.</p>
-                <label className="wave-rider__slider">
-                  <span><strong>Wavelength</strong><output>{wavelength.toFixed(1)} m</output></span>
-                  <input
-                    type="range"
-                    min="2"
-                    max="8"
-                    step="0.5"
-                    value={wavelength}
-                    aria-label="Wave Rider wavelength"
-                    data-control-id="bonus-wave-rider.wavelength"
-                    onChange={(event) => setWavelength(Number(event.target.value))}
-                  />
-                </label>
-              </>
-            ) : (
-              <div className="wave-rider__victory">
-                <Sparkles size={30} aria-hidden="true" />
-                <h3>Wave Rider patch earned</h3>
-                <p>You transferred energy across the course without carrying the medium away.</p>
-              </div>
-            )}
           </div>
 
-          <aside className="wave-rider__telemetry" aria-label="Live wave telemetry">
-            <p className="wave-rider__kicker"><Gauge size={15} aria-hidden="true" /> Live telemetry</p>
-            <dl>
-              <div><dt>Amplitude</dt><dd>{amplitude.toFixed(1)} m</dd></div>
-              <div><dt>Relative energy</dt><dd>{energy.toFixed(2)} units</dd></div>
-              <div><dt>Frequency</dt><dd>1.2 Hz</dd></div>
-              <div><dt>Wavelength</dt><dd>{wavelength.toFixed(1)} m</dd></div>
-              <div><dt>Wave speed</dt><dd>{speed.toFixed(1)} m/s</dd></div>
-            </dl>
-          </aside>
+          <div className={`wave-rider__rider trail-${trail}`} style={{ left: laneLeft(lane), top: `${PLAYER_Y_PERCENT}%` }} aria-hidden="true">
+            <div className="wave-rider__trail" />
+            <div className="wave-rider__board" style={{ background: boardColour }} />
+            {rider.id === 'pulse' ? <img src={`${import.meta.env.BASE_URL}assets/game/pulse-wave-runner.png`} alt="" /> : <span className="wave-rider__avatar">{rider.symbol}</span>}
+            <span>{(callSign || rider.name).toUpperCase()} &middot; ENERGY TRACKER</span>
+          </div>
+
+          {phase === 'intro' && (
+            <div className="wave-rider__overlay wave-rider__builder">
+              <p className="wave-rider__overlay-eyebrow">Build your rider</p>
+              <h3>Choose your style</h3>
+              <fieldset className="wave-rider__rider-picks" data-control-id="bonus-wave-rider.character"><legend>Character</legend>{RIDERS.map((option) => <label key={option.id}><input type="radio" name="rider" value={option.id} checked={riderId === option.id} onChange={() => { setRiderId(option.id); if (callSign === 'Pulse' || !callSign) setCallSign(option.name); }} /><span aria-hidden="true">{option.symbol}</span><strong>{option.name}</strong><small>{option.description}</small></label>)}</fieldset>
+              <div className="wave-rider__design-grid">
+                <label>Call sign<input value={callSign} maxLength={12} onChange={(event) => setCallSign(event.target.value.replace(/[^a-zA-Z0-9 -]/g, ''))} data-control-id="bonus-wave-rider.call-sign" /></label>
+                <label>Board colour<select value={boardColour} onChange={(event) => setBoardColour(event.target.value)} data-control-id="bonus-wave-rider.board-colour"><option value="#ffdc5e">Solar yellow</option><option value="#55ecdc">Current teal</option><option value="#ff6f91">Coral pink</option><option value="#a988ff">Violet pulse</option></select></label>
+                <label>Trail style<select value={trail} onChange={(event) => setTrail(event.target.value)} data-control-id="bonus-wave-rider.trail"><option value="spark">Energy sparks</option><option value="bubble">Bubbles</option><option value="rainbow">Spectrum</option></select></label>
+              </div>
+              <p>Five stages get faster and denser. Correct power-up answers earn abilities; wrong answers give feedback but no reward.</p>
+              <div className="wave-rider__keymap" aria-label="Game controls"><span><kbd>←</kbd><kbd>→</kbd> steer</span><span><kbd>F</kbd> boost</span><span><kbd>J</kbd> jump</span><span><kbd>Space</kbd> pause</span></div>
+              <button type="button" className="wave-rider__primary" onClick={startRun} data-control-id="bonus-wave-rider.start"><Play size={20} aria-hidden="true" /> Start Stage 1</button>
+            </div>
+          )}
+
+          {phase === 'question' && activePowerup && powerupQuestion && (
+            <div className="wave-rider__overlay is-question">
+              <div className="wave-rider__powerup-prize" aria-hidden="true">{powerupSymbols[activePowerup.powerup]}</div>
+              <p className="wave-rider__overlay-eyebrow">Outcome {powerupQuestion.outcome} &middot; win a {powerupNames[activePowerup.powerup]}</p>
+              <h3>Power-up challenge</h3>
+              <p><strong>{powerupQuestion.prompt}</strong></p>
+              <div className="wave-rider__answer-grid" data-control-id="bonus-wave-rider.powerup-answer">{powerupQuestion.options.map((option, index) => <button type="button" key={option} onClick={() => answerPowerup(index)}>{option}</button>)}</div>
+            </div>
+          )}
+
+          {phase === 'stageComplete' && (
+            <div className="wave-rider__overlay is-compact"><Sparkles size={36} aria-hidden="true" /><p className="wave-rider__overlay-eyebrow">Stage {stageIndex + 1} clear</p><h3>{currentStage.name} mastered</h3><p>Next: <strong>{WAVE_RIDER_STAGES[stageIndex + 1].name}</strong>. {WAVE_RIDER_STAGES[stageIndex + 1].tagline}</p><button type="button" className="wave-rider__primary" onClick={continueStage} data-control-id="bonus-wave-rider.next-stage">Start Stage {stageIndex + 2}</button></div>
+          )}
+
+          {phase === 'paused' && <div className="wave-rider__overlay is-compact"><CirclePause size={36} aria-hidden="true" /><h3>Run paused</h3><button type="button" className="wave-rider__primary" onClick={togglePause} data-control-id="bonus-wave-rider.resume">Resume run</button></div>}
+
+          {(phase === 'over' || phase === 'complete') && <div className="wave-rider__overlay"><p className="wave-rider__overlay-eyebrow">{phase === 'complete' ? 'Five-stage mastery patch earned' : 'Course interrupted'}</p><h3>{phase === 'complete' ? 'Maelstrom mastered!' : 'Out of hearts'}</h3><p>{phase === 'complete' ? `${callSign || rider.name} cleared ${clearedGates}/10 gates and scored ${score} points.` : `You reached Stage ${stageIndex + 1} and ${Math.floor(distance)} m. Review the feedback, then try again.`}</p><button type="button" className="wave-rider__primary" onClick={startRun} data-control-id="bonus-wave-rider.restart"><RotateCcw size={19} aria-hidden="true" /> Ride again</button></div>}
         </div>
 
-        <div className="wave-rider__actionbar">
-          <p className={`wave-rider__message is-${rideState}`} role="status">
-            <span aria-hidden="true" /> {message}
-          </p>
-          {completed ? (
-            <button type="button" className="wave-rider__ride-button" onClick={resetGame} data-control-id="bonus-wave-rider.reset">
-              <RotateCcw size={18} aria-hidden="true" /> Ride again
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="wave-rider__ride-button"
-              onClick={rideCheckpoint}
-              disabled={rideState === 'riding' || (stage === 0 && matterChoice === null)}
-              data-control-id="bonus-wave-rider.ride-checkpoint"
-            >
-              <Waves size={19} aria-hidden="true" /> Ride checkpoint <ArrowRight size={17} aria-hidden="true" />
-            </button>
-          )}
+        <div className="wave-rider__control-deck">
+          <div className="wave-rider__mobile-controls" aria-label="Steering and power controls">
+            <button type="button" onClick={() => moveLane(-1)} disabled={phase !== 'running'} aria-label="Steer left" data-control-id="bonus-wave-rider.steer-left"><ArrowLeft aria-hidden="true" /></button>
+            <button type="button" onClick={() => moveLane(1)} disabled={phase !== 'running'} aria-label="Steer right" data-control-id="bonus-wave-rider.steer-right"><ArrowRight aria-hidden="true" /></button>
+            <button type="button" className="is-boost" onClick={activateBoost} disabled={phase !== 'running' || boosts === 0 || boosting} aria-label={`Use speed boost. ${boosts} remaining`} data-control-id="bonus-wave-rider.boost"><Zap aria-hidden="true" /> {boosts}</button>
+            <button type="button" className="is-jump" onClick={activateJump} disabled={phase !== 'running' || jumps === 0 || jumping} aria-label={`Use super jump. ${jumps} remaining`} data-control-id="bonus-wave-rider.jump"><Waves aria-hidden="true" /> {jumps}</button>
+          </div>
+          <div className="wave-rider__options"><label><input type="checkbox" checked={calmSpeed} onChange={(event) => setCalmSpeed(event.target.checked)} data-control-id="bonus-wave-rider.calm-speed" /> Calm speed</label><label><input type="checkbox" checked={highVisibility} onChange={(event) => setHighVisibility(event.target.checked)} data-control-id="bonus-wave-rider.high-visibility" /> High visibility</label><button type="button" onClick={togglePause} disabled={phase !== 'running' && phase !== 'paused'} data-control-id="bonus-wave-rider.pause">{phase === 'paused' ? <Play size={17} aria-hidden="true" /> : <CirclePause size={17} aria-hidden="true" />}{phase === 'paused' ? 'Resume' : 'Pause'}</button></div>
         </div>
+
+        <div className="wave-rider__feedback"><p className="wave-rider__message" role="status"><span aria-hidden="true" /> {message}</p><p><strong>{clearedGates}/10</strong> gates &middot; <strong>{streak}×</strong> streak</p></div>
       </section>
 
       <section className="wave-rider__science" aria-labelledby="wave-rider-science-title">
-        <div>
-          <p className="wave-rider__kicker">How the game relates</p>
-          <h2 id="wave-rider-science-title">The surfing is a metaphor. The physics is real.</h2>
-        </div>
-        <ul>
-          <li><strong>Particles bob locally:</strong> the lower dots oscillate around their marked home positions instead of crossing the course.</li>
-          <li><strong>Amplitude tracks energy:</strong> increasing amplitude raises the relative energy index as A², without changing speed.</li>
-          <li><strong>The controls obey v = fλ:</strong> with the medium speed and source frequency fixed, wavelength must adjust.</li>
-        </ul>
-        <p className="wave-rider__model-note">
-          <strong>Model limit:</strong> Pulse and the board are an arcade-style energy-front tracker, not a particle, photon, or literal surfer carried by a water wave. Real water-surface particles follow near-circular paths, and breaking waves involve additional motion this simplified game does not model.
-        </p>
+        <div><p className="wave-rider__kicker">Why this is mastery</p><h2 id="wave-rider-science-title">Every stage raises both the game and science challenge.</h2></div>
+        <ul><li><strong>Stages 1–2:</strong> mechanical media, energy transfer, particle motion and wave features.</li><li><strong>Stage 3:</strong> numerical and proportional reasoning with λ = v/f.</li><li><strong>Stage 4:</strong> compare EM wave forms and connect properties with uses.</li><li><strong>Stage 5:</strong> retrieve and apply mixed sound, light and wave ideas under pressure.</li></ul>
+        <div className="wave-rider__hazard-key"><span>🦈 <strong>Shark:</strong> heart + lane</span><span>🪵 <strong>Debris:</strong> slows</span><span>🌀 <strong>Whirlpool:</strong> sends back</span><span>🪸 <strong>Reef:</strong> costs a heart</span></div>
+        <p className="wave-rider__model-note"><strong>Model limit:</strong> the rider and board are arcade markers for an energy front. They are not matter, a photon, or a literal surfer transported by a wave. Game speed, jumping and hazards are reward mechanics, not claims about wave behaviour.</p>
       </section>
     </Page>
   );
