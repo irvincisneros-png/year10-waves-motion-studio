@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import { Page } from '../../components/Page';
 import { CanvasScene } from '../../components/sim/CanvasScene';
 import { SimControl } from '../../components/sim/SimControl';
-import { SimToolbar } from '../../components/sim/SimToolbar';
 import { useSimClock } from '../../components/sim/useSimClock';
 import { LineGraph } from '../../components/graphs/LineGraph';
 import { useAnnouncer } from '../../accessibility/LiveRegion';
@@ -15,6 +14,7 @@ import { RulerTool, RULER_DEFAULT, type RulerState } from './RulerTool';
 import { LambdaCalculator } from './LambdaCalculator';
 
 type Series = 'frequency' | 'amplitude';
+type InvestigationStage = 'predict' | 'investigate' | 'explain' | 'submit';
 
 interface PracticalTrial {
   id: string;
@@ -82,7 +82,6 @@ export default function MeasurementLabPage() {
   const [trials, setTrials] = useState<PracticalTrial[]>([]);
   const [feedback, setFeedback] = useState('Measure one wavelength from crest to crest, then record the trial.');
   const [running, setRunning] = useState(true);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [name, setName] = useState('');
   const [className, setClassName] = useState('');
   const [hypothesis, setHypothesis] = useState('');
@@ -90,11 +89,12 @@ export default function MeasurementLabPage() {
   const [checked, setChecked] = useState(false);
   const [draftReady, setDraftReady] = useState(false);
   const [calcResetKey, setCalcResetKey] = useState(0);
+  const [stage, setStage] = useState<InvestigationStage>('predict');
 
   const reducedMotion = useSettingsStore((s) => s.reducedMotion);
   const lowGraphics = useSettingsStore((s) => s.lowGraphics);
   const { announce } = useAnnouncer();
-  const clock = useSimClock({ running, speed: playbackSpeed, reducedMotion, active: true });
+  const clock = useSimClock({ running, speed: 1, reducedMotion, active: true });
 
   useEffect(() => {
     try {
@@ -143,6 +143,15 @@ export default function MeasurementLabPage() {
     frequencyTrials.length >= 3 &&
     amplitudeTrials.length >= 2 &&
     Object.values(checks).every(Boolean);
+  const evidenceReady = frequencyTrials.length >= 3 && amplitudeTrials.length >= 2;
+  const explanationReady = Object.values(checks).every(Boolean);
+
+  const goToStage = (next: InvestigationStage) => {
+    setStage(next);
+    window.requestAnimationFrame(() => {
+      document.getElementById(`investigation-stage-${next}`)?.focus();
+    });
+  };
 
   const choosePreset = (id: string) => {
     if (trials.length > 0) return;
@@ -220,6 +229,7 @@ export default function MeasurementLabPage() {
     setFrequency(initialPreset.defaultFreqHz);
     setAmplitudePct(FREQUENCY_AMPLITUDE);
     setSeries('frequency');
+    setRunning(true);
     setRuler(RULER_DEFAULT);
     setTrials([]);
     setName('');
@@ -228,6 +238,7 @@ export default function MeasurementLabPage() {
     setAnswers(EMPTY_ANSWERS);
     setChecked(false);
     setCalcResetKey((key) => key + 1);
+    setStage('predict');
     setFeedback('Practical cleared. Begin with your hypothesis.');
     clock.reset();
   };
@@ -302,122 +313,165 @@ export default function MeasurementLabPage() {
   return (
     <Page
       title="Measurement lab"
-      lead="A short online practical for the first half of a lesson: collect evidence, answer four questions, then move into wave calculations."
+      lead="Predict → investigate wave features (7.1.5) → use v = fλ (7.1.6) → submit one PDF. Work through the numbered steps from left to right."
     >
       <div className="wave-investigation">
         <div className="investigation-screen-only stack">
-          <section className="card stack investigation-brief" aria-labelledby="practical-purpose">
-            <p className="investigation-kicker">Year 10 Waves · Formal simulator practical</p>
-            <h2 id="practical-purpose">Purpose and fair-test plan</h2>
-            <p><strong>Purpose:</strong> investigate how frequency and amplitude affect wavelength and wave speed in one unchanged medium.</p>
-            <p className="real-world-hook"><strong>Why it matters:</strong> radio engineers choose frequency and wavelength together, while sound engineers adjust amplitude for a stronger signal without changing its speed through the same medium.</p>
-            <ol className="investigation-steps">
-              <li><strong>Part A — frequency:</strong> keep the medium and amplitude constant. Record at least three different frequencies, measure λ, then calculate v = fλ.</li>
-              <li><strong>Part B — amplitude:</strong> keep the same medium and frequency constant. Record two different amplitudes and compare calculated speeds.</li>
-              <li><strong>Analyse:</strong> answer with evidence, check your responses, enter your name, then print/save the report as a PDF.</li>
-            </ol>
-            <div className="investigation-safety notice">
-              <span><strong>Safe use:</strong> this is a virtual rope model with no physical equipment hazard. Use normal device ergonomics. If repeating with a real rope or spring, work only under teacher direction with clear space and eye protection if directed.</span>
-            </div>
-            <label className="notice-capture__label">
-              Your hypothesis (predict both relationships)
-              <textarea rows={3} className="notice-capture__input" value={hypothesis} onChange={(event) => setHypothesis(event.target.value)} data-testid="wave-hypothesis" data-control-id="wave-lab.investigation-hypothesis" placeholder="I predict that when frequency increases… I predict that changing amplitude…" />
-            </label>
-          </section>
+          <nav className="guided-stepper" aria-label="Investigation steps" data-control-id="wave-lab.guided-step-navigation">
+            <button type="button" className={stage === 'predict' ? 'guided-step is-current' : 'guided-step'} aria-current={stage === 'predict' ? 'step' : undefined} onClick={() => goToStage('predict')}>
+              <span className="guided-step__number">1</span><span><strong>Predict</strong><small>{hypothesis.trim().length >= 20 ? 'Done' : 'Write a hypothesis'}</small></span>
+            </button>
+            <button type="button" className={stage === 'investigate' ? 'guided-step is-current' : 'guided-step'} aria-current={stage === 'investigate' ? 'step' : undefined} onClick={() => goToStage('investigate')}>
+              <span className="guided-step__number">2</span><span><strong>Investigate</strong><small>7.1.5 · A {frequencyTrials.length}/3 · B {amplitudeTrials.length}/2</small></span>
+            </button>
+            <button type="button" className={stage === 'explain' ? 'guided-step is-current' : 'guided-step'} aria-current={stage === 'explain' ? 'step' : undefined} onClick={() => goToStage('explain')}>
+              <span className="guided-step__number">3</span><span><strong>Explain</strong><small>7.1.6 · {explanationReady ? 'Done' : 'Formula + evidence'}</small></span>
+            </button>
+            <button type="button" className={stage === 'submit' ? 'guided-step is-current' : 'guided-step'} aria-current={stage === 'submit' ? 'step' : undefined} onClick={() => goToStage('submit')}>
+              <span className="guided-step__number">4</span><span><strong>Submit</strong><small>{reportReady ? 'Report ready' : 'Finish and print'}</small></span>
+            </button>
+          </nav>
 
-          <section className="card stack" aria-labelledby="practical-simulator">
+          {stage === 'predict' ? (
+            <section className="card stack guided-stage-card investigation-brief" aria-labelledby="investigation-stage-predict" data-testid="guided-stage-predict">
+              <div className="guided-stage-heading">
+                <div><p className="investigation-kicker">Step 1 of 4</p><h2 id="investigation-stage-predict" tabIndex={-1}>Predict before you test</h2></div>
+                <span className="guided-time">About 2 minutes</span>
+              </div>
+              <div className="outcome-map" aria-label="Syllabus outcomes covered">
+                <article><strong>7.1.5 · Investigate wave features</strong><p>Change amplitude and frequency, measure wavelength, and calculate speed. Four available models span mechanical, surface, longitudinal and electromagnetic waves; keep one model fixed during your fair test.</p></article>
+                <article><strong>7.1.6 · Use the wave formula</strong><p>Use <span className="formula-inline">v = fλ</span> and <span className="formula-inline">λ = v/f</span> to explain how frequency, speed and wavelength are related.</p></article>
+              </div>
+              <p className="do-now"><strong>Do this now:</strong> write what you think will happen to wavelength when frequency increases, and whether amplitude will change wave speed in the same medium.</p>
+              <label className="notice-capture__label">
+                Your hypothesis
+                <textarea rows={2} className="notice-capture__input" value={hypothesis} onChange={(event) => setHypothesis(event.target.value)} data-testid="wave-hypothesis" data-control-id="wave-lab.investigation-hypothesis" placeholder="I predict that when frequency increases… I predict that changing amplitude…" />
+              </label>
+              <p className="model-note"><strong>Virtual practical:</strong> no physical equipment hazard. The model is idealised; real waves may lose energy through damping.</p>
+              <div className="guided-stage-actions" data-control-id="wave-lab.guided-step-actions">
+                <span>{hypothesis.trim().length >= 20 ? '✓ Hypothesis saved.' : 'Write at least one complete prediction before continuing.'}</span>
+                <button type="button" className="btn btn--primary" disabled={hypothesis.trim().length < 20} onClick={() => goToStage('investigate')}>Next: investigate waves</button>
+              </div>
+            </section>
+          ) : null}
+
+          {stage === 'investigate' ? (
+          <section className="card stack guided-stage-card" aria-labelledby="investigation-stage-investigate" data-testid="guided-stage-investigate">
             <div className="investigation-section-heading">
-              <div><p className="investigation-kicker">Collect evidence</p><h2 id="practical-simulator">Controlled wave simulator</h2></div>
+              <div><p className="investigation-kicker">Step 2 of 4 · Outcome 7.1.5</p><h2 id="investigation-stage-investigate" tabIndex={-1}>Investigate wave features</h2></div>
               <div className="investigation-progress" aria-label="Practical progress">
                 <span className={frequencyTrials.length >= 3 ? 'is-complete' : ''}>Part A {frequencyTrials.length}/3</span>
                 <span className={amplitudeTrials.length >= 2 ? 'is-complete' : ''}>Part B {amplitudeTrials.length}/2</span>
               </div>
             </div>
+            <p className="do-now"><strong>Do this now:</strong> {series === 'frequency' ? 'change frequency, place the ruler crest to crest, then record. Repeat for three different frequencies.' : 'change amplitude, place the ruler, then record. Repeat for two different amplitudes.'}</p>
 
-            <label className="field medium-lock">
-              <span className="field__label">Medium conditions (choose before trial 1)</span>
-              <select value={preset.id} onChange={(event) => choosePreset(event.target.value)} disabled={trials.length > 0} data-testid="sim-preset" data-control-id="wave-lab.measurement-preset-select" aria-describedby="medium-lock-note">
-                {MEASUREMENT_PRESETS.map((option) => <option value={option.id} key={option.id}>{option.label}</option>)}
-              </select>
-              <span id="medium-lock-note" className="seg-control__note">{trials.length > 0 ? `Locked to ${preset.label} so every trial is a fair comparison.` : 'Your choice locks after the first valid trial.'}</span>
-            </label>
+            <div className="investigation-workspace">
+              <div className="investigation-control-panel stack">
+                <label className="field medium-lock">
+                  <span className="field__label">1. Choose one wave model</span>
+                  <select value={preset.id} onChange={(event) => choosePreset(event.target.value)} disabled={trials.length > 0} data-testid="sim-preset" data-control-id="wave-lab.measurement-preset-select" aria-describedby="medium-lock-note">
+                    {MEASUREMENT_PRESETS.map((option) => <option value={option.id} key={option.id}>{option.label}</option>)}
+                  </select>
+                  <span id="medium-lock-note" className="seg-control__note">{trials.length > 0 ? `Locked to ${preset.label} so every trial is a fair comparison.` : `${preset.medium.conditions}. Your choice locks after trial 1.`}</span>
+                </label>
 
-            <div className="series-tabs" role="group" aria-label="Investigation part" data-control-id="wave-lab.investigation-series-toggle">
-              <button type="button" className={series === 'frequency' ? 'btn btn--primary' : 'btn'} aria-pressed={series === 'frequency'} onClick={() => switchSeries('frequency')} data-testid="series-frequency">Part A · Change frequency</button>
-              <button type="button" className={series === 'amplitude' ? 'btn btn--primary' : 'btn'} aria-pressed={series === 'amplitude'} onClick={() => switchSeries('amplitude')} data-testid="series-amplitude">Part B · Change amplitude</button>
-            </div>
+                <div className="series-tabs" role="group" aria-label="Investigation part" data-control-id="wave-lab.investigation-series-toggle">
+                  <button type="button" className={series === 'frequency' ? 'btn btn--primary' : 'btn'} aria-pressed={series === 'frequency'} onClick={() => switchSeries('frequency')} data-testid="series-frequency">Part A · Frequency</button>
+                  <button type="button" className={series === 'amplitude' ? 'btn btn--primary' : 'btn'} aria-pressed={series === 'amplitude'} onClick={() => switchSeries('amplitude')} data-testid="series-amplitude">Part B · Amplitude</button>
+                </div>
 
-            <div className="variable-banner" role="status">
-              {series === 'frequency' ? (
-                <><strong>Independent:</strong> frequency · <strong>Measure:</strong> wavelength and calculated speed · <strong>Controls:</strong> {preset.label}, amplitude {FREQUENCY_AMPLITUDE}%</>
-              ) : (
-                <><strong>Independent:</strong> amplitude · <strong>Measure:</strong> calculated speed · <strong>Controls:</strong> {preset.label}, frequency {formatSigFigs(preset.defaultFreqHz)} Hz</>
-              )}
-            </div>
+                <div className="variable-banner" role="status">
+                  {series === 'frequency' ? (
+                    <><strong>Change:</strong> frequency<br /><strong>Keep fixed:</strong> {preset.label} and amplitude {FREQUENCY_AMPLITUDE}%</>
+                  ) : (
+                    <><strong>Change:</strong> amplitude<br /><strong>Keep fixed:</strong> {preset.label} and frequency {formatSigFigs(preset.defaultFreqHz)} Hz</>
+                  )}
+                </div>
 
-            <SimToolbar running={running} onToggleRun={() => setRunning((value) => !value)} onStep={clock.step} speed={playbackSpeed} onSpeed={setPlaybackSpeed} onReset={reset} resetLabel="whole practical" />
-
-            <div className="wave-controls">
-              <SimControl id="wave-lab.measure-frequency-slider" label="Source frequency" min={preset.freqRangeHz[0]} max={preset.freqRangeHz[1]} step={FREQ_STEP[preset.id] ?? 0.1} value={effectiveFrequency} onChange={changeFrequency} disabled={series !== 'frequency'} format={(value) => `${formatSigFigs(value)} Hz`} hint={series === 'frequency' ? 'Change this for each Part A trial.' : 'Locked during the amplitude fair test.'} testId="measure-frequency-slider" />
-              <SimControl id="wave-lab.measure-amplitude-slider" label="Amplitude" min={20} max={100} step={10} value={effectiveAmplitude} onChange={setAmplitudePct} disabled={series !== 'amplitude'} format={(value) => `${value}% of display scale`} hint={series === 'amplitude' ? 'Change this for each Part B trial.' : 'Locked during the frequency fair test.'} testId="measure-amplitude-slider" />
-            </div>
-
-            <div className="wave-stage__readouts" aria-live="polite">
-              <span>Medium speed: <strong data-testid="measure-speed">{formatSigFigs(preset.speedMps)} m/s</strong></span>
-              <span>Frequency: <strong data-testid="measure-frequency">{formatSigFigs(effectiveFrequency)} Hz</strong></span>
-              <span>Amplitude: <strong>{effectiveAmplitude}%</strong></span>
-              <span>Measured ruler span: <strong data-testid="ruler-reading-summary">{formatSigFigs(spanM)} m</strong></span>
-            </div>
-
-            <CanvasScene label={`Transverse wave in ${preset.label}; use the ruler to measure one wavelength crest to crest`} height={220} frameKey={`${clock.t}|${preset.id}|${effectiveFrequency}|${effectiveAmplitude}|${ruler.startPct}|${ruler.endPct}|${lowGraphics}`} draw={draw} alternative={<p>{preset.label} at {formatSigFigs(effectiveFrequency)} Hz and amplitude {effectiveAmplitude}%. The medium speed is fixed at {formatSigFigs(preset.speedMps)} m/s. Ruler span is {formatSigFigs(spanM)} m.</p>} testId="measure-canvas" />
-
-            <div className="measurement-tools">
-              <RulerTool ruler={ruler} onChange={setRuler} chamberLengthM={chamberLen} lengthUnit="m" readSpan={(value) => value} />
-              <div className="stack">
-                <p><strong>How to measure:</strong> pause if helpful, then place the ruler from one crest to the next. The guided button is keyboard-safe and makes an exact placement.</p>
-                <div className="seg-control__options">
-                  <button type="button" className="btn" onClick={placeRuler} data-testid="place-ruler" data-control-id="wave-lab.guided-ruler-button">Place ruler crest to crest</button>
-                  <button type="button" className="btn btn--primary" onClick={recordTrial} data-testid="add-trial" data-control-id="wave-lab.add-trial-button">Validate and record trial</button>
+                <div className="wave-controls">
+                  <SimControl id="wave-lab.measure-frequency-slider" label="Source frequency" min={preset.freqRangeHz[0]} max={preset.freqRangeHz[1]} step={FREQ_STEP[preset.id] ?? 0.1} value={effectiveFrequency} onChange={changeFrequency} disabled={series !== 'frequency'} format={(value) => `${formatSigFigs(value)} Hz`} hint={series === 'frequency' ? 'Change for each Part A trial.' : 'Locked for Part B.'} testId="measure-frequency-slider" />
+                  <SimControl id="wave-lab.measure-amplitude-slider" label="Amplitude" min={20} max={100} step={10} value={effectiveAmplitude} onChange={setAmplitudePct} disabled={series !== 'amplitude'} format={(value) => `${value}%`} hint={series === 'amplitude' ? 'Change for each Part B trial.' : 'Locked for Part A.'} testId="measure-amplitude-slider" />
                 </div>
               </div>
+
+              <div className="investigation-visual-panel stack">
+                <div className="lab-quick-controls" role="group" aria-label="Wave display controls">
+                  <button type="button" className="btn" aria-pressed={!running} onClick={() => setRunning((value) => !value)} data-testid="sim-pause" data-control-id="global.pause-button">{running ? 'Pause wave' : 'Animate wave'}</button>
+                  <button type="button" className="btn" onClick={reset} data-testid="sim-reset" data-control-id="global.reset-button">Reset investigation</button>
+                </div>
+                <div className="wave-stage__readouts" aria-live="polite">
+                  <span>Speed: <strong data-testid="measure-speed">{formatSigFigs(preset.speedMps)} m/s</strong></span>
+                  <span>Frequency: <strong data-testid="measure-frequency">{formatSigFigs(effectiveFrequency)} Hz</strong></span>
+                  <span>Amplitude: <strong>{effectiveAmplitude}%</strong></span>
+                  <span>Ruler: <strong data-testid="ruler-reading-summary">{formatSigFigs(spanM)} m</strong></span>
+                </div>
+                <div className="record-actions">
+                  <button type="button" className="btn" onClick={placeRuler} data-testid="place-ruler" data-control-id="wave-lab.guided-ruler-button">1. Place ruler crest to crest</button>
+                  <button type="button" className="btn btn--primary" onClick={recordTrial} data-testid="add-trial" data-control-id="wave-lab.add-trial-button">2. Record this trial</button>
+                </div>
+                <CanvasScene label={`Wave displacement graph for ${preset.label}; use the ruler to measure one wavelength crest to crest`} height={180} frameKey={`${clock.t}|${preset.id}|${effectiveFrequency}|${effectiveAmplitude}|${ruler.startPct}|${ruler.endPct}|${lowGraphics}`} draw={draw} alternative={<p>{preset.label} displacement graph at {formatSigFigs(effectiveFrequency)} Hz and amplitude {effectiveAmplitude}%. The model speed is fixed at {formatSigFigs(preset.speedMps)} m/s. Ruler span is {formatSigFigs(spanM)} m.</p>} testId="measure-canvas" />
+                <RulerTool ruler={ruler} onChange={setRuler} chamberLengthM={chamberLen} lengthUnit="m" readSpan={(value) => value} />
+                <p className={feedback.startsWith('Valid') ? 'feedback feedback--correct' : 'feedback feedback--incorrect'} role="status" data-testid="trial-feedback"><span aria-hidden="true">{feedback.startsWith('Valid') ? '✓' : 'ℹ'}</span><span>{feedback}</span></p>
+              </div>
             </div>
-            <p className={feedback.startsWith('Valid') ? 'feedback feedback--correct' : 'feedback feedback--incorrect'} role="status" data-testid="trial-feedback"><span aria-hidden="true">{feedback.startsWith('Valid') ? '✓' : 'ℹ'}</span><span>{feedback}</span></p>
-            <p className="seg-control__note">Model limit: a uniform, lossless, non-dispersive medium is used. Amplitude changes the displayed displacement and energy, but not speed in this linear model. {preset.note}</p>
-          </section>
 
-          <section className="card stack" aria-labelledby="results-heading">
-            <h2 id="results-heading">Results and calculations</h2>
-            <PracticalTable trials={trials} onDelete={(id) => setTrials((current) => current.filter((trial) => trial.id !== id))} />
-            <p className="calculation-reminder"><strong>Calculation used for every row:</strong> wave speed (m/s) = frequency (Hz) × measured wavelength (m).</p>
-            {frequencyTrials.length >= 2 ? <LineGraph title={`Part A — wavelength against 1/frequency (${preset.label})`} xLabel="1/frequency (s)" yLabel="wavelength (m)" xDomain={[0, maxInverse * 1.05]} series={graphSeries} testId="lambda-graph" /> : <p className="notice">Record at least two valid frequency trials to reveal the graph.</p>}
-          </section>
-
-          <section className="card stack" aria-labelledby="analysis-heading" data-control-id="wave-lab.investigation-analysis">
-            <h2 id="analysis-heading">Analysis questions</h2>
-            <AnalysisField id="relationship" label="1. Describe the relationship between frequency and wavelength. Quote at least two results." value={answers.relationship} onChange={(value) => { setAnswers((current) => ({ ...current, relationship: value })); setChecked(false); }} passed={checked && checks.relationship} checked={checked} hint="Use the words frequency and wavelength, and state the direction of the relationship." />
-            <AnalysisField id="speed" label="2. Compare your Part A calculated speeds. Explain why they should be similar." value={answers.speed} onChange={(value) => { setAnswers((current) => ({ ...current, speed: value })); setChecked(false); }} passed={checked && checks.speed} checked={checked} hint="Link constant speed to the unchanged medium conditions." />
-            <AnalysisField id="amplitude" label="3. What happened to wave speed when amplitude changed? Support your claim with Part B evidence." value={answers.amplitude} onChange={(value) => { setAnswers((current) => ({ ...current, amplitude: value })); setChecked(false); }} passed={checked && checks.amplitude} checked={checked} hint="Name amplitude and speed, then state whether speed changed." />
-            <AnalysisField id="limitation" label="4. Identify one limitation of this simulator investigation and explain how it affects the evidence." value={answers.limitation} onChange={(value) => { setAnswers((current) => ({ ...current, limitation: value })); setChecked(false); }} passed={checked && checks.limitation} checked={checked} hint="For example: idealised medium, screen measurement, no damping, or limited values." />
-            <button type="button" className="btn btn--primary" onClick={() => setChecked(true)} data-testid="check-analysis">Check my responses</button>
-            {checked ? <p className={Object.values(checks).every(Boolean) ? 'feedback feedback--correct' : 'feedback feedback--incorrect'} role="status" data-testid="analysis-feedback"><span aria-hidden="true">{Object.values(checks).every(Boolean) ? '✓' : 'ℹ'}</span><span>{Object.values(checks).every(Boolean) ? 'Your explanations include the required scientific ideas.' : 'Use the hints under any response marked “Add detail”, then check again.'}</span></p> : null}
-          </section>
-
-          <section className="card stack calculation-handoff" aria-labelledby="calculation-handoff">
-            <p className="investigation-kicker">Next part of today’s lesson</p>
-            <h2 id="calculation-handoff">From the simulator to wave calculations</h2>
-            <p>The table used <strong>v = fλ</strong> to calculate speed. If a question asks for wavelength, rearrange it to <strong>λ = v/f</strong>.</p>
-            <div className="worked-example" aria-label="Worked wavelength example">
-              <span><strong>Example:</strong> v = 4 m/s and f = 2 Hz</span>
-              <span>λ = v/f</span>
-              <span>λ = 4 ÷ 2 = <strong>2 m</strong></span>
+            <div className="investigation-results stack">
+              <h3 id="results-heading">Your results</h3>
+              <PracticalTable trials={trials} onDelete={(id) => setTrials((current) => current.filter((trial) => trial.id !== id))} />
+              {frequencyTrials.length >= 2 ? <LineGraph title={`Part A — wavelength against 1/frequency (${preset.label})`} xLabel="1/frequency (s)" yLabel="wavelength (m)" xDomain={[0, maxInverse * 1.05]} series={graphSeries} testId="lambda-graph" /> : null}
+              <p className="model-note">The model keeps speed fixed for one unchanged medium. Amplitude changes displacement and energy, not speed. {preset.note}</p>
             </div>
-            <p className="seg-control__note">Keep the units beside each number. Your teacher’s next calculation questions use this same three-step pattern: write the formula, substitute, then answer with a unit.</p>
+            <div className="guided-stage-actions" data-control-id="wave-lab.guided-step-actions">
+              <button type="button" className="btn" onClick={() => goToStage('predict')}>Back: prediction</button>
+              <span>{evidenceReady ? '✓ Five controlled trials recorded.' : `Still needed: ${Math.max(0, 3 - frequencyTrials.length)} frequency and ${Math.max(0, 2 - amplitudeTrials.length)} amplitude trial(s).`}</span>
+              <button type="button" className="btn btn--primary" disabled={!evidenceReady} onClick={() => goToStage('explain')}>Next: use the formula</button>
+            </div>
           </section>
+          ) : null}
 
-          <LambdaCalculator resetKey={calcResetKey} />
+          {stage === 'explain' ? (
+            <div className="guided-stage-stack" data-testid="guided-stage-explain">
+              <section className="card stack guided-stage-card calculation-handoff" aria-labelledby="investigation-stage-explain">
+                <div className="guided-stage-heading"><div><p className="investigation-kicker">Step 3 of 4 · Outcome 7.1.6</p><h2 id="investigation-stage-explain" tabIndex={-1}>Use the wave formula to explain</h2></div><span className="guided-time">About 8 minutes</span></div>
+                <p className="do-now"><strong>Do this now:</strong> follow the worked example, use the calculator with two known values, then answer the four evidence questions.</p>
+                <div className="formula-relationship" aria-label="Wave equation relationships">
+                  <div><span>Wave speed</span><strong>v = fλ</strong><small>frequency × wavelength</small></div>
+                  <div><span>Wavelength</span><strong>λ = v/f</strong><small>speed ÷ frequency</small></div>
+                  <div><span>Same medium</span><strong>v stays fixed</strong><small>higher f means shorter λ</small></div>
+                </div>
+                <div className="worked-example" aria-label="Worked wavelength example">
+                  <span><strong>Write:</strong> λ = v/f</span>
+                  <span><strong>Substitute:</strong> λ = 4 ÷ 2</span>
+                  <span><strong>Answer:</strong> λ = 2 m</span>
+                </div>
+                <p className="model-note"><strong>Important:</strong> amplitude is not in <span className="formula-inline">v = fλ</span>. In the same medium, changing amplitude does not change wave speed.</p>
+              </section>
 
-          <section className="card stack report-actions" aria-labelledby="report-heading">
-            <h2 id="report-heading">Finish and submit</h2>
+              <LambdaCalculator resetKey={calcResetKey} />
+
+              <section className="card stack" aria-labelledby="analysis-heading" data-control-id="wave-lab.investigation-analysis">
+                <h3 id="analysis-heading">Explain your evidence</h3>
+                <AnalysisField id="relationship" label="1. Describe the relationship between frequency and wavelength. Quote at least two results." value={answers.relationship} onChange={(value) => { setAnswers((current) => ({ ...current, relationship: value })); setChecked(false); }} passed={checked && checks.relationship} checked={checked} hint="Use the words frequency and wavelength, and state the direction of the relationship." />
+                <AnalysisField id="speed" label="2. Use v = fλ to compare your Part A speeds. Why should they be similar?" value={answers.speed} onChange={(value) => { setAnswers((current) => ({ ...current, speed: value })); setChecked(false); }} passed={checked && checks.speed} checked={checked} hint="Link constant speed to the unchanged medium conditions." />
+                <AnalysisField id="amplitude" label="3. What happened to wave speed when amplitude changed? Support your claim with Part B evidence." value={answers.amplitude} onChange={(value) => { setAnswers((current) => ({ ...current, amplitude: value })); setChecked(false); }} passed={checked && checks.amplitude} checked={checked} hint="Name amplitude and speed, then state whether speed changed." />
+                <AnalysisField id="limitation" label="4. Identify one limitation of this simulator investigation and explain how it affects the evidence." value={answers.limitation} onChange={(value) => { setAnswers((current) => ({ ...current, limitation: value })); setChecked(false); }} passed={checked && checks.limitation} checked={checked} hint="For example: idealised medium, screen measurement, no damping, or limited values." />
+                <button type="button" className="btn btn--primary" onClick={() => setChecked(true)} data-testid="check-analysis">Check my explanations</button>
+                {checked ? <p className={explanationReady ? 'feedback feedback--correct' : 'feedback feedback--incorrect'} role="status" data-testid="analysis-feedback"><span aria-hidden="true">{explanationReady ? '✓' : 'ℹ'}</span><span>{explanationReady ? 'Your explanations include the required scientific ideas.' : 'Use the hints under any response marked “Add detail”, then check again.'}</span></p> : null}
+              </section>
+
+              <div className="guided-stage-actions" data-control-id="wave-lab.guided-step-actions">
+                <button type="button" className="btn" onClick={() => goToStage('investigate')}>Back: investigation</button>
+                <span>{explanationReady ? '✓ Explanations checked.' : 'Complete and check all four explanations.'}</span>
+                <button type="button" className="btn btn--primary" disabled={!explanationReady} onClick={() => goToStage('submit')}>Next: finish report</button>
+              </div>
+            </div>
+          ) : null}
+
+          {stage === 'submit' ? (
+          <section className="card stack report-actions guided-stage-card" aria-labelledby="investigation-stage-submit" data-testid="guided-stage-submit">
+            <div className="guided-stage-heading"><div><p className="investigation-kicker">Step 4 of 4</p><h2 id="investigation-stage-submit" tabIndex={-1}>Name, check and submit</h2></div><span className="guided-time">About 2 minutes</span></div>
+            <p className="do-now"><strong>Do this now:</strong> enter your name, check every item is ticked, then print and choose “Save as PDF”. Upload that PDF to Google Classroom.</p>
             <div className="student-fields" data-control-id="wave-lab.report-fields">
               <label className="field"><span className="field__label">Student name (required)</span><input className="field__input" value={name} onChange={(event) => setName(event.target.value)} data-testid="student-name" autoComplete="name" /></label>
               <label className="field"><span className="field__label">Class (optional)</span><input className="field__input" value={className} onChange={(event) => setClassName(event.target.value)} data-testid="student-class" /></label>
@@ -430,8 +484,10 @@ export default function MeasurementLabPage() {
               <li className={name.trim().length >= 2 ? 'is-complete' : ''}>Student name entered</li>
             </ul>
             <button type="button" className="btn btn--primary print-button" disabled={!reportReady} onClick={() => window.print()} data-testid="wave-investigation-print" data-control-id="wave-lab.print-report-button">Print / save completed report as PDF</button>
-            <p className="seg-control__note">Your draft is saved only in this browser on this device. Printing opens your device’s print dialog; choose “Save as PDF”, then upload that PDF to Google Classroom.</p>
+            <p className="seg-control__note">Your draft is saved only in this browser on this device. The PDF contains your complete investigation and answers.</p>
+            <div className="guided-stage-actions" data-control-id="wave-lab.guided-step-actions"><button type="button" className="btn" onClick={() => goToStage('explain')}>Back: explanation</button><span>{reportReady ? '✓ Report ready to save.' : 'Finish any unticked item before printing.'}</span></div>
           </section>
+          ) : null}
         </div>
 
         <details className="report-preview" data-control-id="wave-lab.report-preview">

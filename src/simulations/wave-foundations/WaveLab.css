@@ -51,6 +51,45 @@
   font-weight: var(--weight-medium);
 }
 
+.wave-lab__focus-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  min-height: var(--target-min);
+  padding: 0 var(--content-gutter);
+  border-bottom: 1px solid var(--line-subtle);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.wave-lab__back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  font-weight: var(--weight-medium);
+}
+
+.wave-lab--focused {
+  gap: 0;
+}
+
+.wave-lab--focused > .page {
+  max-width: 82rem;
+  padding-top: var(--space-4);
+}
+
+.wave-lab--focused .page__heading {
+  font-size: clamp(1.75rem, 3vw, var(--text-3xl));
+}
+
+.wave-lab--focused .page__lead {
+  max-width: none;
+  font-size: var(--text-base);
+}
+
 /* ---------- Simulation stage ---------- */
 .wave-stage {
   display: grid;
@@ -363,6 +402,254 @@
     var(--surface-card);
 }
 
+.investigation-intro {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+}
+
+.investigation-intro > p:last-child {
+  max-width: 70ch;
+}
+
+.guided-stepper {
+  position: sticky;
+  top: var(--space-2);
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface-page) 94%, transparent);
+  box-shadow: var(--elevation-1);
+  backdrop-filter: blur(8px);
+}
+
+.guided-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  min-height: 3.75rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--ink-body);
+  cursor: pointer;
+  text-align: left;
+}
+
+.guided-step:hover {
+  background: var(--surface-sunken);
+}
+
+.guided-step.is-current {
+  border-color: var(--accent-cyan-ink);
+  background: var(--status-info-surface);
+  color: var(--ink-strong);
+  box-shadow: inset 0 -3px 0 var(--accent-cyan-ink);
+}
+
+.guided-step > span:last-child {
+  min-width: 0;
+}
+
+.guided-step strong,
+.guided-step small {
+  display: block;
+}
+
+.guided-step small {
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guided-step__number {
+  display: grid;
+  flex: 0 0 1.8rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-sunken);
+  color: var(--ink-strong);
+  font-weight: var(--weight-bold);
+}
+
+.guided-step.is-current .guided-step__number {
+  background: var(--accent-cyan-ink);
+  color: #fff;
+}
+
+.guided-stage-card,
+.guided-stage-stack {
+  scroll-margin-top: 6rem;
+}
+
+.guided-stage-stack {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.guided-stage-heading,
+.guided-stage-actions,
+.record-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+}
+
+.guided-time {
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.outcome-map {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.outcome-map article {
+  padding: var(--space-3) var(--space-4);
+  border-left: 4px solid var(--accent-violet-ink);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}
+
+.outcome-map article > strong,
+.outcome-map article > p {
+  display: block;
+}
+
+.outcome-map article > p {
+  margin-top: var(--space-1);
+}
+
+.formula-inline {
+  font-family: var(--font-mono);
+  font-weight: var(--weight-bold);
+  white-space: nowrap;
+}
+
+.do-now {
+  padding: var(--space-3) var(--space-4);
+  border-left: 5px solid var(--accent-cyan-ink);
+  border-radius: var(--radius-md);
+  background: var(--status-info-surface);
+}
+
+.model-note {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.guided-stage-actions {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line-subtle);
+}
+
+.guided-stage-actions > span {
+  flex: 1 1 16rem;
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+.investigation-workspace {
+  display: grid;
+  grid-template-columns: minmax(17rem, 0.72fr) minmax(0, 1.45fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.investigation-control-panel,
+.investigation-visual-panel {
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+}
+
+.investigation-control-panel .wave-controls {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.investigation-control-panel .medium-lock select {
+  width: 100%;
+}
+
+.investigation-visual-panel .canvas-scene__canvas {
+  min-height: 10rem;
+}
+
+.lab-quick-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.lab-quick-controls .btn {
+  flex: 1 1 10rem;
+}
+
+.record-actions .btn {
+  flex: 1 1 14rem;
+}
+
+.investigation-results {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line-subtle);
+}
+
+.formula-relationship {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.formula-relationship > div {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  text-align: center;
+}
+
+.formula-relationship strong {
+  color: var(--accent-cyan-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+}
+
+.formula-relationship small {
+  color: var(--ink-muted);
+}
+
 .investigation-kicker {
   margin: 0;
   color: var(--accent-violet-ink);
@@ -583,6 +870,44 @@
 }
 
 @media (max-width: 44rem) {
+  .wave-lab__focus-nav {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .wave-lab__focus-nav > span {
+    padding-bottom: var(--space-2);
+  }
+
+  .guided-stepper {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .guided-step {
+    min-height: var(--target-min);
+    padding: var(--space-2);
+  }
+
+  .guided-step small {
+    display: none;
+  }
+
+  .investigation-intro,
+  .guided-stage-heading,
+  .guided-stage-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .guided-stage-actions > span {
+    order: -1;
+    text-align: left;
+  }
+
+  .outcome-map,
+  .formula-relationship,
   .investigation-steps,
   .series-tabs,
   .worked-example {
@@ -595,6 +920,50 @@
 
   .practical-data-table {
     min-width: 42rem;
+  }
+}
+
+@media (max-width: 55rem) {
+  .investigation-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 55.01rem) and (max-height: 820px) {
+  .wave-lab--focused > .page {
+    padding-top: var(--space-2);
+    padding-bottom: var(--space-5);
+  }
+
+  .wave-lab--focused .page__lead {
+    margin-top: var(--space-1);
+  }
+
+  .wave-investigation,
+  .guided-stage-stack {
+    gap: var(--space-3);
+  }
+
+  .investigation-intro,
+  .guided-stepper {
+    padding-block: var(--space-1);
+  }
+
+  .guided-step {
+    min-height: 3.25rem;
+  }
+
+  .guided-stage-card {
+    padding: var(--space-4);
+  }
+
+  .guided-stage-card.stack > * + * {
+    margin-top: var(--space-3);
+  }
+
+  .investigation-control-panel,
+  .investigation-visual-panel {
+    padding: var(--space-2);
   }
 }
 
@@ -617,6 +986,7 @@
   .shell__header,
   .shell__footer,
   .wave-lab__phases,
+  .wave-lab__focus-nav,
   .page__heading,
   .page__lead,
   .wave-investigation > .investigation-screen-only {

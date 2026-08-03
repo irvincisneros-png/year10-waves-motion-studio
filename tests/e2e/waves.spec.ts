@@ -56,8 +56,6 @@ test.describe('wave-lab routing and deep links', () => {
   }
 
   test('phase navigation reaches every activity (warm client nav)', async ({ page }) => {
-    await page.goto('/#/waves');
-    const nav = page.getByRole('navigation', { name: 'Wave laboratory phases' });
     for (const [label, heading] of [
       ['Medium or vacuum?', 'Medium or vacuum?'],
       ['Energy transfer', 'Energy transfer'],
@@ -67,6 +65,8 @@ test.describe('wave-lab routing and deep links', () => {
       ['Claim–evidence–reasoning', 'Explain'],
       ['Waves in the real world', 'Waves in the real world'],
     ] as const) {
+      await page.goto('/#/waves');
+      const nav = page.getByRole('navigation', { name: 'Wave laboratory phases' });
       await nav.getByRole('link', { name: label }).click();
       await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible();
     }
@@ -74,8 +74,10 @@ test.describe('wave-lab routing and deep links', () => {
 
   test('measurement-lab preset deep link cold-loads with that preset', async ({ page }) => {
     await page.goto('/#/waves/measure?preset=em');
+    await page.getByRole('button', { name: /^2 Investigate/ }).click();
     await expect(page.getByTestId('measure-speed')).toHaveText(/3\.00 × 10⁸ m\/s/);
     await page.reload();
+    await page.getByRole('button', { name: /^2 Investigate/ }).click();
     await expect(page.getByTestId('measure-speed')).toHaveText(/3\.00 × 10⁸ m\/s/);
   });
 
@@ -337,6 +339,25 @@ test.describe('measurement lab (7.1.5, 7.1.6)', () => {
       }
     });
     await page.goto('/#/waves/measure');
+    await page.getByRole('button', { name: /^2 Investigate/ }).click();
+  });
+
+  test('guided investigation identifies both outcomes and reveals one stage at a time', async ({ page }) => {
+    await page.getByRole('button', { name: /^1 Predict/ }).click();
+    await expect(page.getByTestId('guided-stage-predict')).toContainText('7.1.5 · Investigate wave features');
+    await expect(page.getByTestId('guided-stage-predict')).toContainText('7.1.6 · Use the wave formula');
+    await expect(page.getByTestId('guided-stage-investigate')).toHaveCount(0);
+
+    await page.getByRole('button', { name: /^2 Investigate/ }).click();
+    await expect(page.getByTestId('guided-stage-investigate')).toContainText('Do this now');
+    await expect(page.getByTestId('measure-canvas')).toBeVisible();
+
+    await page.getByRole('button', { name: /^3 Explain/ }).click();
+    await expect(page.getByTestId('guided-stage-explain')).toContainText('v = fλ');
+    await expect(page.getByTestId('guided-stage-explain')).toContainText('λ = v/f');
+
+    await page.getByRole('button', { name: /^4 Submit/ }).click();
+    await expect(page.getByTestId('guided-stage-submit')).toContainText('Save as PDF');
   });
 
   async function guidedTrial(page: Page) {
@@ -369,9 +390,11 @@ test.describe('measurement lab (7.1.5, 7.1.6)', () => {
   }
 
   async function completeWriting(page: Page) {
+    await page.getByRole('button', { name: /^1 Predict/ }).click();
     await page.getByTestId('wave-hypothesis').fill(
       'Increasing frequency will shorten wavelength, while amplitude will not change wave speed.',
     );
+    await page.getByRole('button', { name: /^3 Explain/ }).click();
     await page.getByTestId('analysis-relationship').fill(
       'As frequency increased from 1 Hz to 4 Hz, wavelength became shorter, showing an inverse relationship.',
     );
@@ -449,6 +472,7 @@ test.describe('measurement lab (7.1.5, 7.1.6)', () => {
     await completeData(page);
     await completeWriting(page);
     await expect(page.getByTestId('analysis-feedback')).toContainText('required scientific ideas');
+    await page.getByRole('button', { name: /^4 Submit/ }).click();
     await page.getByTestId('student-name').fill('Alex Student');
     const print = page.getByTestId('wave-investigation-print');
     await expect(print).toBeEnabled();
@@ -466,12 +490,17 @@ test.describe('measurement lab (7.1.5, 7.1.6)', () => {
 
   test('draft survives reload and print media contains only the clean report', async ({ page }) => {
     await guidedTrial(page);
+    await page.getByRole('button', { name: /^1 Predict/ }).click();
     await page.getByTestId('wave-hypothesis').fill('Frequency should change wavelength but not the fixed medium wave speed.');
+    await page.getByRole('button', { name: /^4 Submit/ }).click();
     await page.getByTestId('student-name').fill('Sam Learner');
     await page.waitForFunction(() => localStorage.getItem('wavemotion.wave-practical.v2')?.includes('Sam Learner'));
     await page.reload();
+    await page.getByRole('button', { name: /^4 Submit/ }).click();
     await expect(page.getByTestId('student-name')).toHaveValue('Sam Learner');
+    await page.getByRole('button', { name: /^1 Predict/ }).click();
     await expect(page.getByTestId('wave-hypothesis')).toContainText('Frequency should change wavelength');
+    await page.getByRole('button', { name: /^2 Investigate/ }).click();
     await expect(page.locator('.investigation-screen-only').getByTestId('trial-table-body').locator('tr')).toHaveCount(1);
     await page.emulateMedia({ media: 'print' });
     await expect(page.locator('.shell__header')).toBeHidden();
@@ -486,6 +515,7 @@ test.describe('measurement lab (7.1.5, 7.1.6)', () => {
 test.describe('v = fλ calculator validation (false-positive regressions)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/#/waves/measure');
+    await page.getByRole('button', { name: /^3 Explain/ }).click();
   });
 
   test('rejects fewer than two values', async ({ page }) => {
@@ -700,6 +730,7 @@ test.describe('keyboard-only walkthrough', () => {
     browserName,
   }) => {
     await page.goto('/#/waves/measure');
+    await page.getByRole('button', { name: /^2 Investigate/ }).click();
 
     // 1. Operate the frequency slider by keyboard.
     const freq = page.getByTestId('measure-frequency-slider');

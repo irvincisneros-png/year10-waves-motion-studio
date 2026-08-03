@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import './WaveLab.css';
 
 /**
@@ -18,20 +18,30 @@ const PHASES = [
 ];
 
 export function WavesLayout() {
+  const location = useLocation();
+  const isFocusedInvestigation = location.pathname === '/waves/measure';
+
   return (
-    <div className="wave-lab">
-      <nav aria-label="Wave laboratory phases" className="wave-lab__phases">
-        <ul role="list" className="wave-lab__phase-list">
-          {PHASES.map((p) => (
-            <li key={p.to}>
-              <NavLink to={p.to} end={p.end} className="wave-lab__phase-link">
-                <span className="wave-lab__phase-tag">{p.phase}</span>
-                <span>{p.label}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
+    <div className={isFocusedInvestigation ? 'wave-lab wave-lab--focused' : 'wave-lab'}>
+      {isFocusedInvestigation ? (
+        <nav aria-label="Wave investigation navigation" className="wave-lab__focus-nav">
+          <NavLink to="/waves" className="wave-lab__back-link">← All wave activities</NavLink>
+          <span>Year 10 · outcomes 7.1.5 and 7.1.6</span>
+        </nav>
+      ) : (
+        <nav aria-label="Wave laboratory phases" className="wave-lab__phases">
+          <ul role="list" className="wave-lab__phase-list">
+            {PHASES.map((p) => (
+              <li key={p.to}>
+                <NavLink to={p.to} end={p.end} className="wave-lab__phase-link">
+                  <span className="wave-lab__phase-tag">{p.phase}</span>
+                  <span>{p.label}</span>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
       <Outlet />
     </div>
   );
