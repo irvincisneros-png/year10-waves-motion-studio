@@ -58,6 +58,18 @@ test.describe("accessibility audit", () => {
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
 
+  test("axe reports zero violations on every guided wave-investigation stage", async ({ page }) => {
+    await page.goto("/#/waves/measure");
+    for (const stage of [/^1 Predict/, /^2 Investigate/, /^3 Explain/, /^4 Submit/]) {
+      await page.getByRole("button", { name: stage }).click();
+      const results = await new AxeBuilder({ page }).analyze();
+      expect(
+        results.violations,
+        `${String(stage)}: ${results.violations.map((violation) => violation.id).join(", ")}`,
+      ).toEqual([]);
+    }
+  });
+
   test("skip link is the first tab stop and jumps focus to main content", async ({
     page,
     browserName,

@@ -12,6 +12,11 @@ import {
 } from "./helpers";
 
 const WIDTHS = [320, 375, 768, 1024, 1440];
+const CLASSROOM_VIEWPORTS = [
+  { width: 1280, height: 720 },
+  { width: 1366, height: 768 },
+  { width: 1920, height: 1080 },
+];
 
 test.describe("responsive layout", () => {
   for (const width of WIDTHS) {
@@ -86,11 +91,17 @@ test.describe("responsive layout", () => {
   }) => {
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto("/#/waves/measure");
+    for (const name of [/^1 Predict/, /^2 Investigate/, /^3 Explain/, /^4 Submit/]) {
+      const box = await page.getByRole("button", { name }).boundingBox();
+      expect(box, `${String(name)} has a bounding box`).not.toBeNull();
+      expect(box!.height, `${String(name)} height`).toBeGreaterThanOrEqual(44);
+    }
+
+    await page.getByRole("button", { name: /^2 Investigate/ }).click();
     for (const name of [
-      "Place ruler crest to crest",
-      "Validate and record trial",
-      "Calculate / check with v = fλ",
-      "Reset whole practical",
+      "1. Place ruler crest to crest",
+      "2. Record this trial",
+      "Reset investigation",
     ]) {
       const box = await page
         .getByRole("button", { name })
@@ -103,7 +114,39 @@ test.describe("responsive layout", () => {
       .getByRole("slider", { name: "Ruler tool" })
       .boundingBox();
     expect(ruler!.height).toBeGreaterThanOrEqual(44);
+
+    await page.getByRole("button", { name: /^3 Explain/ }).click();
+    const calculate = await page
+      .getByRole("button", { name: "Calculate / check with v = fλ" })
+      .boundingBox();
+    expect(calculate).not.toBeNull();
+    expect(calculate!.height).toBeGreaterThanOrEqual(44);
   });
+
+  for (const viewport of CLASSROOM_VIEWPORTS) {
+    test(`guided wave task keeps the current action visible at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/#/waves/measure");
+
+      await expect(page.getByRole("navigation", { name: "Investigation steps" })).toBeVisible();
+      const hypothesis = await page.getByTestId("wave-hypothesis").boundingBox();
+      expect(hypothesis).not.toBeNull();
+      expect(hypothesis!.y + hypothesis!.height).toBeLessThanOrEqual(viewport.height);
+
+      await page.getByRole("button", { name: /^2 Investigate/ }).click();
+      const firstAction = await page.getByTestId("place-ruler").boundingBox();
+      const secondAction = await page.getByTestId("add-trial").boundingBox();
+      expect(firstAction).not.toBeNull();
+      expect(secondAction).not.toBeNull();
+      expect(firstAction!.y + firstAction!.height).toBeLessThanOrEqual(viewport.height);
+      expect(secondAction!.y + secondAction!.height).toBeLessThanOrEqual(viewport.height);
+
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
+  }
 
   test("sound-lab interactive targets meet the 44px minimum at 320px", async ({
     page,
