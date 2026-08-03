@@ -42,16 +42,6 @@ async function focusUntil(page: Page, browserName: string, target: Locator, max 
   ).toBe(true);
 }
 
-async function readDownload(page: Page, trigger: () => Promise<void>): Promise<string> {
-  const downloadPromise = page.waitForEvent('download');
-  await trigger();
-  const download = await downloadPromise;
-  const stream = await download.createReadStream();
-  const chunks: Buffer[] = [];
-  for await (const chunk of stream) chunks.push(chunk as Buffer);
-  return Buffer.concat(chunks).toString('utf8');
-}
-
 // ---------------------------------------------------------------- routing
 
 test.describe('wave-lab routing and deep links', () => {
@@ -340,191 +330,154 @@ test.describe('wave types (7.1.3)', () => {
 
 test.describe('measurement lab (7.1.5, 7.1.6)', () => {
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      if (!sessionStorage.getItem('wave-practical-test-started')) {
+        localStorage.removeItem('wavemotion.wave-practical.v2');
+        sessionStorage.setItem('wave-practical-test-started', 'true');
+      }
+    });
     await page.goto('/#/waves/measure');
   });
 
-  test('switching preset re-clamps the frequency into the preset range (regression)', async ({
-    page,
-  }) => {
+  async function guidedTrial(page: Page) {
+    await page.getByTestId('place-ruler').click();
+    await page.getByTestId('add-trial').click();
+    await expect(page.getByTestId('trial-feedback')).toContainText('Valid');
+  }
+
+  async function setRange(page: Page, testId: string, value: number) {
+    await page.getByTestId(testId).evaluate((element, next) => {
+      const input = element as HTMLInputElement;
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      setter?.call(input, String(next));
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }, value);
+  }
+
+  async function completeData(page: Page) {
+    await guidedTrial(page); // f = 2 Hz
+    await setRange(page, 'measure-frequency-slider', 1);
+    await guidedTrial(page);
+    await setRange(page, 'measure-frequency-slider', 4);
+    await guidedTrial(page);
+    await page.getByTestId('series-amplitude').click();
+    await setRange(page, 'measure-amplitude-slider', 30);
+    await guidedTrial(page);
+    await setRange(page, 'measure-amplitude-slider', 90);
+    await guidedTrial(page);
+  }
+
+  async function completeWriting(page: Page) {
+    await page.getByTestId('wave-hypothesis').fill(
+      'Increasing frequency will shorten wavelength, while amplitude will not change wave speed.',
+    );
+    await page.getByTestId('analysis-relationship').fill(
+      'As frequency increased from 1 Hz to 4 Hz, wavelength became shorter, showing an inverse relationship.',
+    );
+    await page.getByTestId('analysis-speed').fill(
+      'The calculated speed stayed the same because the rope medium conditions were kept constant.',
+    );
+    await page.getByTestId('analysis-amplitude').fill(
+      'Changing amplitude did not change speed; speed stayed constant in the same rope medium.',
+    );
+    await page.getByTestId('analysis-limitation').fill(
+      'The simulator uses an ideal lossless rope, so real waves would lose energy through damping.',
+    );
+    await page.getByTestId('check-analysis').click();
+  }
+
+  test('preset selection re-clamps frequency and locks the medium after the first valid trial', async ({ page }) => {
     await page.getByTestId('sim-preset').selectOption('em');
     await expect(page.getByTestId('measure-speed')).toHaveText(/3\.00 × 10⁸ m\/s/);
-    // Frequency snapped to the EM default 100 MHz = 1.00 × 10⁸ Hz.
     await expect(page.getByTestId('measure-frequency')).toHaveText(/1\.00 × 10⁸ Hz/);
     await page.getByTestId('sim-preset').selectOption('sound');
     await expect(page.getByTestId('measure-speed')).toHaveText('343 m/s');
     await expect(page.getByTestId('measure-frequency')).toHaveText('440 Hz');
+    await guidedTrial(page);
+    await expect(page.getByTestId('sim-preset')).toBeDisabled();
+    await expect(page.getByText(/Locked to Sound in air/)).toBeVisible();
   });
 
-  test('frequency and length unit conversions are exact and reversible', async ({ page }) => {
-    // Rope default: f = 2 Hz, λ = v/f = 2 m.
-    await expect(page.getByTestId('measure-lambda')).toHaveText('2 m');
-    await page.getByTestId('length-unit-select').selectOption('cm');
-    await expect(page.getByTestId('measure-lambda')).toHaveText('200 cm');
-    await page.getByTestId('length-unit-select').selectOption('mm');
-    await expect(page.getByTestId('measure-lambda')).toHaveText('2000 mm');
-    await page.getByTestId('length-unit-select').selectOption('m');
-    await expect(page.getByTestId('measure-lambda')).toHaveText('2 m');
-    await page.getByTestId('freq-unit-select').selectOption('kHz');
-    await expect(page.getByTestId('measure-frequency')).toHaveText('0.002 kHz');
-    await page.getByTestId('freq-unit-select').selectOption('Hz');
-    await expect(page.getByTestId('measure-frequency')).toHaveText('2 Hz');
-  });
-
-  test('ruler is keyboard-operable, reports its span, and gates the add-trial button', async ({
-    page,
-  }) => {
-    const addTrial = page.getByTestId('add-trial');
-    await expect(addTrial).toBeDisabled();
+  test('rejects an arbitrary ruler span and accepts a crest-to-crest measurement', async ({ page }) => {
     const ruler = page.getByTestId('ruler-tool');
     await ruler.focus();
-    await ruler.press('End'); // stretch across the whole 8 m chamber
+    await ruler.press('End'); // 8 m is four wavelengths, not one
     await expect(page.getByTestId('ruler-span')).toContainText('8 m');
-    await expect(addTrial).toBeEnabled();
-    // Fine + coarse adjustment of the end.
-    await ruler.press('Shift+ArrowLeft');
-    await expect(page.getByTestId('ruler-span')).toContainText('7.96 m');
-    await ruler.press('PageDown');
-    await expect(page.getByTestId('ruler-span')).toContainText('7.56 m');
-    await ruler.press('Home'); // collapse
-    await expect(page.getByTestId('ruler-span')).toContainText('0 m');
-    await expect(addTrial).toBeDisabled();
+    await page.getByTestId('add-trial').click();
+    await expect(page.getByTestId('trial-feedback')).toContainText(/from one wavelength/);
+    await expect(page.locator('.investigation-screen-only').getByTestId('trial-table-body').locator('tr')).toHaveCount(1);
+    await guidedTrial(page);
+    const row = page.locator('.investigation-screen-only').getByTestId('trial-table-body').locator('tr');
+    await expect(row).toHaveCount(1);
+    await expect(row).toContainText('2');
+    await expect(row).toContainText('4');
   });
 
-  test('timer starts, stops, and retains the measured interval', async ({ page }) => {
-    await pauseAndStep(page, 0); // pause so stepping controls the clock
-    await page.getByTestId('timer-button').click(); // start at t
-    await pauseAndStep(page, 15); // +0.5 s
-    await page.getByTestId('timer-button').click(); // stop
-    await expect(page.getByTestId('timer-elapsed')).toHaveText('0.5 s');
-    await pauseAndStep(page, 10);
-    await expect(page.getByTestId('timer-elapsed')).toHaveText('0.5 s'); // retained
-  });
-
-  test('probe reports the displacement at any keyboard-selected position', async ({ page }) => {
-    const probe = page.getByTestId('measure-probe');
-    await probe.focus();
-    await probe.press('Home');
-    await expect(probe).toHaveValue('0');
-    await probe.press('ArrowRight');
-    await expect(probe).toHaveValue('1');
-    // The canvas alternative reports the probe reading with units.
-    await expect(page.getByTestId('measure-canvas-alt')).toContainText('reads displacement');
-  });
-
-  test('trials append with correct values; rows are individually deletable; reset clears with confirmation', async ({
-    page,
-  }) => {
-    const ruler = page.getByTestId('ruler-tool');
-    await ruler.focus();
-    await ruler.press('End');
-    await page.getByTestId('add-trial').click();
-    const body = page.getByTestId('trial-table-body');
-    await expect(body.locator('tr')).toHaveCount(1);
-    // Rope: f = 2 Hz, measured λ = 8 m → computed speed 16 m/s, 1/f = 0.5 s.
-    await expect(body.locator('tr').first()).toContainText('Rope');
-    await expect(body.locator('tr').first()).toContainText('16');
-    await expect(body.locator('tr').first()).toContainText('0.5');
-    // Second trial at a different frequency.
-    const freq = page.getByTestId('measure-frequency-slider');
-    await freq.focus();
-    await freq.press('End'); // 5 Hz
-    await page.getByTestId('add-trial').click();
-    await expect(body.locator('tr')).toHaveCount(2);
-    // Delete trial 1.
-    await page.getByRole('button', { name: 'Delete trial 1' }).click();
-    await expect(body.locator('tr')).toHaveCount(1);
-    // Reset asks for confirmation; dismissing keeps the trial.
-    page.once('dialog', (d) => void d.dismiss());
-    await page.getByRole('button', { name: 'Reset wave measurement lab' }).click();
-    await expect(body.locator('tr')).toHaveCount(1);
-    // Accepting clears everything.
-    page.once('dialog', (d) => void d.accept());
-    await page.getByRole('button', { name: 'Reset wave measurement lab' }).click();
-    await expect(page.getByTestId('trial-table-body')).toContainText('No trials yet');
-  });
-
-  test('graph view requires 2+ trials, then plots λ vs 1/f with an accessible data table', async ({
-    page,
-  }) => {
-    await page.getByTestId('trial-view-graph').check();
-    await expect(page.getByTestId('graph-needs-trials')).toContainText(
-      'Add at least two trials to see a graph.',
-    );
-    // Record two trials at different frequencies.
-    await page.getByTestId('trial-view-table').check();
-    const ruler = page.getByTestId('ruler-tool');
-    await ruler.focus();
-    await ruler.press('End');
-    await page.getByTestId('add-trial').click();
-    const freq = page.getByTestId('measure-frequency-slider');
-    await freq.focus();
-    await freq.press('End');
-    await page.getByTestId('add-trial').click();
-    await page.getByTestId('trial-view-graph').check();
+  test('records three distinct frequency trials, calculates speed, and plots λ against 1/f', async ({ page }) => {
+    await guidedTrial(page);
+    await setRange(page, 'measure-frequency-slider', 1);
+    await guidedTrial(page);
+    await setRange(page, 'measure-frequency-slider', 4);
+    await guidedTrial(page);
+    const body = page.locator('.investigation-screen-only').getByTestId('trial-table-body');
+    await expect(body.locator('tr')).toHaveCount(3);
+    for (const row of await body.locator('tr').all()) await expect(row).toContainText('4');
     const graph = page.getByTestId('lambda-graph');
     await expect(graph).toBeVisible();
     await expect(graph).toContainText('1/frequency (s)');
-    await expect(graph).toContainText('wavelength (m)');
-    // Hidden data-table equivalent exists inside the figure.
     await expect(graph.locator('table caption')).toContainText('Data table');
   });
 
-  test('CSV and JSON exports produce parseable content with units in headers', async ({
-    page,
-  }) => {
-    const ruler = page.getByTestId('ruler-tool');
-    await ruler.focus();
-    await ruler.press('End');
-    await page.getByTestId('add-trial').click();
-    const csv = await readDownload(page, () => page.getByTestId('export-csv').click());
-    const lines = csv.split('\n');
-    expect(lines[0]).toContain('Frequency (Hz)');
-    expect(lines[0]).toContain('Wavelength (m)');
-    expect(lines).toHaveLength(2);
-    expect(lines[1]).toContain('Rope');
-    const json = await readDownload(page, () => page.getByTestId('export-json').click());
-    const parsed = JSON.parse(json);
-    expect(parsed.schema).toBe('wavemotion.investigation');
-    expect(parsed.trials).toHaveLength(1);
-    expect(parsed.fixedSpeedMps).toBe(4);
+  test('amplitude investigation locks frequency and shows speed is unchanged', async ({ page }) => {
+    await page.getByTestId('series-amplitude').click();
+    await expect(page.getByTestId('measure-frequency-slider')).toBeDisabled();
+    await expect(page.getByTestId('measure-amplitude-slider')).toBeEnabled();
+    await setRange(page, 'measure-amplitude-slider', 20);
+    await guidedTrial(page);
+    await setRange(page, 'measure-amplitude-slider', 100);
+    await guidedTrial(page);
+    const rows = page.locator('.investigation-screen-only').getByTestId('trial-table-body').locator('tr');
+    await expect(rows).toHaveCount(2);
+    await expect(rows.nth(0)).toContainText('20');
+    await expect(rows.nth(1)).toContainText('100');
+    await expect(rows.nth(0)).toContainText('4');
+    await expect(rows.nth(1)).toContainText('4');
   });
 
-  test('seeded noise mode perturbs ruler readings deterministically and never the wave state', async ({
-    page,
-  }) => {
-    const ruler = page.getByTestId('ruler-tool');
-    await ruler.focus();
-    await ruler.press('End');
-    const exact = await page.getByTestId('ruler-span').textContent();
-    await page.getByTestId('noise-toggle').check();
-    const noisy1 = await page.getByTestId('ruler-span').textContent();
-    expect(noisy1).not.toBe(exact);
-    // Model wavelength readout (wave state) is untouched by noise.
-    await expect(page.getByTestId('measure-lambda')).toHaveText('2 m');
-    // Toggling off restores the exact value; same seed reproduces the reading.
-    await page.getByTestId('noise-toggle').uncheck();
-    expect(await page.getByTestId('ruler-span').textContent()).toBe(exact);
-    await page.getByTestId('noise-toggle').check();
-    expect(await page.getByTestId('ruler-span').textContent()).toBe(noisy1);
+  test('completed responses unlock a print-ready report containing all student work', async ({ page }) => {
+    await completeData(page);
+    await completeWriting(page);
+    await expect(page.getByTestId('analysis-feedback')).toContainText('required scientific ideas');
+    await page.getByTestId('student-name').fill('Alex Student');
+    const print = page.getByTestId('wave-investigation-print');
+    await expect(print).toBeEnabled();
+    const report = page.getByTestId('wave-report');
+    await expect(report).toContainText('Alex Student');
+    await expect(report).toContainText('inverse relationship');
+    await expect(report.locator('tbody tr')).toHaveCount(5);
+    await page.evaluate(() => {
+      (window as Window & { printCalled?: boolean }).printCalled = false;
+      window.print = () => { (window as Window & { printCalled?: boolean }).printCalled = true; };
+    });
+    await print.click();
+    expect(await page.evaluate(() => (window as Window & { printCalled?: boolean }).printCalled)).toBe(true);
   });
 
-  test('interpretation and limitation prompts reject empty text and save evidence', async ({
-    page,
-  }) => {
-    await page.getByTestId('interpretation-save').click();
-    await expect(page.getByText('Write your interpretation before saving.')).toBeVisible();
-    await page
-      .getByTestId('interpretation-input')
-      .fill('Wavelength is proportional to 1/f — doubling f halves λ at fixed speed.');
-    await page.getByTestId('interpretation-save').click();
-    await expect(page.getByText('Saved (outcome 7.1.6).')).toBeVisible();
-    await page.getByTestId('limitations-save').click();
-    await expect(page.getByText('Write at least one limitation before saving.')).toBeVisible();
-    await page
-      .getByTestId('limitations-input')
-      .fill('The model medium is lossless and the ruler snaps to the drawn wave.');
-    await page.getByTestId('limitations-save').click();
-    await expect(page.getByText('Saved (outcome 7.1.5).')).toBeVisible();
+  test('draft survives reload and print media contains only the clean report', async ({ page }) => {
+    await guidedTrial(page);
+    await page.getByTestId('wave-hypothesis').fill('Frequency should change wavelength but not the fixed medium wave speed.');
+    await page.getByTestId('student-name').fill('Sam Learner');
+    await page.waitForFunction(() => localStorage.getItem('wavemotion.wave-practical.v2')?.includes('Sam Learner'));
+    await page.reload();
+    await expect(page.getByTestId('student-name')).toHaveValue('Sam Learner');
+    await expect(page.getByTestId('wave-hypothesis')).toContainText('Frequency should change wavelength');
+    await expect(page.locator('.investigation-screen-only').getByTestId('trial-table-body').locator('tr')).toHaveCount(1);
+    await page.emulateMedia({ media: 'print' });
+    await expect(page.locator('.shell__header')).toBeHidden();
+    await expect(page.locator('.investigation-screen-only')).toBeHidden();
+    await expect(page.getByTestId('wave-report')).toBeVisible();
+    await expect(page.getByTestId('wave-report')).toContainText('Sam Learner');
   });
 });
 
@@ -742,7 +695,7 @@ test.describe('reduced motion and degraded capability', () => {
 // --------------------------------------------------- keyboard-only walkthrough
 
 test.describe('keyboard-only walkthrough', () => {
-  test('operate the lab, record a trial, export, and answer a check question with keys alone', async ({
+  test('operate the lab, record a valid trial, and answer a check question with keys alone', async ({
     page,
     browserName,
   }) => {
@@ -755,27 +708,20 @@ test.describe('keyboard-only walkthrough', () => {
     await page.keyboard.press('ArrowRight');
     await expect(page.getByTestId('measure-frequency')).toHaveText('2.1 Hz');
 
-    // 2. Stretch the ruler across the chamber by keyboard.
-    const ruler = page.getByTestId('ruler-tool');
-    await focusUntil(page, browserName, ruler);
-    await page.keyboard.press('End');
-    await expect(page.getByTestId('ruler-span')).toContainText('8 m');
+    // 2. Use the guided crest-to-crest measurement by keyboard.
+    const placeRuler = page.getByTestId('place-ruler');
+    await focusUntil(page, browserName, placeRuler);
+    await page.keyboard.press('Enter');
+    await expect(page.getByTestId('ruler-span')).toContainText(/1\.9/);
 
     // 3. Record the trial by keyboard.
     const addTrial = page.getByTestId('add-trial');
     await focusUntil(page, browserName, addTrial);
     await page.keyboard.press('Enter');
-    await expect(page.getByTestId('trial-table-body').locator('tr')).toHaveCount(1);
+    await expect(page.locator('.investigation-screen-only').getByTestId('trial-table-body').locator('tr')).toHaveCount(1);
+    await expect(page.getByTestId('trial-feedback')).toContainText('Valid');
 
-    // 4. Export the JSON by keyboard.
-    const exportJson = page.getByTestId('export-json');
-    await focusUntil(page, browserName, exportJson);
-    const downloadPromise = page.waitForEvent('download');
-    await page.keyboard.press('Enter');
-    const download = await downloadPromise;
-    expect(download.suggestedFilename()).toBe('wavemotion-wave-trials.json');
-
-    // 5. Answer a check question by keyboard.
+    // 4. Answer a check question by keyboard.
     await page.goto('/#/waves/check');
     const firstOption = page.getByTestId('option-a');
     await focusUntil(page, browserName, firstOption);

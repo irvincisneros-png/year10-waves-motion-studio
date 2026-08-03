@@ -87,10 +87,10 @@ test.describe("responsive layout", () => {
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto("/#/waves/measure");
     for (const name of [
-      "Add measurement to trial table",
+      "Place ruler crest to crest",
+      "Validate and record trial",
       "Calculate / check with v = fλ",
-      "Timer",
-      "Reset wave measurement lab",
+      "Reset whole practical",
     ]) {
       const box = await page
         .getByRole("button", { name })
