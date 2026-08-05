@@ -23,6 +23,8 @@ import {
   hasAudioSafetyAcknowledgement,
   rememberAudioSafetyAcknowledgement,
 } from './audioSafetySession';
+import { LiveSoundVisualiser } from './LiveSoundVisualiser';
+import { GuitarStringConnection } from './GuitarStringConnection';
 
 /**
  * Pitch and loudness investigation (outcome 7.2.2). Frequency and amplitude are
@@ -295,6 +297,12 @@ export default function PitchLoudnessPage() {
           </button>
         </div>
 
+        <section className="sound-classroom-flow" aria-labelledby="classroom-flow-title">
+          <p className="live-sound__eyebrow">Primary classroom activity</p>
+          <h2 id="classroom-flow-title">1. Teacher: choose and play a tone</h2>
+          <p>The teacher changes frequency or output level and plays the tone through classroom speakers. Students then use the live listening view below on their own laptops.</p>
+        </section>
+
         <AudioEnablePanel
           audio={audio}
           acknowledged={acknowledged}
@@ -438,6 +446,8 @@ export default function PitchLoudnessPage() {
               : 'Continuous mode selected. The visual trace remains complete with sound off.'}
           </p>
         ) : null}
+
+        <LiveSoundVisualiser demoFrequencyHz={frequency} demoAmplitude={levelPct / 100} />
 
         {/* Pitch and loudness meters — never colour-only; always paired with a number. */}
         <div className="wave-controls">
@@ -680,6 +690,8 @@ export default function PitchLoudnessPage() {
             controls are independent.
           </span>
         </p>
+
+        <GuitarStringConnection />
       </div>
     </Page>
   );

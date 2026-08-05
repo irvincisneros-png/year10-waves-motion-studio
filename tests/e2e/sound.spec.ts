@@ -189,6 +189,51 @@ test.describe('pitch and loudness investigation (7.2.2)', () => {
     await expect(page.getByTestId('timescale-slider')).toHaveAttribute('aria-valuetext', 'Window: 100 ms');
   });
 
+  test('classroom visualiser makes frequency, amplitude and wavelength limits explicit', async ({ page }) => {
+    await expect(page.getByTestId('live-sound-visualiser')).toBeVisible();
+    await expect(page.getByTestId('live-frequency')).toContainText('440 Hz');
+    await expect(page.getByTestId('live-amplitude')).toContainText('20%');
+    await expect(page.getByTestId('live-wavelength')).toContainText('0.78 m');
+    await expect(page.getByText(/does not measure wavelength/i)).toBeVisible();
+
+    await page.getByTestId('frequency-slider').fill('880');
+    await page.getByTestId('amplitude-slider').fill('60');
+    await expect(page.getByTestId('live-frequency')).toContainText('880 Hz');
+    await expect(page.getByTestId('live-amplitude')).toContainText('60%');
+  });
+
+  test('microphone denial falls back to a complete demo mode', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'mediaDevices', {
+        configurable: true,
+        value: {
+          getUserMedia: async () => {
+            throw new DOMException('Permission denied for test', 'NotAllowedError');
+          },
+        },
+      });
+    });
+    await page.reload();
+    await page.getByTestId('capture-microphone').check();
+    await page.getByTestId('start-microphone').click();
+    await expect(page.getByTestId('microphone-fallback')).toContainText(/Demo mode is active/i);
+    await expect(page.getByTestId('capture-demo')).toBeChecked();
+    await expect(page.getByTestId('live-waveform')).toBeVisible();
+  });
+
+  test('guitar connection holds string properties fixed and separates length from pluck strength', async ({ page }) => {
+    await expect(page.getByTestId('guitar-connection')).toContainText(/tension and string thickness stay fixed/i);
+    const initial = await page.getByTestId('guitar-connection').getByText(/Hz/).first().textContent();
+    await page.getByTestId('guitar-length').press('Home');
+    const shorter = await page.getByTestId('guitar-connection').getByText(/Hz/).first().textContent();
+    expect(Number(shorter?.replace(/[^0-9.]/g, ''))).toBeGreaterThan(Number(initial?.replace(/[^0-9.]/g, '')));
+    await page.getByTestId('guitar-pluck').press('End');
+    await expect(page.getByTestId('guitar-connection')).toContainText(/larger amplitude.*louder sound/i);
+    await page.getByTestId('pluck-string').click();
+    await expect(page.getByTestId('guitar-waveform')).toContainText(/current amplitude/i);
+    await expect(page.getByTestId('guitar-model').locator('.guitar-model__active-string')).toHaveClass(/is-ringing/);
+  });
+
   test('duration and emission mode have complete visual-only effects and validation', async ({ page }) => {
     await page.getByTestId('duration-input').fill('');
     await page.getByTestId('play-pulse').click();
