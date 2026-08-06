@@ -5,15 +5,17 @@ import { useSettingsStore } from '../../store/settingsStore';
 
 const REFERENCE_LENGTH_CM = 65;
 const REFERENCE_FREQUENCY_HZ = 110;
-const STRING_LEFT = 142;
-const STRING_RIGHT = 604;
+const GUITAR_ASSET = `${import.meta.env.BASE_URL}assets/acoustic-guitar-horizontal.png`;
+const STRING_LEFT = 258;
+const STRING_RIGHT = 1195;
+const STRING_Y = 512;
 
 function vibratingStringPath(startX: number, amplitude: number, phase: number): string {
   return Array.from({ length: 101 }, (_, index) => {
     const progress = index / 100;
     const x = startX + progress * (STRING_RIGHT - startX);
     const envelope = Math.sin(Math.PI * progress);
-    const y = 94 - amplitude * envelope * Math.sin(phase);
+    const y = STRING_Y - amplitude * envelope * Math.sin(phase);
     return `${index === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
   }).join(' ');
 }
@@ -45,9 +47,9 @@ export function GuitarStringConnection() {
   const elapsed = pluckStarted === null ? 1.5 : Math.max(0, animationTime - pluckStarted) / 1000;
   const decay = pluckStarted === null ? 0 : Math.max(0, 1 - elapsed / 2.6);
   const visibleAmplitude = (pluck / 100) * decay;
-  const phase = reducedMotion ? Math.PI / 2 : elapsed * 2 * Math.PI * Math.min(frequencyHz, 180) * 0.08;
+  const phase = reducedMotion ? Math.PI / 2 : elapsed * 2 * Math.PI * frequencyHz * 0.02;
   const stringPath = useMemo(
-    () => vibratingStringPath(fingerX, visibleAmplitude * 35, phase),
+    () => vibratingStringPath(fingerX, visibleAmplitude * 44, phase),
     [fingerX, phase, visibleAmplitude],
   );
   const tracePath = useMemo(
@@ -96,26 +98,29 @@ export function GuitarStringConnection() {
       <div className="guitar-connection__controls">
         <SimControl id="sound-lab.guitar-length-slider" label="Effective vibrating length" min={25} max={90} step={1} value={lengthCm} onChange={changeLength} format={(value) => `${Math.round(value)} cm`} hint="Move the finger towards the guitar body to shorten the part that can vibrate." testId="guitar-length" />
         <SimControl id="sound-lab.guitar-pluck-slider" label="Pluck strength" min={10} max={100} step={1} value={pluck} onChange={setPluck} format={(value) => `${Math.round(value)}%`} hint="A harder pluck gives larger displacement and a louder sound." testId="guitar-pluck" />
-        <button type="button" className="btn btn--primary guitar-connection__pluck" onClick={pluckString} data-testid="pluck-string">
+        <button type="button" className="btn btn--primary guitar-connection__pluck" onClick={pluckString} data-testid="pluck-string" data-control-id="sound-lab.guitar-pluck-button">
           <span aria-hidden="true">☝</span> Pluck the string
         </button>
       </div>
 
       <div className="guitar-connection__models">
         <figure className="guitar-model">
-          <figcaption>Guitar model · click the string or use “Pluck the string”</figcaption>
-          <svg viewBox="0 0 640 188" role="img" aria-label={`Interactive guitar with ${Math.round(lengthCm)} centimetre vibrating string. Frequency ${Math.round(frequencyHz)} hertz.`} onClick={pluckString} data-testid="guitar-model">
-            <path className="guitar-model__body" d="M532 24 C495 21 477 42 479 67 C451 73 438 94 447 117 C456 140 481 145 498 134 C515 166 568 171 593 141 C625 143 640 113 625 92 C641 63 615 34 586 40 C572 26 553 21 532 24 Z" />
-            <circle className="guitar-model__hole" cx="535" cy="94" r="26" />
-            <rect className="guitar-model__neck" x="82" y="76" width="430" height="36" rx="8" />
-            {Array.from({ length: 10 }, (_, index) => <line key={index} className="guitar-model__fret" x1={126 + index * 36} x2={126 + index * 36} y1="77" y2="111" />)}
-            <path className="guitar-model__head" d="M22 66 L95 74 L95 114 L22 122 Q6 94 22 66 Z" />
-            <line className="guitar-model__inactive-string" x1={28} x2={fingerX} y1="94" y2="94" />
-            <path d={stringPath} className={`guitar-model__active-string${visibleAmplitude > 0 ? ' is-ringing' : ''}`} />
-            <circle className="guitar-model__finger" cx={fingerX} cy="94" r="11" />
-            <text className="guitar-model__finger-label" x={fingerX} y="66" textAnchor="middle">finger</text>
-            <text className="guitar-model__length-label" x={(fingerX + STRING_RIGHT) / 2} y="145" textAnchor="middle">{Math.round(lengthCm)} cm vibrating length</text>
-          </svg>
+          <figcaption>Horizontal guitar model · press the guitar or use “Pluck the string”</figcaption>
+          <button
+            type="button"
+            className="guitar-model__pluck-surface"
+            onClick={pluckString}
+            aria-label={`Pluck the guitar string. Vibrating length ${Math.round(lengthCm)} centimetres; frequency ${Math.round(frequencyHz)} hertz.`}
+            data-testid="guitar-model"
+            data-control-id="sound-lab.guitar-model-button"
+          >
+            <svg viewBox="0 180 1536 664" aria-hidden="true">
+              <image href={GUITAR_ASSET} x="0" y="0" width="1536" height="1024" preserveAspectRatio="xMidYMid meet" />
+              <line className="guitar-model__inactive-string" x1="88" x2={fingerX} y1={STRING_Y} y2={STRING_Y} />
+              <path d={stringPath} className={`guitar-model__active-string${visibleAmplitude > 0 ? ' is-ringing' : ''}`} />
+              <circle className="guitar-model__finger" cx={fingerX} cy={STRING_Y} r="20" />
+            </svg>
+          </button>
         </figure>
 
         <figure className="guitar-scope" data-testid="guitar-waveform">

@@ -194,7 +194,12 @@ test.describe('pitch and loudness investigation (7.2.2)', () => {
     await expect(page.getByTestId('live-frequency')).toContainText('440 Hz');
     await expect(page.getByTestId('live-amplitude')).toContainText('20%');
     await expect(page.getByTestId('live-wavelength')).toContainText('0.78 m');
+    await expect(page.getByTestId('live-wavelength')).toContainText('Calculated wavelength (not measured)');
     await expect(page.getByText(/does not measure wavelength/i)).toBeVisible();
+
+    await page.getByTestId('frequency-slider').fill('8000');
+    const highFrequencyTrace = await page.getByTestId('live-waveform').locator('.live-trace__wave').getAttribute('d');
+    expect(highFrequencyTrace?.match(/\b[ML]/g)).toHaveLength(360);
 
     await page.getByTestId('frequency-slider').fill('880');
     await page.getByTestId('amplitude-slider').fill('60');
@@ -232,6 +237,9 @@ test.describe('pitch and loudness investigation (7.2.2)', () => {
     await page.getByTestId('pluck-string').click();
     await expect(page.getByTestId('guitar-waveform')).toContainText(/current amplitude/i);
     await expect(page.getByTestId('guitar-model').locator('.guitar-model__active-string')).toHaveClass(/is-ringing/);
+    await expect(page.getByTestId('guitar-model').locator('image')).toHaveAttribute('href', /acoustic-guitar-horizontal\.png$/);
+    await expect(page.getByTestId('guitar-model').locator('svg')).toHaveAttribute('viewBox', '0 180 1536 664');
+    await expect(page.getByTestId('guitar-model').locator('text')).toHaveCount(0);
   });
 
   test('duration and emission mode have complete visual-only effects and validation', async ({ page }) => {

@@ -310,46 +310,34 @@
   text-align: center;
 }
 
-.guitar-model svg {
+.guitar-model__pluck-surface {
+  display: block;
+  width: 100%;
+  min-height: var(--target-min);
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
   cursor: pointer;
 }
 
-.guitar-model__body {
-  fill: var(--status-warn-surface);
-  stroke: var(--status-developing);
-  stroke-width: 4;
-}
-
-.guitar-model__hole {
-  fill: var(--surface-card);
-  stroke: var(--status-developing);
-  stroke-width: 4;
-}
-
-.guitar-model__neck {
-  fill: var(--ink-strong);
-}
-
-.guitar-model__fret {
-  stroke: var(--surface-card);
-  stroke-width: 2;
-  opacity: 0.65;
-}
-
-.guitar-model__head {
-  fill: var(--status-developing);
+.guitar-model__pluck-surface:hover {
+  border-color: var(--accent-cyan-ink);
+  background: color-mix(in srgb, var(--accent-cyan) 7%, transparent);
 }
 
 .guitar-model__inactive-string {
-  stroke: var(--ink-muted);
-  stroke-width: 2;
+  stroke: #d9edf0;
+  stroke-width: 5;
+  filter: drop-shadow(0 1px 1px rgba(20, 27, 46, 0.8));
 }
 
 .guitar-model__active-string {
   fill: none;
-  stroke: var(--accent-cyan-ink);
-  stroke-width: 3.5;
+  stroke: #00e5ff;
+  stroke-width: 7;
   stroke-linecap: round;
+  filter: drop-shadow(0 2px 2px rgba(20, 27, 46, 0.95));
 }
 
 .guitar-model__active-string.is-ringing {
@@ -359,11 +347,9 @@
 .guitar-model__finger {
   fill: var(--accent-violet-ink);
   stroke: var(--surface-card);
-  stroke-width: 3;
+  stroke-width: 6;
 }
 
-.guitar-model__finger-label,
-.guitar-model__length-label,
 .guitar-scope text {
   fill: var(--ink-muted);
   font-family: var(--font-sans);

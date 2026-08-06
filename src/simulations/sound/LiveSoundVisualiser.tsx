@@ -16,7 +16,7 @@ interface LiveSoundVisualiserProps {
   demoAmplitude: number;
 }
 
-const TRACE_POINTS = 180;
+const TRACE_POINTS = 360;
 const DEMO_WINDOW_SECONDS = 0.012;
 const ASSUMED_SOUND_SPEED = 343;
 
@@ -101,7 +101,11 @@ export function LiveSoundVisualiser({ demoFrequencyHz, demoAmplitude }: LiveSoun
       context.createMediaStreamSource(stream).connect(analyser);
       streamRef.current = stream;
       contextRef.current = context;
-      setSampleWindowMs(analyser.fftSize / context.sampleRate * 1000);
+      const displaySampleCount = Math.min(
+        analyser.fftSize,
+        Math.round(context.sampleRate * DEMO_WINDOW_SECONDS),
+      );
+      setSampleWindowMs(displaySampleCount / context.sampleRate * 1000);
       setMicrophoneState('live');
       announce('Microphone is live. Play or sing one steady tone near this laptop.');
 
@@ -112,8 +116,11 @@ export function LiveSoundVisualiser({ demoFrequencyHz, demoAmplitude }: LiveSoun
           lastPaintRef.current = time;
           const rms = calculateRms(buffer);
           const frequency = estimateFundamentalFrequency(buffer, context.sampleRate);
-          const step = Math.max(1, Math.floor(buffer.length / TRACE_POINTS));
-          setLiveSamples(Array.from({ length: TRACE_POINTS }, (_, index) => buffer[index * step] ?? 0));
+          const displayStart = buffer.length - displaySampleCount;
+          setLiveSamples(Array.from({ length: TRACE_POINTS }, (_, index) => {
+            const sourceIndex = displayStart + Math.round(index * (displaySampleCount - 1) / (TRACE_POINTS - 1));
+            return buffer[sourceIndex] ?? 0;
+          }));
           setLiveAmplitude(Math.min(1, rms * 5));
           setLiveFrequency(frequency);
         }
@@ -150,7 +157,7 @@ export function LiveSoundVisualiser({ demoFrequencyHz, demoAmplitude }: LiveSoun
           <h2 id="live-sound-title">2. Students: listen and see the sound</h2>
           <p>Use <strong>Microphone</strong> on student laptops while the teacher plays a steady tone, or use <strong>Demo tone</strong> without permission.</p>
         </div>
-        <fieldset className="seg-control live-sound__mode">
+        <fieldset className="seg-control live-sound__mode" data-control-id="sound-lab.capture-mode-toggle">
           <legend className="seg-control__legend">Signal source</legend>
           <div className="seg-control__options" role="radiogroup" aria-label="Sound visualiser signal source">
             <label className="seg-control__option">
@@ -167,7 +174,7 @@ export function LiveSoundVisualiser({ demoFrequencyHz, demoAmplitude }: LiveSoun
 
       {mode === 'microphone' ? (
         <div className="live-sound__mic-actions">
-          <button type="button" className="btn btn--primary" onClick={() => void startMicrophone()} disabled={microphoneState === 'requesting'} data-testid="start-microphone">
+          <button type="button" className="btn btn--primary" onClick={() => void startMicrophone()} disabled={microphoneState === 'requesting'} data-testid="start-microphone" data-control-id="sound-lab.microphone-start-button">
             {microphoneState === 'requesting' ? 'Waiting for permission…' : microphoneState === 'live' ? 'Restart microphone' : 'Start microphone'}
           </button>
           {microphoneState === 'live' ? <p className="live-sound__live" role="status"><span aria-hidden="true">●</span> Listening on this device only</p> : null}
@@ -204,7 +211,7 @@ export function LiveSoundVisualiser({ demoFrequencyHz, demoAmplitude }: LiveSoun
       <div className="live-sound__readouts" aria-live="polite">
         <div data-testid="live-frequency"><span>Frequency</span><strong>{shownFrequency === null ? '—' : `${Math.round(shownFrequency)} Hz`}</strong><small>{pitchDescription(shownFrequency)}</small></div>
         <div data-testid="live-amplitude"><span>Relative amplitude</span><strong>{amplitudePercent}%</strong><small>{relativeLoudnessDescription(shownAmplitude)}</small></div>
-        <div data-testid="live-wavelength"><span>Estimated wavelength</span><strong>{wavelength === null ? '—' : `${formatSigFigs(wavelength)} m`}</strong><small>Assuming sound speed = 343 m/s</small></div>
+        <div data-testid="live-wavelength"><span>Calculated wavelength (not measured)</span><strong>{wavelength === null ? '—' : `${formatSigFigs(wavelength)} m`}</strong><small>Assuming sound speed = 343 m/s</small></div>
       </div>
 
       <p className="live-sound__measurement-note">
