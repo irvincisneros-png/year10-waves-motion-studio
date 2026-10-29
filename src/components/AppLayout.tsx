@@ -98,6 +98,7 @@ export function AppLayout() {
               <Link to="/glossary">Glossary</Link>
               <Link to="/teacher">Teacher tools</Link>
               <Link to="/about">About &amp; model limits</Link>
+              <a href="https://irvincisneros-png.github.io/">← Learning Hub</a>
             </nav>
           </div>
           <p className="shell__footer-version">Version {APP_VERSION}</p>
